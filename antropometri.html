@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anthropometry Assessment | NutriSolve</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="anthro-page">
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <div class="nav-group active">
+          <a class="nav-parent active" href="nutrisolve.html"><span>NutriSolve</span><span class="nav-chevron">v</span></a>
+          <div class="nav-sub-links">
+            <a class="active" href="antropometri.html">Anthro</a>
+            <a href="clinical.html">Clinical</a>
+            <a href="dietary.html">Dietary</a>
+            <a href="ar-patient.html">AR Patient</a>
+          </div>
+        </div>
+        <a href="nutribase.html">NutriBase</a>
+        <a href="nutripath.html">NutriPath</a>
+        <a href="nutriread.html">NutriRead</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero anthro-hero reveal-on-scroll">
+      <span class="eyebrow">NutriSolve / Anthropometry</span>
+      <h1>Anthropometry Assessment</h1>
+      <p class="lead">Pilih kelompok, isi hasil ukur, lalu baca Tabel Interpretasi dan saran awal dari Simulasi DSS.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-inner anthro-workspace reveal-on-scroll delay-100">
+        <div class="anthro-visual-board" aria-label="Visual panduan anthropometry">
+          <div class="body-map" aria-hidden="true">
+            <span class="body-head"></span>
+            <span class="body-torso"></span>
+            <span class="body-arm left"></span>
+            <span class="body-arm right"></span>
+            <span class="body-leg left"></span>
+            <span class="body-leg right"></span>
+            <span class="measure-line height"></span>
+            <span class="measure-line waist"></span>
+            <span class="measure-dot head"></span>
+            <span class="measure-dot arm"></span>
+          </div>
+          <div class="visual-chip-row">
+            <span class="visual-chip"><i>BB</i> Berat</span>
+            <span class="visual-chip"><i>TB</i> Tinggi</span>
+            <span class="visual-chip"><i>BMI</i> IMT</span>
+            <span class="visual-chip"><i>LP</i> Pinggang</span>
+            <span class="visual-chip"><i>SK</i> Skinfold</span>
+          </div>
+          <div class="visual-meter" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="anthro-mode-grid" aria-label="Pilihan kelompok antropometri">
+          <button class="anthro-mode active" type="button" data-anthro-tab="child"><span>01</span><strong>Balita/Bayi</strong><small>0-5 tahun</small></button>
+          <button class="anthro-mode" type="button" data-anthro-tab="teen"><span>02</span><strong>Remaja</strong><small>5-18 tahun</small></button>
+          <button class="anthro-mode" type="button" data-anthro-tab="adult"><span>03</span><strong>Dewasa-Lansia</strong><small>BMI, RLPP, Skinfold</small></button>
+          <button class="anthro-mode" type="button" data-anthro-tab="hospital"><span>04</span><strong>Pasien Rumah Sakit</strong><small>Estimasi klinis</small></button>
+        </div>
+
+        <div class="anthro-legend">
+          <span class="anthro-status normal">Hijau: normal/baik</span>
+          <span class="anthro-status risk">Kuning: risiko/perlu pantau</span>
+          <span class="anthro-status bad">Merah: masalah gizi</span>
+          <span class="anthro-status severe">Hitam: sangat berat</span>
+        </div>
+
+        <div class="anthro-panel active" data-anthro-panel="child">
+          <div class="grid two">
+            <div class="mockup">
+              <h2>Balita/Bayi</h2>
+              <div class="anthro-steps">
+                <div class="anthro-step-card">
+                  <span>1</span>
+                  <div><strong>Buka WHO Anthro</strong><p>Ambil z-score dari hasil pengukuran anak.</p></div>
+                </div>
+                <div class="anthro-step-card">
+                  <span>2</span>
+                  <div><strong>Download aplikasi</strong><p><a class="anthro-step-action" href="https://www.who.int/tools/child-growth-standards/software" target="_blank" rel="noreferrer">WHO Anthro</a></p></div>
+                </div>
+                <div class="anthro-step-card">
+                  <span>3</span>
+                  <div><strong>Isi z-score</strong><p>Warna kartu dan interpretasi berubah otomatis.</p></div>
+                </div>
+              </div>
+            </div>
+            <div class="mockup">
+              <h2>Input Indikator</h2>
+              <div class="indicator-grid">
+                <label class="indicator-card"><i class="indicator-icon">BB</i><span>BB/U</span><input type="number" step="0.1" data-child-indicator="wfa" placeholder="-1.2"><b data-output="child-wfa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">BMI</i><span>IMT/U</span><input type="number" step="0.1" data-child-indicator="bmifa" placeholder="0.4"><b data-output="child-bmifa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">TB</i><span>TB/U</span><input type="number" step="0.1" data-child-indicator="hfa" placeholder="-0.8"><b data-output="child-hfa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">PB</i><span>PB/U</span><input type="number" step="0.1" data-child-indicator="lfa" placeholder="-0.8"><b data-output="child-lfa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">BT</i><span>BB/TB</span><input type="number" step="0.1" data-child-indicator="wfh" placeholder="0.2"><b data-output="child-wfh">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">LK</i><span>LIKA/U</span><input type="number" step="0.1" data-child-indicator="hcfa" placeholder="0.0"><b data-output="child-hcfa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">LA</i><span>LILA/U</span><input type="number" step="0.1" data-child-indicator="acfa" placeholder="-0.5"><b data-output="child-acfa">Belum diisi</b></label>
+              </div>
+            </div>
+          </div>
+          <div class="anthro-result" data-result="child">
+            <h2>Tabel Interpretasi Balita</h2>
+            <p>Isi z-score untuk melihat kategori, interpretasi, dan saran awal.</p>
+          </div>
+        </div>
+
+        <div class="anthro-panel" data-anthro-panel="teen">
+          <div class="grid two">
+            <div class="mockup">
+              <h2>Remaja</h2>
+              <div class="anthro-steps">
+                <div class="anthro-step-card">
+                  <span>1</span>
+                  <div><strong>Buka AnthroPLUS</strong><p>Gunakan z-score untuk usia 5 sampai 18 tahun.</p></div>
+                </div>
+                <div class="anthro-step-card">
+                  <span>2</span>
+                  <div><strong>Download aplikasi</strong><p><a class="anthro-step-action" href="https://www.who.int/tools/growth-reference-data-for-5to19-years/application-tools" target="_blank" rel="noreferrer">AnthroPLUS</a></p></div>
+                </div>
+                <div class="anthro-step-card">
+                  <span>3</span>
+                  <div><strong>Cek umur</strong><p>BB/U nonaktif otomatis saat umur di atas 10.</p></div>
+                </div>
+              </div>
+            </div>
+            <div class="mockup">
+              <h2>Input Remaja</h2>
+              <div class="form-grid">
+                <label class="field" data-icon="AGE"><span>Umur</span><input class="anthro-input" type="number" min="5" max="18" value="9" data-teen-age></label>
+              </div>
+              <div class="indicator-grid compact">
+                <label class="indicator-card"><i class="indicator-icon">BMI</i><span>IMT/U</span><input type="number" step="0.1" data-teen-indicator="bmifa" placeholder="0.2"><b data-output="teen-bmifa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">BB</i><span>BB/U</span><input type="number" step="0.1" data-teen-indicator="wfa" placeholder="-0.8"><b data-output="teen-wfa">Belum diisi</b></label>
+                <label class="indicator-card"><i class="indicator-icon">TB</i><span>TB/U</span><input type="number" step="0.1" data-teen-indicator="hfa" placeholder="-0.3"><b data-output="teen-hfa">Belum diisi</b></label>
+              </div>
+            </div>
+          </div>
+          <div class="anthro-result" data-result="teen">
+            <h2>Tabel Interpretasi Remaja</h2>
+            <p>Isi umur dan z-score untuk menjalankan interpreter.</p>
+          </div>
+        </div>
+
+        <div class="anthro-panel" data-anthro-panel="adult">
+          <div class="grid two">
+            <div class="mockup">
+              <h2>Dewasa-Lansia Calculator</h2>
+              <p class="muted">BMI, Waist/Hip Ratio, lingkar pinggang, LILA, dan Skinfold.</p>
+              <div class="form-grid">
+                <label class="field" data-icon="KG"><span>Berat badan</span><input class="anthro-input" type="number" step="0.1" value="60" data-adult="weight"></label>
+                <label class="field" data-icon="CM"><span>Tinggi badan</span><input class="anthro-input" type="number" step="0.1" value="165" data-adult="height"></label>
+                <label class="field" data-icon="W"><span>Lingkar pinggang</span><input class="anthro-input" type="number" step="0.1" value="78" data-adult="waist"></label>
+                <label class="field" data-icon="H"><span>Lingkar panggul</span><input class="anthro-input" type="number" step="0.1" value="94" data-adult="hip"></label>
+                <label class="field" data-icon="L"><span>LILA</span><input class="anthro-input" type="number" step="0.1" value="24" data-adult="lila"></label>
+                <label class="field" data-icon="S"><span>Jenis kelamin</span><select class="anthro-input" data-adult="sex"><option value="male">Laki-laki</option><option value="female">Perempuan</option></select></label>
+              </div>
+            </div>
+            <div class="mockup">
+              <h2>Skinfold</h2>
+              <div class="formula-note">D = c - m x log skinfold; %BF = (495/D - 450) x 100; BF = BB x %BF; FFM = BB - BF</div>
+              <div class="form-grid">
+                <label class="field" data-icon="c"><span>Konstanta c</span><input class="anthro-input" type="number" step="0.001" value="1.112" data-adult="c"></label>
+                <label class="field" data-icon="m"><span>Konstanta m</span><input class="anthro-input" type="number" step="0.001" value="0.00043499" data-adult="m"></label>
+                <label class="field" data-icon="MM"><span>Skinfold harus mm</span><input class="anthro-input" type="number" step="0.1" value="18" data-adult="skinfold"></label>
+                <label class="field" data-icon="%"><span>Umur</span><input class="anthro-input" type="number" step="1" value="28" data-adult="age"></label>
+              </div>
+            </div>
+          </div>
+          <div class="anthro-result" data-result="adult"></div>
+        </div>
+
+        <div class="anthro-panel" data-anthro-panel="hospital">
+          <div class="grid two">
+            <div class="mockup">
+              <h2>Pasien Rumah Sakit</h2>
+              <div class="form-grid">
+                <label class="field" data-icon="S"><span>Jenis kelamin</span><select class="anthro-input" data-hospital="sex"><option value="male">Laki-laki</option><option value="female">Perempuan</option></select></label>
+                <label class="field" data-icon="AGE"><span>Umur</span><input class="anthro-input" type="number" value="45" data-hospital="age"></label>
+                <label class="field" data-icon="CB"><span>Lingkar betis</span><input class="anthro-input" type="number" step="0.1" value="34" data-hospital="calf"></label>
+                <label class="field" data-icon="KH"><span>Tinggi lutut</span><input class="anthro-input" type="number" step="0.1" value="50" data-hospital="knee"></label>
+                <label class="field" data-icon="UA"><span>LILA</span><input class="anthro-input" type="number" step="0.1" value="27" data-hospital="lila"></label>
+                <label class="field" data-icon="SF"><span>Subscapular</span><input class="anthro-input" type="number" step="0.1" value="16" data-hospital="subscapular"></label>
+                <label class="field" data-icon="DS"><span>Demispan</span><input class="anthro-input" type="number" step="0.1" value="77" data-hospital="demispan"></label>
+                <label class="field" data-icon="UL"><span>Panjang ulna</span><input class="anthro-input" type="number" step="0.1" value="26" data-hospital="ulna"></label>
+              </div>
+            </div>
+            <div class="mockup">
+              <h2>Pilih Rumus Estimasi</h2>
+              <div class="formula-list">
+                <label><input type="radio" name="hospital-height" value="chumlea" checked> Chumlea: TB dari umur + tinggi lutut</label>
+                <label><input type="radio" name="hospital-height" value="bassey"> Bassey: TB dari demispan</label>
+                <label><input type="radio" name="hospital-height" value="ulna"> Ulna: TB dari panjang ulna</label>
+              </div>
+              <label class="field" data-icon="U"><span>Populasi formula ulna</span><select class="anthro-input" data-hospital="ulnaFormula"><option value="ilayperuma">Ilayperuma et al</option><option value="thummar">Thummar et al</option><option value="pureepatpong">Pureepatpong et al</option><option value="bonell">Bonell et al</option></select></label>
+              <p class="muted">BB estimasi memakai lingkar betis, tinggi lutut, LILA, dan subscapular sesuai tabel.</p>
+            </div>
+          </div>
+          <div class="anthro-result" data-result="hospital"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>Anthropometry Assessment</strong><p class="muted">Calculator and interpreter machine untuk NutriSolve DSS.</p></div>
+      <div class="footer-links"><a href="nutrisolve.html">NutriSolve</a><a href="clinical.html">Clinical</a><a href="dietary.html">Dietary</a><a href="ar-patient.html">AR Patient</a></div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

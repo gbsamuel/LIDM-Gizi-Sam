@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Summary | NutriRead</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .ai-workspace {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .result-box {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      min-height: 120px;
+      display: none;
+    }
+    .result-box.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <div class="nav-group">
+          <a class="nav-parent" href="nutrisolve.html"><span>NutriSolve</span><span class="nav-chevron">v</span></a>
+          <div class="nav-sub-links">
+            <a href="antropometri.html">Anthro</a>
+            <a href="clinical.html">Clinical</a>
+            <a href="dietary.html">Dietary</a>
+            <a href="ar-patient.html">AR Patient</a>
+          </div>
+        </div>
+        <a href="nutribase.html">NutriBase</a>
+        <a href="nutripath.html">NutriPath</a>
+        <a class="active" href="nutriread.html">NutriRead</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="page-hero reveal-on-scroll" style="padding-bottom: 24px;">
+      <a href="nutriread.html" class="button secondary" style="margin-bottom: 16px; display: inline-flex;">&larr; Kembali</a>
+      <span class="eyebrow" style="margin-left: 12px;">AI Tool</span>
+      <h1>AI Summary</h1>
+      <p class="lead">Gunakan AI untuk membuat ringkasan dari jurnal, artikel, atau dokumen gizi yang panjang secara otomatis.</p>
+    </section>
+    <section class="section">
+      <div class="section-inner ai-workspace">
+        <div class="mockup reveal-on-scroll delay-100" style="padding: 30px; background: rgba(255, 255, 255, 0.84);">
+          <h3>Masukkan Teks Jurnal</h3>
+          <p class="muted" style="margin-bottom: 20px;">Paste teks dari jurnal di bawah ini, lalu klik Summarize untuk melihat ringkasannya.</p>
+          <div class="form-grid" style="grid-template-columns: 1fr; gap: 16px;">
+            <div class="field" style="min-height: auto;">
+              <textarea id="journal-input" placeholder="Paste teks jurnal di sini..." style="width: 100%; min-height: 200px; padding: 16px; border-radius: 12px; border: 1px solid var(--line); font-family: inherit; font-size: 15px; resize: vertical;"></textarea>
+            </div>
+            <button id="summarize-btn" class="button primary" style="width: 100%; height: 50px; font-size: 16px;">✨ Summarize Jurnal</button>
+          </div>
+
+          <div id="summary-result" class="result-box">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="font-size: 20px;">🤖</span>
+              <h4 style="margin: 0; font-size: 18px; color: var(--green-dark);">Hasil AI Summary</h4>
+            </div>
+            <div id="summary-text" style="color: var(--ink); line-height: 1.6;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>NutriRead</strong><p class="muted">Library digital untuk rancangan frontend.</p></div>
+      <div class="footer-links">
+        <a href="index.html">Beranda</a>
+        <a href="nutribase.html">NutriBase</a>
+        <a href="nutripath.html">NutriPath</a>
+      </div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.getElementById('summarize-btn').addEventListener('click', function() {
+      const input = document.getElementById('journal-input').value;
+      const resultBox = document.getElementById('summary-result');
+      const summaryText = document.getElementById('summary-text');
+      const btn = this;
+
+      if (!input.trim()) {
+        alert('Mohon masukkan teks jurnal terlebih dahulu!');
+        return;
+      }
+
+      // Loading state
+      btn.innerHTML = 'Memproses...';
+      btn.style.opacity = '0.7';
+      btn.disabled = true;
+      resultBox.classList.remove('active');
+
+      // Simulate AI process
+      setTimeout(() => {
+        btn.innerHTML = '✨ Summarize Jurnal';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+        
+        summaryText.innerHTML = `
+          <strong>Ringkasan Eksekutif:</strong><br>
+          Berdasarkan teks yang diberikan, AI mengidentifikasi poin-poin utama berikut:
+          <ul style="margin-top: 10px; padding-left: 20px;">
+            <li style="margin-bottom: 6px;">Metode yang digunakan memiliki pendekatan komprehensif terhadap analisis diet.</li>
+            <li style="margin-bottom: 6px;">Terdapat korelasi signifikan antara asupan gizi tertentu dengan indikator kesehatan klinis.</li>
+            <li style="margin-bottom: 6px;">Kesimpulan menekankan pentingnya intervensi gizi berbasis bukti (evidence-based).</li>
+          </ul>
+          <em>(Ini adalah simulasi hasil AI Summary yang siap dihubungkan dengan API LLM)</em>
+        `;
+        
+        resultBox.classList.add('active');
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

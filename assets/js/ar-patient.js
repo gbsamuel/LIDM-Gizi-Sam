@@ -1,0 +1,629 @@
+// ==========================================================================
+// NutriVerse AR 3D Patient Visualization & AI Diagnostic Engine
+// ==========================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Case Studies Database
+  const cases = {
+    kwashiorkor: {
+      id: "kwashiorkor",
+      name: "Balita Laki-Laki (3 Tahun) - KEP Berat (Kwashiorkor)",
+      complaint: "Dokter, anak saya ini lemas sekali sejak sebulan terakhir. Kakinya bengkak gembung air, rambutnya berubah kemerahan kasar mirip rambut jagung dan gampang sekali rontok kalau disisir. Dia juga tidak nafsu makan sama sekali...",
+      telemetry: {
+        hr: "108 BPM",
+        temp: "35.8 °C (Hipotermia)",
+        zscore: "-3.4 SD (Gizi Buruk Akut)"
+      },
+      hotspots: {
+        hair: "Rambut kering kusam, berwarna kemerahan jingga (Flag Sign), sangat tipis dan rapuh, serta mudah dicabut tanpa menimbulkan rasa sakit.",
+        eyes: "Mata sayu, kelopak mata agak sembap (edema palpebra), sklera bersih tetapi tatapan sangat apatis.",
+        mouth: "Bibir kering pecah-pecah (Cheilosis) dan sudut bibir luka retak meradang (Angular Stomatitis).",
+        skin: "Bercak-bercak pigmentasi gelap bersisik yang mengelupas lebar di paha dan bokong, menyerupai cat mengelupas (Crazy Pavement Dermatosis).",
+        nails: "Kuku jari tipis, rapuh, dengan guratan horizontal putih (Muehrcke's lines).",
+        abdomen: "Perut sangat buncit tegang (Ascites / Busung Air) akibat penimbunan cairan interstitial dari hipoalbuminemia berat, hati membesar (Hepatomegali)."
+      },
+      visualState: {
+        hairColor: "#f39c12", // Amber/Reddish
+        skinColor: "#dfbda7",
+        abdomenScale: "scale(1.2) translate(-15px, -15px)",
+        eyeGlow: "rgba(226, 87, 79, 0.4)",
+        paleFactor: 0.8
+      },
+      correctDiagnosis: "kwashiorkor",
+      correctTherapy: "f75-f100"
+    },
+    vad: {
+      id: "vad",
+      name: "Anak Perempuan (4 Tahun) - Defisiensi Vitamin A",
+      complaint: "Mata anak saya akhir-akhir ini sering berair merah, dan dia selalu mengeluh perih kalau melihat cahaya silau. Tapi yang paling saya khawatirkan, kalau sore hari menjelang maghrib dia sering menabrak barang dan tersandung karena tidak jelas melihat...",
+      telemetry: {
+        hr: "84 BPM",
+        temp: "36.6 °C (Normal)",
+        zscore: "-1.1 SD (Gizi Kurang Ringan)"
+      },
+      hotspots: {
+        hair: "Rambut normal, agak kasar tetapi tidak mudah rontok atau berubah warna.",
+        eyes: "Konjungtiva kering (Xerosis) dengan plak berbusa putih keabuan berbentuk segitiga di tepi luar hitam mata (Bercak Bitot / Bitot's Spots). Kornea tampak kusam.",
+        mouth: "Rongga mulut normal, tidak ada sariawan.",
+        skin: "Kulit sangat kering berbenjol-benjol keras seperti duri di sekitar folikel rambut lengan bawah dan paha, mirip kulit katak (Follicular Hyperkeratosis / Phrynoderma).",
+        nails: "Kuku normal, permukaan datar tanpa kelainan bentuk.",
+        abdomen: "Dinding perut rata normal, tidak buncit ataupun edema."
+      },
+      visualState: {
+        hairColor: "#22252a",
+        skinColor: "#c9a0dc",
+        abdomenScale: "scale(1)",
+        eyeGlow: "rgba(242, 165, 26, 0.8)", // Golden glow
+        paleFactor: 1
+      },
+      correctDiagnosis: "vad",
+      correctTherapy: "vita"
+    },
+    anemia: {
+      id: "anemia",
+      name: "Remaja Putri (15 Tahun) - Anemia Defisiensi Besi",
+      complaint: "Saya gampang sekali lelah, lesu, dan selalu mengantuk saat mendengarkan penjelasan guru di kelas. Konsentrasi saya turun drastis, kepala saya sering terasa kliyengan pusing berputar, dan jantung saya kadang berdebar kencang saat naik tangga...",
+      telemetry: {
+        hr: "115 BPM (Takikardia)",
+        temp: "36.2 °C (Normal)",
+        zscore: "-0.8 SD (Normal)"
+      },
+      hotspots: {
+        hair: "Rambut kering, kusam, dan ujungnya mudah bercabang akibat kurangnya pasokan oksigen ke folikel.",
+        eyes: "Kelopak mata bagian dalam (Konjungtiva Palpebra) terlihat sangat pucat, hampir berwarna putih susu.",
+        mouth: "Bibir tampak sangat pucat kebiruan, lidah licin mengkilap kehilangan papila (Atrophic Glossitis).",
+        skin: "Kulit wajah dan telapak tangan terlihat pucat pasi kekuningan (Pallor).",
+        nails: "Kuku jari sangat tipis, rapuh, mendatar, dan melengkung ke atas di bagian pinggirnya membentuk cekungan seperti sendok (Spoon Nails / Koilonychia).",
+        abdomen: "Perut normal rata, bising usus normal."
+      },
+      visualState: {
+        hairColor: "#1a1c20",
+        skinColor: "#e5e0d8", // Pale skin
+        abdomenScale: "scale(1)",
+        eyeGlow: "rgba(255, 255, 255, 0.2)",
+        paleFactor: 0.6 // Extreme pale
+      },
+      correctDiagnosis: "anemia",
+      correctTherapy: "iron-folate"
+    },
+    pellagra: {
+      id: "pellagra",
+      name: "Orang Dewasa (32 Tahun) - Pellagra (Defisiensi Vitamin B3)",
+      complaint: "Kulit leher dan punggung tangan saya rasanya panas perih menyengat. Awalnya merah mirip luka bakar setelah kena matahari, sekarang tebal bersisik gelap terkelupas simetris kiri-kanan. Saya juga sering mencret hebat, lemas sekali, dan sulit tidur karena cemas...",
+      telemetry: {
+        hr: "92 BPM",
+        temp: "37.1 °C (Normal)",
+        zscore: "-1.8 SD (Kurus)"
+      },
+      hotspots: {
+        hair: "Rambut normal, tidak rapuh.",
+        eyes: "Mata tampak lelah dan sayu akibat insomnia berat (efek neurologis kekurangan niasin).",
+        mouth: "Lidah berwarna merah menyala terang (Scarlet Glossitis) membengkak hebat, terdapat sariawan menyakitkan di seluruh mukosa pipi.",
+        skin: "Lesi dermatitis khas tebal, bersisik, berpigmentasi cokelat gelap melingkari leher berbentuk kalung (Casal's Necklace) dan di punggung tangan-kaki secara simetris.",
+        nails: "Kuku normal tanpa kelainan.",
+        abdomen: "Perut agak kembung, sering terasa kram akibat gangguan gastrointestinal (Diare kronis)."
+      },
+      visualState: {
+        hairColor: "#111316",
+        skinColor: "#a28a7e",
+        abdomenScale: "scale(1.05)",
+        eyeGlow: "rgba(226, 87, 79, 0.3)",
+        paleFactor: 0.95
+      },
+      correctDiagnosis: "pellagra",
+      correctTherapy: "niacin"
+    }
+  };
+
+  // State Management
+  let currentCaseId = "kwashiorkor";
+  let activeHotspotId = null;
+  let rotationAngle = 0;
+  let zoomLevel = 1;
+  let scannedHotspots = new Set();
+  let verifiedStreak = 0;
+  let casesDiagnosed = 0;
+
+  // DOM Elements
+  const patientSVG = document.getElementById("patient-mesh");
+  const caseButtons = document.querySelectorAll("[data-case]");
+  const speechBubble = document.getElementById("patient-speech");
+  const telemetryHr = document.getElementById("tele-hr");
+  const telemetryTemp = document.getElementById("tele-temp");
+  const telemetryZscore = document.getElementById("tele-zscore");
+  const hotspots = document.querySelectorAll(".ar-hotspot");
+  const targetReticle = document.getElementById("ar-reticle");
+  const scanStatus = document.getElementById("scan-status-badge");
+  const observationResults = document.getElementById("observation-results");
+  const btnStartAR = document.getElementById("btn-start-ar-cam");
+  const arCameraOverlay = document.getElementById("ar-cam-overlay");
+  const cameraFeed = document.getElementById("camera-feed");
+  const cameraPlaceholder = document.getElementById("camera-placeholder");
+  
+  // Quiz controls
+  const diagSelect = document.getElementById("select-diagnosis");
+  const therapySelect = document.getElementById("select-therapy");
+  const btnVerify = document.getElementById("btn-verify-answer");
+  const aiValidatorChat = document.getElementById("ai-chat-box");
+
+  // Telemetry Heartbeat simulation
+  let telemetryInterval = null;
+  function startTelemetryPulse() {
+    if (telemetryInterval) clearInterval(telemetryInterval);
+    telemetryInterval = setInterval(() => {
+      if (currentCaseId === "anemia") {
+        // High heart rate, pale
+        telemetryHr.textContent = (110 + Math.floor(Math.random() * 8)) + " BPM";
+      } else if (currentCaseId === "kwashiorkor") {
+        telemetryHr.textContent = (104 + Math.floor(Math.random() * 6)) + " BPM";
+      } else {
+        telemetryHr.textContent = (78 + Math.floor(Math.random() * 8)) + " BPM";
+      }
+    }, 2000);
+  }
+
+  // Load Case Details
+  function loadCase(caseId) {
+    currentCaseId = caseId;
+    activeHotspotId = null;
+    scannedHotspots.clear();
+    
+    const activeCase = cases[caseId];
+    
+    // Update active tab styles
+    caseButtons.forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.case === caseId);
+    });
+
+    // Update subjective speech bubble
+    speechBubble.querySelector("p").textContent = `"${activeCase.complaint}"`;
+    
+    // Reset Observation hud
+    observationResults.innerHTML = `
+      <div class="ai-empty-state" style="padding: 1.5rem 0;">
+        <i style="font-style: normal; font-size: 20px; font-weight: bold; color: var(--green);">◈</i>
+        <span>Silakan klik hotspot sirkuler berkedip pada tubuh pasien untuk memicu pemindaian visual AR.</span>
+      </div>
+    `;
+
+    // Reset AI panel
+    aiValidatorChat.innerHTML = `
+      <div class="ai-empty-state">
+        <i style="font-style: normal; font-size: 20px; font-weight: bold; color: var(--green);">✦</i>
+        <span>Pilihlah tebakan diagnosis penyakit dan tatalaksana di atas, lalu minta validasi AI untuk memeriksa ketepatan jawaban Anda.</span>
+      </div>
+    `;
+    
+    // Update fixed telemetry values
+    telemetryTemp.textContent = activeCase.telemetry.temp;
+    telemetryZscore.textContent = activeCase.telemetry.zscore;
+    startTelemetryPulse();
+
+    // Hide target reticle
+    targetReticle.style.display = "none";
+
+    // Set interactive hot spot warning colors
+    hotspots.forEach(hotspot => {
+      hotspot.classList.remove("active");
+      const type = hotspot.dataset.hotspot;
+      
+      // Dynamic color coding based on severity of sign in this case
+      hotspot.className = "ar-hotspot"; // Reset
+      if (activeCase.hotspots[type].includes("normal") || activeCase.hotspots[type].includes("Normal")) {
+        hotspot.classList.add("info-cyan");
+      } else if (activeCase.hotspots[type].includes("sedikit") || activeCase.hotspots[type].includes("agak")) {
+        hotspot.classList.add("warn-yellow");
+      } else {
+        // Severe signs
+        hotspot.classList.add("warn-red"); // Default pulse red
+      }
+    });
+
+    // Animate patient mesh mutations based on medical case
+    mutatePatientSVG(activeCase.visualState);
+
+    // Reset dropdown values
+    diagSelect.selectedIndex = 0;
+    therapySelect.selectedIndex = 0;
+    
+    // Reset scanner badge
+    scanStatus.textContent = "STANDBY / HUD READY";
+    scanStatus.className = "ar-status-badge";
+  }
+
+  // Mutate Patient SVG Visual States to mock physical changes
+  function mutatePatientSVG(state) {
+    const hair = document.getElementById("svg-hair");
+    const skin = document.getElementById("svg-body-base");
+    const abdomen = document.getElementById("svg-abdomen");
+    const cheeks = document.querySelectorAll(".svg-cheek");
+    const eyes = document.querySelectorAll(".svg-eye-glow");
+    const limbs = document.querySelectorAll(".svg-limb");
+
+    if (hair) {
+      hair.style.fill = state.hairColor;
+      hair.style.stroke = state.hairColor === "#22252a" ? "none" : "#e67e22";
+    }
+
+    if (skin) {
+      skin.style.fill = state.skinColor;
+      if (currentCaseId === "anemia") {
+        skin.style.opacity = "0.75"; // Pale look
+      } else {
+        skin.style.opacity = "1";
+      }
+    }
+
+    if (abdomen) {
+      abdomen.style.transform = state.abdomenScale;
+      // ascites bloated visual warning
+      if (currentCaseId === "kwashiorkor") {
+        abdomen.style.fill = "#d35400";
+        abdomen.style.stroke = "#ffbe76";
+        abdomen.style.strokeWidth = "2px";
+      } else {
+        abdomen.style.fill = "url(#bodyGrad)";
+        abdomen.style.stroke = "rgba(18, 164, 111, 0.4)";
+        abdomen.style.strokeWidth = "1px";
+      }
+    }
+
+    // Cheeks & Eyes
+    cheeks.forEach(cheek => {
+      if (currentCaseId === "anemia") {
+        cheek.style.fill = "#f5f6fa"; // Dead pale cheeks
+        cheek.style.opacity = "0.9";
+      } else if (currentCaseId === "kwashiorkor") {
+        cheek.style.fill = "#e74c3c"; // Swollen puffed face (moon face)
+        cheek.style.opacity = "0.35";
+      } else {
+        cheek.style.fill = "#ff7979";
+        cheek.style.opacity = "0.2";
+      }
+    });
+
+    eyes.forEach(eye => {
+      eye.style.fill = state.eyeGlow;
+      eye.style.filter = currentCaseId === "vad" ? "drop-shadow(0 0 5px #f2a51a)" : "none";
+    });
+
+    // Crazy pavement / Casal's necklace dermatitis texture simulations
+    limbs.forEach(limb => {
+      if (currentCaseId === "kwashiorkor") {
+        limb.style.stroke = "#c0392b";
+        limb.style.strokeDasharray = "5,3";
+      } else if (currentCaseId === "pellagra") {
+        limb.style.stroke = "#7f8c8d";
+        limb.style.strokeWidth = "2px";
+        limb.style.strokeDasharray = "none";
+      } else {
+        limb.style.stroke = "rgba(18, 164, 111, 0.3)";
+        limb.style.strokeWidth = "1px";
+        limb.style.strokeDasharray = "none";
+      }
+    });
+  }
+
+  // Hotspot Click Scanning Loop
+  hotspots.forEach(hotspot => {
+    hotspot.addEventListener("click", () => {
+      const type = hotspot.dataset.hotspot;
+      
+      // Deactivate other hotspots
+      hotspots.forEach(h => h.classList.remove("active"));
+      hotspot.classList.add("active");
+      activeHotspotId = type;
+
+      // Position Glowing Reticle over hotspot
+      const parentRect = hotspot.parentElement.getBoundingClientRect();
+      const childRect = hotspot.getBoundingClientRect();
+      
+      // Relative positioning inside parent canvas
+      const x = childRect.left - parentRect.left + (childRect.width / 2);
+      const y = childRect.top - parentRect.top + (childRect.height / 2);
+
+      targetReticle.style.left = `${x}px`;
+      targetReticle.style.top = `${y}px`;
+      targetReticle.style.display = "block";
+
+      // Zoom model slightly towards the clicked hotspot area
+      applyInteractiveZoom(type);
+
+      // Trigger AR scanning HUD feedback
+      scanStatus.textContent = "ANALYSIS IN PROGRESS...";
+      scanStatus.className = "ar-status-badge scanning";
+
+      // Mock scanning telemetry load
+      observationResults.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 0.8rem; padding: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #ffb732;">
+            <span>AR BIO-SCANNER ACTIVE</span>
+            <span id="scan-pct">0%</span>
+          </div>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow:hidden;">
+            <div id="scan-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ffb732, #2ee59d); transition: width 0.05s linear; box-shadow: 0 0 10px #2ee59d;"></div>
+          </div>
+          <span style="font-size: 11px; color: #64748b; text-align: center; font-family: monospace;">ANALYZING CELLULAR METABOLISM NODE...</span>
+        </div>
+      `;
+
+      let pct = 0;
+      const interval = setInterval(() => {
+        pct += 5;
+        const bar = document.getElementById("scan-bar");
+        const pctText = document.getElementById("scan-pct");
+        
+        if (bar) bar.style.width = `${pct}%`;
+        if (pctText) pctText.textContent = `${pct}%`;
+
+        if (pct >= 100) {
+          clearInterval(interval);
+          scannedHotspots.add(type);
+          
+          // Complete scan
+          scanStatus.textContent = "SCAN COMPLETE / DIAG DATA ACTIVE";
+          scanStatus.className = "ar-status-badge";
+
+          // Display visual clinical observation report
+          const activeCase = cases[currentCaseId];
+          const nodeName = hotspot.querySelector(".ar-hotspot-label").textContent;
+          const observationContent = activeCase.hotspots[type];
+
+          // Check if severe or normal warning color tag
+          let tagClass = "tag";
+          if (observationContent.includes("normal") || observationContent.includes("Normal")) {
+            tagClass = "tag blue";
+          } else if (observationContent.includes("sedikit") || observationContent.includes("agak")) {
+            tagClass = "tag gold";
+          } else {
+            tagClass = "tag coral";
+          }
+
+          observationResults.innerHTML = `
+            <div class="ai-critique-box">
+              <div class="ai-critique-header success">
+                <span class="ai-critique-badge success">NODE DETECTED</span>
+                <strong>NODE PEMERIKSAAN: ${nodeName}</strong>
+              </div>
+              <p class="ai-critique-text" style="color: #ffffff; font-weight: 700; font-size: 14px;">
+                ${observationContent}
+              </p>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                <div class="tag-row" style="margin-top:0;">
+                  <span class="${tagClass}">Skrining Visual AR</span>
+                  <span class="tag">Node ${type.toUpperCase()}</span>
+                </div>
+                <span style="font-size: 11px; color:#64748b; font-family:monospace;">STREAK SCAN: ${scannedHotspots.size}/6</span>
+              </div>
+            </div>
+          `;
+        }
+      }, 40);
+    });
+  });
+
+  // Apply interactive SVG translation based on clicking target nodes to create "3D focus depth"
+  function applyInteractiveZoom(type) {
+    let transform = "";
+    if (type === "hair") {
+      transform = "scale(1.2) translateY(24px)";
+    } else if (type === "eyes") {
+      transform = "scale(1.28) translateY(18px)";
+    } else if (type === "mouth") {
+      transform = "scale(1.25) translateY(5px)";
+    } else if (type === "abdomen") {
+      transform = "scale(1.15) translateY(-25px)";
+    } else if (type === "skin") {
+      transform = "scale(1.1) translateX(-15px) translateY(-10px)";
+    } else if (type === "nails") {
+      transform = "scale(1.25) translateX(-25px) translateY(-50px)";
+    } else {
+      transform = "scale(1)";
+    }
+    
+    // Incorporate overall controls zoomLevel and rotationAngle
+    patientSVG.style.transform = `rotate(${rotationAngle}deg) ${transform}`;
+  }
+
+  // 3D Navigation Controls
+  document.getElementById("btn-rotate-l")?.addEventListener("click", () => {
+    rotationAngle -= 20;
+    updateSVGTransform();
+  });
+
+  document.getElementById("btn-rotate-r")?.addEventListener("click", () => {
+    rotationAngle += 20;
+    updateSVGTransform();
+  });
+
+  document.getElementById("btn-zoom-in")?.addEventListener("click", () => {
+    zoomLevel = Math.min(1.6, zoomLevel + 0.15);
+    updateSVGTransform();
+  });
+
+  document.getElementById("btn-zoom-out")?.addEventListener("click", () => {
+    zoomLevel = Math.max(0.7, zoomLevel - 0.15);
+    updateSVGTransform();
+  });
+
+  document.getElementById("btn-reset-view")?.addEventListener("click", () => {
+    rotationAngle = 0;
+    zoomLevel = 1;
+    activeHotspotId = null;
+    targetReticle.style.display = "none";
+    hotspots.forEach(h => h.classList.remove("active"));
+    patientSVG.style.transform = "scale(1) rotate(0deg) translate(0, 0)";
+    
+    scanStatus.textContent = "VIEWPORT RESET / STANDBY";
+    scanStatus.className = "ar-status-badge";
+  });
+
+  function updateSVGTransform() {
+    patientSVG.style.transform = `scale(${zoomLevel}) rotate(${rotationAngle}deg)`;
+  }
+
+  // AI Validator Engine (Validasi Jawaban User)
+  btnVerify?.addEventListener("click", () => {
+    const userDiag = diagSelect.value;
+    const userTherapy = therapySelect.value;
+
+    if (!userDiag) {
+      alert("Silakan pilih Tebakan Penyakit / Diagnosis Anda terlebih dahulu.");
+      return;
+    }
+    if (!userTherapy) {
+      alert("Silakan tentukan Rekomendasi Tatalaksana Gizi terlebih dahulu.");
+      return;
+    }
+
+    // Trigger typing indicator in AI box
+    aiValidatorChat.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; gap: 8px; justify-content:center; padding: 2rem 0; color:#2ee59d;">
+        <span class="ai-critique-badge success" style="animation: pulse-border 1s infinite alternate; background: rgba(18, 164, 111, 0.15); border: 1px solid rgba(18, 164, 111, 0.3); padding: 6px 12px; border-radius: 6px;">AI VALIDATOR PROCESSING...</span>
+        <span style="font-size:12px; font-family:monospace; color:#64748b;">MENGANALISIS KECELASAN GEJALA & REKOMENDASI TERAPI...</span>
+      </div>
+    `;
+
+    setTimeout(() => {
+      const activeCase = cases[currentCaseId];
+      const isDiagCorrect = userDiag === activeCase.correctDiagnosis;
+      const isTherapyCorrect = userTherapy === activeCase.correctTherapy;
+
+      let scoreMessage = "";
+      let scoreClass = "error";
+      let headerText = "VALIDASI AI: SALAH";
+      let badgeText = "DIAGNOSIS INKOREK";
+      let explanation = "";
+      let advice = "";
+
+      if (isDiagCorrect && isTherapyCorrect) {
+        verifiedStreak++;
+        casesDiagnosed++;
+        scoreClass = "success";
+        headerText = "VALIDASI AI: SEMPURNA (100%)";
+        badgeText = "DIAGNOSIS & TERAPI TEPAT";
+        scoreMessage = `Luar biasa! Diagnosis **${diagSelect.options[diagSelect.selectedIndex].text}** dan tatalaksana **${therapySelect.options[therapySelect.selectedIndex].text}** yang Anda berikan adalah **100% BENAR**!`;
+        
+        // Detailed clinical reasoning based on diagnosis
+        if (currentCaseId === "kwashiorkor") {
+          explanation = `Kwashiorkor terjadi akibat defisiensi energi protein (KEP) berat yang ditandai dengan **edema pitting bilateral** (kaki bengkak air) dan perut buncit (ascites) karena penurunan drastis tekanan osmotik koloid plasma akibat **hipoalbuminemia berat**. Rambut kemerahan jagung (*Flag Sign*) disebabkan kerusakan biosintesis keratin rambut.`;
+          advice = `**Tatalaksana WHO Terapi Stabilisasi**: Sangat tepat menggunakan susu formula khusus **F-75** pada fase stabilisasi. Pemberian makanan padat tinggi protein secara langsung harus DILINDUNGI untuk mencegah **Refeeding Syndrome** (gangguan elektrolit fatal akibat lonjakan insulin mendadak).`;
+        } else if (currentCaseId === "vad") {
+          explanation = `Bercak Bitot (*Bitot's Spots*) pada konjungtiva mata adalah akumulasi keratin bercampur bakteri Corynebacterium xerosis, yang merupakan manifestasi patognomonis **Defisiensi Vitamin A kronis**. Keluhan rabun senja (*Hemeralopia*) terjadi karena retinol tidak mencukupi untuk mensintesis rhodopsin di sel batang retina. Kulit kasar seperti duri (*Phrynoderma*) melengkapi tanda hiperkeratosis folikular.`;
+          advice = `**Terapi Vitamin A**: Rekomendasi pemberian **Kapsul Vitamin A dosis tinggi** (misal 200.000 IU untuk anak 1-5 tahun) secara megadose pada hari ke-1, 2, dan 14 sangat krusial untuk mencegah kerusakan permanen kornea (*Keratomalacia*) yang menyebabkan kebutaan total.`;
+        } else if (currentCaseId === "anemia") {
+          explanation = `Gejala pucat (*pallor*) pada konjungtiva dan kuku cekung sendok (*Koilonychia*) adalah tanda klasik **Anemia Defisiensi Besi berat**. Kurangnya mikronutrien besi (Fe) mengganggu proses eritropoiesis, menghambat sintesis hemoglobin, sehingga menurunkan kapasitas pengikatan oksigen darah yang memicu hipoksia jaringan (membuat lemas, pusing, dan takikardia).`;
+          advice = `**Terapi Anemia**: Pemberian **Tablet Tambah Darah (Zat Besi & Asam Folat)** secara konsisten disertai anjuran konsumsi pangan kaya zat besi hewani (*heme iron* seperti daging merah, hati) bersama Vitamin C (untuk melarutkan Fe3+ menjadi Fe2+ agar mudah diserap usus) adalah tatalaksana terbaik.`;
+        } else if (currentCaseId === "pellagra") {
+          explanation = `Pellagra ditandai dengan trias klasik **3D**: *Dermatitis* (lesi simetris Casal's Necklace leher akibat fotosensitivitas), *Diarrhea* (diare kronis karena atrofi mukosa usus), dan *Dementia* (insomnia, depresi, kecemasan). Ini disebabkan kekurangan **Niasin / Vitamin B3** kronis.`;
+          advice = `**Terapi Pellagra**: Pemberian **suplemen Niasin/Nikotinamida** dosis tinggi disertai diet kaya protein tinggi triptofan (asam amino prekursor niasin di tubuh, seperti telur, susu, unggas) akan memulihkan metabolisme seluler dalam 48-72 jam.`;
+        }
+      } else if (isDiagCorrect && !isTherapyCorrect) {
+        scoreClass = "warning";
+        headerText = "VALIDASI AI: EVALUASI KORSET";
+        badgeText = "DIAGNOSIS BENAR, TERAPI SALAH";
+        scoreMessage = `Diagnosis Anda tentang **${diagSelect.options[diagSelect.selectedIndex].text}** sudah **TEPAT**, tetapi rekomendasi tatalaksana gizi yang Anda pilih (**${therapySelect.options[therapySelect.selectedIndex].text}**) adalah **SALAH**.`;
+        
+        if (currentCaseId === "kwashiorkor") {
+          explanation = `Meskipun Anda mengenali Kwashiorkor dengan tepat, pilihan terapi Anda tidak pas. Pasien gizi buruk akut dengan gangguan cairan (edema edema) berada dalam status metabolik tidak stabil.`;
+          advice = `**Instruksi AI**: Gantilah tatalaksana ke **Susu F-75 fase stabilisasi**. Jangan memberikan zat besi atau makanan tinggi protein padat di awal stabilisasi karena organ tubuh anak tidak sanggup memprosesnya dan berisiko mematikan.`;
+        } else if (currentCaseId === "anemia") {
+          explanation = `Anda mengidentifikasi Anemia Defisiensi Besi dengan benar, namun terapi yang Anda pilih tidak akan meningkatkan pembentukan hemoglobin di sumsum tulang belakang.`;
+          advice = `**Instruksi AI**: Gantilah tatalaksana ke **Tablet Tambah Darah (Zat Besi & Asam Folat)**. Suplementasi lain tidak akan mengobati defisiensi zat besi secara signifikan.`;
+        } else if (currentCaseId === "vad") {
+          explanation = `Diagnosis Defisiensi Vitamin A Anda benar, namun terapi yang Anda anjurkan tidak cukup kuat untuk menyelamatkan mata anak dari ancaman kebutaan permanen.`;
+          advice = `**Instruksi AI**: Pilihlah **Kapsul Vitamin A Megadosis** (100.000 / 200.000 IU) untuk penanganan medis darurat.`;
+        } else if (currentCaseId === "pellagra") {
+          explanation = `Diagnosis Pellagra Anda tepat, namun terapi yang Anda rekomendasikan tidak akan menyembuhkan lesi dermatitis bersisik di leher dan diare yang melemahkan selaput usus.`;
+          advice = `**Instruksi AI**: Pilihlah **Suplementasi Niasin (B3) & Diet Triptofan** untuk memulihkan sintesis energi seluler NAD/NADP.`;
+        }
+      } else {
+        verifiedStreak = 0;
+        scoreClass = "error";
+        headerText = "VALIDASI AI: INKOREK";
+        badgeText = "DIAGNOSIS KELIRU";
+        scoreMessage = `Jawaban Diagnosis **${diagSelect.options[diagSelect.selectedIndex].text}** yang Anda pilih adalah **SALAH**.`;
+        
+        explanation = `Gejala fisik subjektif pasien (misal: "${activeCase.complaint.substring(0, 80)}...") serta data objektif yang Anda kumpulkan dari pemindaian visual AR tidak cocok dengan patofisiologi penyakit yang Anda tebak.`;
+        advice = `**Instruksi AI**: Silakan reset pandangan Anda, klik ulang sisa hotspot berkedip merah/kuning untuk mengumpulkan detail objektif (rambut, mata, perut, kuku, kulit), lalu analisis kembali hubungan gejala tersebut dengan referensi NutriBase.`;
+      }
+
+      // Render critique chat block
+      aiValidatorChat.innerHTML = `
+        <div class="ai-critique-box">
+          <div class="ai-critique-header ${scoreClass}">
+            <span class="ai-critique-badge ${scoreClass}">${badgeText}</span>
+            <strong>${headerText}</strong>
+          </div>
+          <p class="ai-critique-text" style="font-size: 13.5px;">
+            ${scoreMessage}
+          </p>
+          ${explanation ? `<p class="ai-critique-text" style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; font-size:13px; border-left: 3px solid rgba(255,255,255,0.15);">${explanation}</p>` : ""}
+          <p class="ai-critique-advice" style="color: ${scoreClass === 'success' ? '#2ee59d' : '#ffb732'};">
+            ${advice}
+          </p>
+          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top: 8px; font-size: 11px; color:#64748b; text-align:right; font-family:monospace;">
+            STREAK AKTIF: ${verifiedStreak} | DIAGNOSTIC LEVEL: ${verifiedStreak >= 3 ? 'SPESIALIS GIZI AR' : 'RESIDEN PEMBELAJAR'}
+          </div>
+        </div>
+      `;
+    }, 1500);
+  });
+
+  // Simulated Holographic Webcam AR Visor Cam
+  let arCamStream = null;
+  btnStartAR?.addEventListener("click", async () => {
+    const isActive = arCameraOverlay.classList.toggle("active");
+    
+    if (isActive) {
+      btnStartAR.textContent = "Matikan Kamera AR";
+      btnStartAR.className = "button secondary";
+      cameraPlaceholder.style.display = "none";
+      cameraFeed.style.display = "block";
+      
+      try {
+        arCamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        cameraFeed.srcObject = arCamStream;
+        
+        // Start rendering fake diagnostic face grid lines over video
+        scanStatus.textContent = "CAMERA FEED / HOLO RETICLE ACTIVE";
+        scanStatus.className = "ar-status-badge scanning";
+      } catch (err) {
+        console.error("Camera access failed:", err);
+        // Fallback display mesh overlay if camera not authorized
+        cameraFeed.style.display = "none";
+        cameraPlaceholder.style.display = "flex";
+        cameraPlaceholder.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap: 8px; padding: 1.5rem; text-align:center;">
+            <span style="color:#ffb732; font-weight:800; font-size: 13px;">[ HOLOGRAPHIC MESH FALLBACK ]</span>
+            <span style="font-size:11px; color:#64748b;">Kamera tidak diizinkan. Memuat overlay grid pemindai diagnostik bawaan sistem.</span>
+          </div>
+        `;
+      }
+    } else {
+      btnStartAR.textContent = "Aktifkan Kamera AR (Visor HUD)";
+      btnStartAR.className = "button primary";
+      cameraFeed.style.display = "none";
+      cameraPlaceholder.style.display = "flex";
+      cameraPlaceholder.innerHTML = `<span>Kamera Nonaktif</span>`;
+      
+      if (arCamStream) {
+        arCamStream.getTracks().forEach(track => track.stop());
+        arCamStream = null;
+      }
+
+      scanStatus.textContent = "STANDBY / HUD READY";
+      scanStatus.className = "ar-status-badge";
+    }
+  });
+
+  // Handle case button clicks
+  caseButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      loadCase(btn.dataset.case);
+    });
+  });
+
+  // Initialize page on load
+  loadCase("kwashiorkor");
+});

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AR Patient Visualization | NutriSolve</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="ar-page">
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <div class="nav-group active">
+          <a class="nav-parent active" href="nutrisolve.html"><span>NutriSolve</span><span class="nav-chevron">v</span></a>
+          <div class="nav-sub-links">
+            <a href="antropometri.html">Anthro</a>
+            <a href="clinical.html">Clinical</a>
+            <a href="dietary.html">Dietary</a>
+            <a class="active" href="ar-patient.html">AR Patient</a>
+          </div>
+        </div>
+        <a href="nutribase.html">NutriBase</a>
+        <a href="nutripath.html">NutriPath</a>
+        <a href="nutriread.html">NutriRead</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero reveal-on-scroll">
+      <span class="eyebrow">NutriSolve / AR Patient</span>
+      <h1>AR Patient Visualization</h1>
+      <p class="lead">Simulasi fisik pasien gizi berbasis Augmented Reality (AR) 3D interaktif. Analisis gejala pasien, tebak penyakitnya, dan dapatkan validasi klinis dari AI Supervisor.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-inner ar-layout-grid">
+        
+        <!-- COLUMN 1: AR VIEWPORT (THE 3D PATIENT VIEW) -->
+        <div class="ar-viewport-card reveal-on-scroll delay-100">
+          <div class="ar-viewport-header">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 800; color: #94a3b8; font-family: monospace;">AR SCREENER HUD v2.5</span>
+              <span id="scan-status-badge" class="ar-status-badge">STANDBY / HUD READY</span>
+            </div>
+            <button class="button primary" id="btn-start-ar-cam" style="cursor: pointer; font-size: 11px; padding: 6px 14px; min-height: auto;">
+              Aktifkan Kamera AR (Visor HUD)
+            </button>
+          </div>
+
+          <div class="ar-canvas-area" id="viewport-canvas">
+            <!-- Cyber Backdrop -->
+            <div class="ar-grid-backdrop"></div>
+            
+            <!-- Scanning sweep beam -->
+            <div class="scanning-sweep"></div>
+
+            <!-- Subjective Patient Complaint Speech Bubble -->
+            <div class="patient-speech-bubble" id="patient-speech">
+              <p>"Dokter, anak saya lemas sekali..."</p>
+            </div>
+
+            <!-- Dashboard Target Reticle -->
+            <div class="target-reticle" id="ar-reticle"></div>
+
+            <!-- Webcam AR view overlay -->
+            <div class="ar-camera-overlay" id="ar-cam-overlay">
+              <video id="camera-feed" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; border-radius: 14px;"></video>
+              <div id="camera-placeholder" style="display: none;"></div>
+              
+              <!-- Face Calibration holographic overlays -->
+              <div class="camera-grid-crosshair"></div>
+              <div class="camera-bounding-box" style="top: 25%; left: 35%; width: 30%; height: 35%;">
+                [ CALIBRATING RETINA EYE_NODE ]
+              </div>
+              <div class="camera-bounding-box" style="top: 55%; left: 40%; width: 20%; height: 12%; border-color:#2ee59d; color:#2ee59d;">
+                [ CHEILOSIS_SCANNER ACTIVE ]
+              </div>
+              <div style="position: absolute; bottom: 10px; left: 15px; font-family: monospace; font-size: 9px; color: #2ee59d;">
+                &gt; REALTIME BIOMETRIC READOUT FEED ACTIVE<br>
+                &gt; RESOLUTION: 1080P // FPS: 60 // ISO: AUTO
+              </div>
+            </div>
+
+            <!-- 3D PATIENT SVG MODEL -->
+            <svg class="patient-mesh-svg" id="patient-mesh" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bodyGrad" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#fdfcf8" />
+                  <stop offset="100%" stop-color="#dfcfbe" />
+                </radialGradient>
+              </defs>
+
+              <!-- Main Patient Body Vector Frame -->
+              <g id="svg-patient-body">
+                <!-- Hair (Orange/Amber in Kwashiorkor, Black in Anemia) -->
+                <path id="svg-hair" d="M110 95 C115 70, 185 70, 190 95 C195 85, 175 60, 150 60 C125 60, 105 85, 110 95 Z" fill="#22252a" />
+                
+                <!-- Head -->
+                <circle id="svg-head" cx="150" cy="115" r="32" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" stroke-width="1.5" />
+                
+                <!-- Eyes (with glowing markers for Bitot's Spots) -->
+                <ellipse cx="138" cy="112" rx="4" ry="2.5" fill="#111918" />
+                <circle class="svg-eye-glow" cx="138" cy="112" r="1.8" fill="rgba(255,255,255,0.2)" />
+                <ellipse cx="162" cy="112" rx="4" ry="2.5" fill="#111918" />
+                <circle class="svg-eye-glow" cx="162" cy="112" r="1.8" fill="rgba(255,255,255,0.2)" />
+
+                <!-- Cheeks (dynamic puffiness in Kwashiorkor, pale in Anemia) -->
+                <circle class="svg-cheek" cx="128" cy="120" r="4.5" fill="#ff7979" opacity="0.2" />
+                <circle class="svg-cheek" cx="172" cy="120" r="4.5" fill="#ff7979" opacity="0.2" />
+
+                <!-- Lips (dry angular cracks / pale) -->
+                <path id="svg-lips" d="M140 132 C145 130, 155 130, 160 132 C155 136, 145 136, 140 132 Z" fill="#e2574f" stroke="#c0392b" stroke-width="0.5" />
+
+                <!-- Neck -->
+                <path id="svg-neck" d="M142 144 L142 158 L158 158 L158 144 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.2)" />
+
+                <!-- Torso & Abdomen (extremely bloated in Kwashiorkor ascites) -->
+                <path id="svg-body-base" d="M120 158 C100 190, 95 240, 110 320 L190 320 C205 240, 200 190, 180 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" stroke-width="1.5" />
+                
+                <!-- Abdomen Overlay for dynamic bloating / ascites swelling -->
+                <path id="svg-abdomen" d="M118 240 C110 270, 120 318, 150 318 C180 318, 190 270, 182 240 C175 225, 125 225, 118 240 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" style="transform-origin: 150px 270px; transition: transform 0.5s ease;" />
+
+                <!-- Left Arm & Hand -->
+                <path class="svg-limb" d="M120 162 C95 190, 80 230, 85 270 C88 280, 78 280, 76 270 C70 230, 85 190, 110 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
+
+                <!-- Right Arm & Hand -->
+                <path class="svg-limb" d="M180 162 C205 190, 220 230, 215 270 C212 280, 222 280, 224 270 C230 230, 215 190, 190 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
+
+                <!-- Left Leg & Foot -->
+                <path class="svg-limb" d="M124 320 C115 360, 110 410, 120 460 C125 470, 105 475, 100 460 C90 410, 95 360, 110 320 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
+
+                <!-- Right Leg & Foot -->
+                <path class="svg-limb" d="M176 320 C185 360, 190 410, 180 460 C175 470, 195 475, 200 460 C210 410, 205 360, 190 320 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
+              </g>
+            </svg>
+
+            <!-- PULSING DIAGNOSTIC HOTSPOTS (Click to Scan) -->
+            <!-- 1. Hair Hotspot -->
+            <div class="ar-hotspot" style="top: 15%; left: 49%;" data-hotspot="hair">
+              <span class="ar-hotspot-label">PEMERIKSAAN RAMBUT</span>
+            </div>
+
+            <!-- 2. Eyes Hotspot -->
+            <div class="ar-hotspot" style="top: 22%; left: 41%;" data-hotspot="eyes">
+              <span class="ar-hotspot-label">PEMERIKSAAN MATA</span>
+            </div>
+
+            <!-- 3. Mouth Hotspot -->
+            <div class="ar-hotspot" style="top: 26%; left: 53%;" data-hotspot="mouth">
+              <span class="ar-hotspot-label">PEMERIKSAAN MULUT & LIDAH</span>
+            </div>
+
+            <!-- 4. Skin Hotspot -->
+            <div class="ar-hotspot" style="top: 40%; left: 35%;" data-hotspot="skin">
+              <span class="ar-hotspot-label">INTEGUMEN / KULIT</span>
+            </div>
+
+            <!-- 5. Abdomen Hotspot -->
+            <div class="ar-hotspot" style="top: 55%; left: 51%;" data-hotspot="abdomen">
+              <span class="ar-hotspot-label">PEMERIKSAAN ABDOMEN</span>
+            </div>
+
+            <!-- 6. Nails Hotspot -->
+            <div class="ar-hotspot" style="top: 53%; left: 71%;" data-hotspot="nails">
+              <span class="ar-hotspot-label">STRUKTUR KUKU</span>
+            </div>
+
+            <!-- Visualizer Navigation & Scale Dash Controls -->
+            <div class="ar-view-controls">
+              <button class="ar-control-btn" id="btn-rotate-l" title="Putar Kiri">↺</button>
+              <button class="ar-control-btn" id="btn-rotate-r" title="Putar Kanan">↻</button>
+              <button class="ar-control-btn" id="btn-zoom-in" title="Perbesar">+</button>
+              <button class="ar-control-btn" id="btn-zoom-out" title="Perkecil">-</button>
+              <button class="ar-control-btn" id="btn-reset-view" title="Reset Pandangan" style="font-size:12px; font-weight:900;">RESET</button>
+            </div>
+          </div>
+          <p class="muted" style="margin-top: 1rem; font-size: 13px;">Gunakan kontrol navigasi di sudut kanan bawah untuk mensimulasikan rotasi 3D dan perbesaran mesh pasien.</p>
+        </div>
+
+        <!-- COLUMN 2: SCI-FI TELEMETRY HUD & AI VALIDATION SYSTEM -->
+        <div class="ar-hud-card reveal-on-scroll delay-200">
+          <h2 class="ar-hud-title">Simulasi Kasus Klinis</h2>
+          <div class="ar-case-selector">
+            <button class="ar-case-btn active" data-case="kwashiorkor">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#e2574f;"></span>
+              Kasus 1: Balita KEP
+            </button>
+            <button class="ar-case-btn" data-case="vad">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f2a51a;"></span>
+              Kasus 2: Defisiensi Vit.A
+            </button>
+            <button class="ar-case-btn" data-case="anemia">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#fff;"></span>
+              Kasus 3: Remaja Anemis
+            </button>
+            <button class="ar-case-btn" data-case="pellagra">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#0ea5e9;"></span>
+              Kasus 4: Pellagra
+            </button>
+          </div>
+
+          <!-- BIOMETRIC DATA METER -->
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Biometrik Telemetri Pasien</span>
+            <div class="telemetry-row">
+              <div class="telemetry-item">
+                <span>PULSE RATE (HR)</span>
+                <strong id="tele-hr">82 BPM</strong>
+              </div>
+              <div class="telemetry-item">
+                <span>BODY TEMP</span>
+                <strong id="tele-temp">36.6 °C</strong>
+              </div>
+              <div class="telemetry-item">
+                <span>Z-SCORE STATUS</span>
+                <strong id="tele-zscore">-1.1 SD</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCAN OBSERVATIONS BOARD -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Hasil Observasi Scan AR</span>
+            <div class="ai-validator-chat" id="observation-results" style="min-height: 120px;">
+              <!-- Dynamic observation content fills here -->
+            </div>
+          </div>
+
+          <!-- USER DIAGNOSIS & REKOMENDASI FORM -->
+          <div style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;">
+            <h2 class="ar-hud-title">Tebak Diagnosis & Terapi</h2>
+            
+            <div class="diag-form-row">
+              <label for="select-diagnosis">Tebak Penyakit / Masalah Gizi:</label>
+              <select class="diag-select" id="select-diagnosis">
+                <option value="" disabled selected>-- Pilih Diagnosis Penyakit Gizi --</option>
+                <option value="kwashiorkor">Kwashiorkor (Defisiensi Protein Energi Berat)</option>
+                <option value="vad">Defisiensi Vitamin A (Bitot's Spots / Xerophthalmia)</option>
+                <option value="anemia">Anemia Defisiensi Besi (IDA / Kurang Darah)</option>
+                <option value="pellagra">Pellagra (Defisiensi Vitamin B3 / Niasin)</option>
+              </select>
+            </div>
+
+            <div class="diag-form-row">
+              <label for="select-therapy">Rekomendasi Tatalaksana Pangan:</label>
+              <select class="diag-select" id="select-therapy">
+                <option value="" disabled selected>-- Pilih Tindakan / Rekomendasi Terapi --</option>
+                <option value="f75-f100">Formula Khusus WHO F-75 fase stabilisasi dilanjut F-100</option>
+                <option value="vita">Megadosis Kapsul Vitamin A dosis tinggi & Makanan Kaya Beta-Karoten</option>
+                <option value="iron-folate">Tablet Tambah Darah (TTD Zat Besi & Asam Folat) & Daging Merah/Hati</option>
+                <option value="niacin">Suplementasi Niasin (Vitamin B3) & Diet Kaya Protein Tinggi Triptofan</option>
+              </select>
+            </div>
+
+            <button class="button primary" id="btn-verify-answer" style="cursor: pointer; width: 100%; margin-top: 6px; font-weight:900; letter-spacing:0.5px;">
+              Kirim Jawaban untuk Validasi AI
+            </button>
+          </div>
+
+          <!-- AI CLINICAL VALIDATION CONSOLE -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Validasi Konseling AI</span>
+            <div class="ai-validator-chat" id="ai-chat-box">
+              <!-- AI Diagnostic evaluation output fills here -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>AR Patient Visualization</strong>
+        <p class="muted">Skrining 3D visual & validasi keputusan medis berbasis AI.</p>
+      </div>
+      <div class="footer-links">
+        <a href="nutrisolve.html">NutriSolve</a>
+        <a href="antropometri.html">Anthropometry</a>
+        <a href="clinical.html">Clinical</a>
+        <a href="dietary.html">Dietary</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/ar-patient.js"></script>
+</body>
+</html>
