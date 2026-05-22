@@ -1527,7 +1527,6 @@ tr:last-child td {
   width: 140px;
   height: 140px;
   object-fit: contain;
-  mix-blend-mode: lighten;
   animation: float3d 4s ease-in-out infinite;
   pointer-events: none;
 }

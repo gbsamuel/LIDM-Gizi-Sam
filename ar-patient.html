@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AR Patient Visualization | NutriSolve</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- Three.js Library for high-end WebGL 3D Holographic Rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body class="ar-page">
   <header class="site-header">
@@ -85,87 +87,37 @@
               </div>
             </div>
 
-            <!-- 3D PATIENT SVG MODEL -->
-            <svg class="patient-mesh-svg" id="patient-mesh" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient id="bodyGrad" cx="50%" cy="40%" r="60%">
-                  <stop offset="0%" stop-color="#fdfcf8" />
-                  <stop offset="100%" stop-color="#dfcfbe" />
-                </radialGradient>
-              </defs>
-
-              <!-- Main Patient Body Vector Frame -->
-              <g id="svg-patient-body">
-                <!-- Hair (Orange/Amber in Kwashiorkor, Black in Anemia) -->
-                <path id="svg-hair" d="M110 95 C115 70, 185 70, 190 95 C195 85, 175 60, 150 60 C125 60, 105 85, 110 95 Z" fill="#22252a" />
-                
-                <!-- Head -->
-                <circle id="svg-head" cx="150" cy="115" r="32" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" stroke-width="1.5" />
-                
-                <!-- Eyes (with glowing markers for Bitot's Spots) -->
-                <ellipse cx="138" cy="112" rx="4" ry="2.5" fill="#111918" />
-                <circle class="svg-eye-glow" cx="138" cy="112" r="1.8" fill="rgba(255,255,255,0.2)" />
-                <ellipse cx="162" cy="112" rx="4" ry="2.5" fill="#111918" />
-                <circle class="svg-eye-glow" cx="162" cy="112" r="1.8" fill="rgba(255,255,255,0.2)" />
-
-                <!-- Cheeks (dynamic puffiness in Kwashiorkor, pale in Anemia) -->
-                <circle class="svg-cheek" cx="128" cy="120" r="4.5" fill="#ff7979" opacity="0.2" />
-                <circle class="svg-cheek" cx="172" cy="120" r="4.5" fill="#ff7979" opacity="0.2" />
-
-                <!-- Lips (dry angular cracks / pale) -->
-                <path id="svg-lips" d="M140 132 C145 130, 155 130, 160 132 C155 136, 145 136, 140 132 Z" fill="#e2574f" stroke="#c0392b" stroke-width="0.5" />
-
-                <!-- Neck -->
-                <path id="svg-neck" d="M142 144 L142 158 L158 158 L158 144 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.2)" />
-
-                <!-- Torso & Abdomen (extremely bloated in Kwashiorkor ascites) -->
-                <path id="svg-body-base" d="M120 158 C100 190, 95 240, 110 320 L190 320 C205 240, 200 190, 180 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" stroke-width="1.5" />
-                
-                <!-- Abdomen Overlay for dynamic bloating / ascites swelling -->
-                <path id="svg-abdomen" d="M118 240 C110 270, 120 318, 150 318 C180 318, 190 270, 182 240 C175 225, 125 225, 118 240 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.4)" style="transform-origin: 150px 270px; transition: transform 0.5s ease;" />
-
-                <!-- Left Arm & Hand -->
-                <path class="svg-limb" d="M120 162 C95 190, 80 230, 85 270 C88 280, 78 280, 76 270 C70 230, 85 190, 110 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
-
-                <!-- Right Arm & Hand -->
-                <path class="svg-limb" d="M180 162 C205 190, 220 230, 215 270 C212 280, 222 280, 224 270 C230 230, 215 190, 190 158 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
-
-                <!-- Left Leg & Foot -->
-                <path class="svg-limb" d="M124 320 C115 360, 110 410, 120 460 C125 470, 105 475, 100 460 C90 410, 95 360, 110 320 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
-
-                <!-- Right Leg & Foot -->
-                <path class="svg-limb" d="M176 320 C185 360, 190 410, 180 460 C175 470, 195 475, 200 460 C210 410, 205 360, 190 320 Z" fill="url(#bodyGrad)" stroke="rgba(18, 164, 111, 0.3)" />
-              </g>
-            </svg>
+            <!-- 3D PATIENT THREE.JS CANVAS CONTAINER -->
+            <div id="ar-3d-canvas-container" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: auto;"></div>
 
             <!-- PULSING DIAGNOSTIC HOTSPOTS (Click to Scan) -->
             <!-- 1. Hair Hotspot -->
-            <div class="ar-hotspot" style="top: 15%; left: 49%;" data-hotspot="hair">
+            <div class="ar-hotspot" data-hotspot="hair">
               <span class="ar-hotspot-label">PEMERIKSAAN RAMBUT</span>
             </div>
 
             <!-- 2. Eyes Hotspot -->
-            <div class="ar-hotspot" style="top: 22%; left: 41%;" data-hotspot="eyes">
+            <div class="ar-hotspot" data-hotspot="eyes">
               <span class="ar-hotspot-label">PEMERIKSAAN MATA</span>
             </div>
 
             <!-- 3. Mouth Hotspot -->
-            <div class="ar-hotspot" style="top: 26%; left: 53%;" data-hotspot="mouth">
+            <div class="ar-hotspot" data-hotspot="mouth">
               <span class="ar-hotspot-label">PEMERIKSAAN MULUT & LIDAH</span>
             </div>
 
             <!-- 4. Skin Hotspot -->
-            <div class="ar-hotspot" style="top: 40%; left: 35%;" data-hotspot="skin">
+            <div class="ar-hotspot" data-hotspot="skin">
               <span class="ar-hotspot-label">INTEGUMEN / KULIT</span>
             </div>
 
             <!-- 5. Abdomen Hotspot -->
-            <div class="ar-hotspot" style="top: 55%; left: 51%;" data-hotspot="abdomen">
+            <div class="ar-hotspot" data-hotspot="abdomen">
               <span class="ar-hotspot-label">PEMERIKSAAN ABDOMEN</span>
             </div>
 
             <!-- 6. Nails Hotspot -->
-            <div class="ar-hotspot" style="top: 53%; left: 71%;" data-hotspot="nails">
+            <div class="ar-hotspot" data-hotspot="nails">
               <span class="ar-hotspot-label">STRUKTUR KUKU</span>
             </div>
 
