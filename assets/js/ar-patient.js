@@ -1,14 +1,23 @@
 // ==========================================================================
-// NutriVerse AR 3D Patient Visualization & AI Diagnostic Engine
+// NutriVerse AR 3D Patient Visualization & AI Diagnostic Engine (Interactive)
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Case Studies Database
+  // Case Studies Database with spoken first-person narratives
   const cases = {
     kwashiorkor: {
       id: "kwashiorkor",
       name: "Balita Laki-Laki (3 Tahun) - KEP Berat (Kwashiorkor)",
       complaint: "Dokter, anak saya ini lemas sekali sejak sebulan terakhir. Kakinya bengkak gembung air, rambutnya berubah kemerahan kasar mirip rambut jagung dan gampang sekali rontok kalau disisir. Dia juga tidak nafsu makan sama sekali...",
+      spokenIntro: "Dokter, anak saya ini lemas sekali sejak sebulan terakhir. Kakinya bengkak gembung air, rambutnya berubah kemerahan kasar mirip rambut jagung dan gampang sekali rontok kalau disisir. Dia juga tidak nafsu makan sama sekali...",
+      hotspotVoices: {
+        hair: "Rambut anak saya kok kering kusam dan berubah kemerahan kayak rambut jagung ya, Dok? Tipis banget dan gampang rontok kalau disisir.",
+        eyes: "Matanya terlihat sayu banget, Dok. Terus kelopak matanya juga bengkak sembab, tatapannya lemas dan apatis.",
+        mouth: "Bibirnya kering pecah-pecah sekali, Dok, terus di sudut bibirnya ada luka retak meradang yang perih.",
+        skin: "Di paha sama bokongnya ada bercak gelap bersisik yang terkelupas lebar-lebar, perih sekali mirip cat dinding mengelupas.",
+        nails: "Kuku jarinya tipis sekali, rapuh, dan ada garis-garis putih mendatar di atas permukaannya.",
+        abdomen: "Perut anak saya buncit besar sekali kayak kembung air karena bengkak gizi, Dok. Padahal tangannya kurus banget."
+      },
       telemetry: {
         hr: "108 BPM",
         temp: "35.8 °C (Hipotermia)",
@@ -36,6 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
       id: "vad",
       name: "Anak Perempuan (4 Tahun) - Defisiensi Vitamin A",
       complaint: "Mata anak saya akhir-akhir ini sering berair merah, dan dia selalu mengeluh perih kalau melihat cahaya silau. Tapi yang paling saya khawatirkan, kalau sore hari menjelang maghrib dia sering menabrak barang dan tersandung karena tidak jelas melihat...",
+      spokenIntro: "Mata anak saya akhir-akhir ini sering berair merah, dan dia selalu mengeluh perih kalau melihat cahaya silau. Tapi yang paling saya khawatirkan, kalau sore hari menjelang maghrib dia sering menabrak barang dan tersandung karena tidak jelas melihat...",
+      hotspotVoices: {
+        hair: "Rambut anak saya normal saja Dok, cuma agak sedikit kasar tapi tidak rapuh atau rontok.",
+        eyes: "Matanya kering merah, dan ada plak putih keabuan berbentuk segitiga di pinggir hitam matanya, Dok. Korneanya kusam.",
+        mouth: "Rongga mulut anak saya normal-normal saja kok, Dok, tidak ada sariawan.",
+        skin: "Kulit lengan dan pahanya sangat kering bersisik kasar, dan bruntusan keras kayak duri mirip kulit katak, Dok.",
+        nails: "Kuku jarinya normal dan rata, tidak ada masalah apa-apa.",
+        abdomen: "Perutnya rata dan normal saja Dok, tidak buncit atau bengkak."
+      },
       telemetry: {
         hr: "84 BPM",
         temp: "36.6 °C (Normal)",
@@ -63,6 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
       id: "anemia",
       name: "Remaja Putri (15 Tahun) - Anemia Defisiensi Besi",
       complaint: "Saya gampang sekali lelah, lesu, dan selalu mengantuk saat mendengarkan penjelasan guru di kelas. Konsentrasi saya turun drastis, kepala saya sering terasa kliyengan pusing berputar, dan jantung saya kadang berdebar kencang saat naik tangga...",
+      spokenIntro: "Saya gampang sekali lelah, lesu, dan selalu mengantuk saat mendengarkan penjelasan guru di kelas. Konsentrasi saya turun drastis, kepala saya sering terasa kliyengan pusing berputar, dan jantung saya kadang berdebar kencang saat naik tangga...",
+      hotspotVoices: {
+        hair: "Rambut saya kering, kusam, dan ujung-ujungnya gampang sekali bercabang, Dok.",
+        eyes: "Kalau kelopak mata bawah saya ditarik, bagian dalamnya terlihat sangat pucat, hampir berwarna putih susu.",
+        mouth: "Bibir saya pucat banget Dok, dan permukaan lidah saya terasa licin mengkilap karena kehilangan papila.",
+        skin: "Kulit wajah dan telapak tangan saya kelihatan pucat pasi kekuningan, Dok.",
+        nails: "Kuku jari saya tipis, rapuh, dan melengkung ke atas membentuk cekungan di pinggirnya seperti sendok.",
+        abdomen: "Perut saya normal-normal saja Dok, tidak ada kembung atau rasa sakit."
+      },
       telemetry: {
         hr: "115 BPM (Takikardia)",
         temp: "36.2 °C (Normal)",
@@ -90,6 +117,15 @@ document.addEventListener("DOMContentLoaded", () => {
       id: "pellagra",
       name: "Orang Dewasa (32 Tahun) - Pellagra (Defisiensi Vitamin B3)",
       complaint: "Kulit leher dan punggung tangan saya rasanya panas perih menyengat. Awalnya merah mirip luka bakar setelah kena matahari, sekarang tebal bersisik gelap terkelupas simetris kiri-kanan. Saya juga sering mencret hebat, lemas sekali, dan sulit tidur karena cemas...",
+      spokenIntro: "Kulit leher dan punggung tangan saya rasanya panas perih menyengat. Awalnya merah mirip luka bakar setelah kena matahari, sekarang tebal bersisik gelap terkelupas simetris kiri-kanan. Saya juga sering mencret hebat, lemas sekali, dan sulit tidur karena cemas...",
+      hotspotVoices: {
+        hair: "Rambut saya normal dan sehat Dok, tidak ada masalah rontok.",
+        eyes: "Mata saya rasanya lelah dan sayu sekali, Dok, karena saya susah tidur nyenyak akhir-akhir ini.",
+        mouth: "Lidah saya merah menyala bengkak, Dok, perih sekali dan penuh sariawan di seluruh rongga mulut.",
+        skin: "Muncul ruam kulit merah tebal bersisik gelap melingkari leher berbentuk kalung dan di punggung tangan-kaki secara simetris, rasanya perih terbakar.",
+        nails: "Kuku saya normal dan bersih, tidak ada kelainan bentuk.",
+        abdomen: "Perut saya rasanya kembung begah Dok, dan saya sering mencret hebat beberapa hari ini."
+      },
       telemetry: {
         hr: "92 BPM",
         temp: "37.1 °C (Normal)",
@@ -127,6 +163,41 @@ document.addEventListener("DOMContentLoaded", () => {
   // Three.js State Variables
   let scene, camera, renderer, controls, model;
 
+  // Rigged Bones State
+  let spineBone = null;
+  let neckBone = null;
+  let headBone = null;
+  let leftShoulderBone = null;
+  let rightShoulderBone = null;
+  let leftArmBone = null;
+  let rightArmBone = null;
+  let leftForeArmBone = null;
+  let rightForeArmBone = null;
+
+  let animationState = "idle"; // "idle" | "speaking" | "focused"
+  let voiceEnabled = true;
+  let lastSpokenText = "";
+
+  // Target bone angles for smooth trigonometry interpolation (Slerp-like)
+  let targetSpineRotX = 0;
+  let targetSpineRotY = 0;
+  let targetSpineRotZ = 0;
+
+  let targetNeckRotX = 0;
+  let targetNeckRotY = 0;
+  let targetNeckRotZ = 0;
+
+  let targetHeadRotX = 0;
+  let targetHeadRotY = 0;
+  let targetHeadRotZ = 0;
+
+  let targetLeftArmRotZ = 1.3;
+  let targetRightArmRotZ = -1.3;
+  let targetLeftArmRotX = 0;
+  let targetRightArmRotX = 0;
+  let targetLeftArmRotY = 0;
+  let targetRightArmRotY = 0;
+
   // DOM Elements
   const caseButtons = document.querySelectorAll("[data-case]");
   const speechBubble = document.getElementById("patient-speech");
@@ -142,6 +213,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const cameraFeed = document.getElementById("camera-feed");
   const cameraPlaceholder = document.getElementById("camera-placeholder");
   
+  // Custom speech synthesis controls
+  const btnToggleVoice = document.getElementById("btn-toggle-voice");
+  const btnReplaySpeech = document.getElementById("btn-replay-speech");
+
   // Quiz controls
   const diagSelect = document.getElementById("select-diagnosis");
   const therapySelect = document.getElementById("select-therapy");
@@ -173,7 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (telemetryInterval) clearInterval(telemetryInterval);
     telemetryInterval = setInterval(() => {
       if (currentCaseId === "anemia") {
-        // High heart rate, pale
         telemetryHr.textContent = (110 + Math.floor(Math.random() * 8)) + " BPM";
       } else if (currentCaseId === "kwashiorkor") {
         telemetryHr.textContent = (104 + Math.floor(Math.random() * 6)) + " BPM";
@@ -188,6 +262,8 @@ document.addEventListener("DOMContentLoaded", () => {
     currentCaseId = caseId;
     activeHotspotId = null;
     scannedHotspots.clear();
+    resetBoneTargets();
+    animationState = "idle";
     
     const activeCase = cases[caseId];
     
@@ -196,9 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.toggle("active", btn.dataset.case === caseId);
     });
 
-    // Update subjective speech bubble
-    speechBubble.querySelector("p").textContent = `"${activeCase.complaint}"`;
+    // Update subjective speech bubble text
+    speechBubble.querySelector("p").textContent = `"${activeCase.spokenIntro}"`;
     
+    // Play spoken intro narrative
+    speakText(activeCase.spokenIntro);
+
     // Reset Observation hud
     observationResults.innerHTML = `
       <div class="ai-empty-state" style="padding: 1.5rem 0;">
@@ -228,15 +307,13 @@ document.addEventListener("DOMContentLoaded", () => {
       hotspot.classList.remove("active");
       const type = hotspot.dataset.hotspot;
       
-      // Dynamic color coding based on severity of sign in this case
       hotspot.className = "ar-hotspot"; // Reset
       if (activeCase.hotspots[type].includes("normal") || activeCase.hotspots[type].includes("Normal")) {
         hotspot.classList.add("info-cyan");
       } else if (activeCase.hotspots[type].includes("sedikit") || activeCase.hotspots[type].includes("agak")) {
         hotspot.classList.add("warn-yellow");
       } else {
-        // Severe signs
-        hotspot.classList.add("warn-red"); // Default pulse red
+        hotspot.classList.add("warn-red");
       }
     });
 
@@ -258,30 +335,42 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateCaseLights(caseId) {
     if (!scene) return;
     
-    let accentColor = 0x2ee59d; // Default neon green
-    let emissiveColor = 0x02120e;
+    let accentColor = 0x5b86e5; // Soft clinical blue
+    let emissiveColor = 0x0a101d;
     
     if (caseId === "kwashiorkor") {
-      accentColor = 0xf39c12; // Amber/Orange-Red for Flag Sign
-      emissiveColor = 0x301e02;
+      accentColor = 0xf39c12;
+      emissiveColor = 0x1d150a;
     } else if (caseId === "vad") {
-      accentColor = 0xf2a51a; // Golden Yellow for Xerophthalmia
-      emissiveColor = 0x2d1e02;
+      accentColor = 0xf2a51a;
+      emissiveColor = 0x1d150a;
     } else if (caseId === "anemia") {
-      accentColor = 0xa5f3fc; // Pale Blue/White for Pallor
-      emissiveColor = 0x051e22;
+      accentColor = 0xa5f3fc;
+      emissiveColor = 0x0a1d1f;
     } else if (caseId === "pellagra") {
-      accentColor = 0xe2574f; // Deep Red for Casal's Necklace
-      emissiveColor = 0x300502;
+      accentColor = 0xe2574f;
+      emissiveColor = 0x1d0a0a;
     }
     
-    // Traverse model meshes and update wireframe and emissive colors
     if (model) {
       model.traverse((child) => {
         if (child.isMesh && child.material) {
-          child.material.emissive.setHex(emissiveColor);
+          try {
+            if (Array.isArray(child.material)) {
+              child.material.forEach(m => {
+                if (m && m.emissive && typeof m.emissive.setHex === 'function') {
+                  m.emissive.setHex(emissiveColor);
+                }
+              });
+            } else {
+              if (child.material.emissive && typeof child.material.emissive.setHex === 'function') {
+                child.material.emissive.setHex(emissiveColor);
+              }
+            }
+          } catch (e) {
+            console.warn("Could not set emissive color on mesh child:", e);
+          }
           
-          // Update wireframe colors of child line segments
           child.children.forEach(c => {
             if (c.isLineSegments && c.material) {
               c.material.color.setHex(accentColor);
@@ -291,7 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
     
-    // Update directional backlight and spotlight colors in the scene
     scene.traverse((child) => {
       if (child.isDirectionalLight && child.position.z < 0) {
         child.color.setHex(accentColor);
@@ -309,9 +397,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     container.innerHTML = "";
     
-    // Create Scene with sci-fi fog
+    // Create Scene with bright clinical fog and clean medical room background
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x060c0a, 0.05);
+    scene.background = new THREE.Color(0xf1f5f9);
+    scene.fog = new THREE.FogExp2(0xf1f5f9, 0.015);
     
     // Camera
     camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
@@ -333,25 +422,25 @@ document.addEventListener("DOMContentLoaded", () => {
     controls.maxDistance = 8;
     
     // Ambient & Studio Lights
-    const ambientLight = new THREE.AmbientLight(0x0c2f2c, 1.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
     
-    const dirLightFront = new THREE.DirectionalLight(0x0ea5e9, 2.0);
+    const dirLightFront = new THREE.DirectionalLight(0xffffff, 1.5);
     dirLightFront.position.set(2, 4, 5);
     scene.add(dirLightFront);
     
-    const dirLightBack = new THREE.DirectionalLight(0x2ee59d, 2.5);
+    const dirLightBack = new THREE.DirectionalLight(0xffffff, 1.0);
     dirLightBack.position.set(-2, 2, -3);
     scene.add(dirLightBack);
     
-    const spotLight = new THREE.SpotLight(0x2ee59d, 4);
+    const spotLight = new THREE.SpotLight(0xffffff, 2.0);
     spotLight.position.set(0, 5, 0);
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.5;
     scene.add(spotLight);
     
-    // High-tech holographic grid floor
-    const gridHelper = new THREE.GridHelper(10, 20, 0x12a46f, 0x052e1e);
+    // High-end medical room clean grid floor
+    const gridHelper = new THREE.GridHelper(10, 20, 0x94a3b8, 0xe2e8f0);
     gridHelper.position.y = -1.4;
     scene.add(gridHelper);
     
@@ -378,29 +467,40 @@ document.addEventListener("DOMContentLoaded", () => {
         object.position.y = -box.min.y * scale - 1.4;
         object.position.z = -center.z * scale;
         
-        // Apply beautiful sci-fi translucent materials
+        object.basePositionY = object.position.y; // Keep track of baseline Y coordinates
+        
+        // Resolve bones for skeletal rigging control using highly inclusive criteria
+        window.allFBXNodes = [];
         object.traverse((child) => {
+          window.allFBXNodes.push(`${child.name} (${child.type || 'Object3D'})`);
+          
+          // Use exact matching based on the last part of the node name (stripping colons/namespaces)
+          const rawName = child.name;
+          const cleanName = rawName.substring(rawName.lastIndexOf(':') + 1).toLowerCase();
+          
+          if (cleanName === "head" && !headBone) {
+            headBone = child;
+          } else if (cleanName === "neck" && !neckBone) {
+            neckBone = child;
+          } else if ((cleanName === "spine_01" || cleanName === "spine") && !spineBone) {
+            spineBone = child;
+          } else if (cleanName === "shoulder_l" && !leftShoulderBone) {
+            leftShoulderBone = child;
+          } else if (cleanName === "shoulder_r" && !rightShoulderBone) {
+            rightShoulderBone = child;
+          } else if (cleanName === "upperarm_l" && !leftArmBone) {
+            leftArmBone = child;
+          } else if (cleanName === "upperarm_r" && !rightArmBone) {
+            rightArmBone = child;
+          } else if (cleanName === "lowerarm_l" && !leftForeArmBone) {
+            leftForeArmBone = child;
+          } else if (cleanName === "lowerarm_r" && !rightForeArmBone) {
+            rightForeArmBone = child;
+          }
+
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
-            
-            child.material = new THREE.MeshPhongMaterial({
-              color: 0x05241b,
-              emissive: 0x02120e,
-              transparent: true,
-              opacity: 0.75,
-              shininess: 30,
-              flatShading: true,
-              side: THREE.DoubleSide
-            });
-            
-            // Add custom glowing wireframe helper
-            const wireframe = new THREE.WireframeGeometry(child.geometry);
-            const line = new THREE.LineSegments(wireframe);
-            line.material.color.setHex(0x2ee59d);
-            line.material.transparent = true;
-            line.material.opacity = 0.2;
-            child.add(line);
           }
         });
         
@@ -409,7 +509,73 @@ document.addEventListener("DOMContentLoaded", () => {
         scanStatus.textContent = "HOLOGRAPHIC MESH READY";
         scanStatus.className = "ar-status-badge";
         
-        // Update styling colors to match case
+        // VISUAL ON-SCREEN DEBUG LOGGER FOR USER DIAGNOSTICS
+        const debugOverlay = document.createElement("div");
+        debugOverlay.id = "ar-debug-console";
+        debugOverlay.style.position = "absolute";
+        debugOverlay.style.top = "10px";
+        debugOverlay.style.left = "10px";
+        debugOverlay.style.background = "rgba(0,0,0,0.85)";
+        debugOverlay.style.color = "#00ff66";
+        debugOverlay.style.padding = "12px";
+        debugOverlay.style.fontFamily = "monospace";
+        debugOverlay.style.fontSize = "11px";
+        debugOverlay.style.zIndex = "99999";
+        debugOverlay.style.borderRadius = "8px";
+        debugOverlay.style.border = "2px solid #00ff66";
+        debugOverlay.style.boxShadow = "0 0 15px rgba(0,255,102,0.4)";
+        debugOverlay.style.pointerEvents = "auto";
+        debugOverlay.style.maxHeight = "300px";
+        debugOverlay.style.overflowY = "auto";
+        
+        window.updateDebugOverlay = () => {
+          const firstNodes = (window.allFBXNodes || []).slice(0, 25).join(", ");
+          debugOverlay.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+              <b>[AR PATIENT RIG DIAGNOSTICS]</b>
+              <button onclick="this.parentElement.parentElement.remove()" style="background:#ff3333; color:white; border:none; padding:2px 6px; cursor:pointer; font-size:9px; border-radius:3px;">CLOSE</button>
+            </div>
+            Model Object: ${model ? "LOADED" : "NULL"}<br>
+            Mesh Center (X, Y, Z): ${model ? `${model.position.x.toFixed(2)}, ${model.position.y.toFixed(2)}, ${model.position.z.toFixed(2)}` : "N/A"}<br>
+            Bones Found:<br>
+            - Spine: ${spineBone ? `<font color=#00ff66>${spineBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Neck: ${neckBone ? `<font color=#00ff66>${neckBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Head: ${headBone ? `<font color=#00ff66>${headBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Left Arm: ${leftArmBone ? `<font color=#00ff66>${leftArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Right Arm: ${rightArmBone ? `<font color=#00ff66>${rightArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Left Forearm: ${leftForeArmBone ? `<font color=#00ff66>${leftForeArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            - Right Forearm: ${rightForeArmBone ? `<font color=#00ff66>${rightForeArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
+            Last Rotation Z: ${leftArmBone ? leftArmBone.rotation.z.toFixed(2) : "N/A"}<br>
+            Error Logs: <span id="ar-debug-errors" style="color:#ff3333;">None</span><br>
+            <div style="font-size: 9px; color: #888; max-width: 320px; word-wrap: break-word; margin-top: 4px;">
+              <b>First 25 FBX Nodes Traversed:</b><br>
+              ${firstNodes || "None"}
+            </div>
+          `;
+        };
+        
+        window.updateDebugOverlay();
+        document.body.appendChild(debugOverlay);
+        
+        window.addEventListener("error", (e) => {
+          const errSpan = document.getElementById("ar-debug-errors");
+          if (errSpan) {
+            errSpan.innerHTML = `${e.message} at ${e.filename}:${e.lineno}`;
+          }
+        });
+
+        console.log("NutriVerse AR - Resolved Bones:", {
+          headBone: headBone ? headBone.name : "NOT FOUND",
+          neckBone: neckBone ? neckBone.name : "NOT FOUND",
+          spineBone: spineBone ? spineBone.name : "NOT FOUND",
+          leftShoulderBone: leftShoulderBone ? leftShoulderBone.name : "NOT FOUND",
+          rightShoulderBone: rightShoulderBone ? rightShoulderBone.name : "NOT FOUND",
+          leftArmBone: leftArmBone ? leftArmBone.name : "NOT FOUND",
+          rightArmBone: rightArmBone ? rightArmBone.name : "NOT FOUND",
+          leftForeArmBone: leftForeArmBone ? leftForeArmBone.name : "NOT FOUND",
+          rightForeArmBone: rightForeArmBone ? rightForeArmBone.name : "NOT FOUND",
+        });
+        
         updateCaseLights(currentCaseId);
       },
       function (xhr) {
@@ -430,6 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const material = new THREE.MeshPhongMaterial({ color: 0x12a46f, wireframe: true });
         const fallbackMesh = new THREE.Mesh(geometry, material);
         fallbackMesh.position.y = -0.15;
+        fallbackMesh.isCylinderFallback = true; // Mark as fallback cylinder
         scene.add(fallbackMesh);
         model = fallbackMesh;
       }
@@ -439,15 +606,124 @@ document.addEventListener("DOMContentLoaded", () => {
     const clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      controls.update();
       
-      // Slow aesthetic holographic rotation
-      if (model) {
-        model.rotation.y += 0.05 * delta;
+      try {
+        const delta = clock.getDelta();
+        controls.update();
+        
+        const time = clock.getElapsedTime();
+        
+        // Dynamic game-like rigged skeletal animations
+        if (model) {
+          // Slow aesthetic backdrop rotation
+          model.rotation.y += 0.08 * delta;
+
+          // Realistic standing sway: no hovering/floating offset, feet firmly on grid
+          const hoverOffsetY = 0; // Disable floating
+          const swayAngleX = Math.sin(time * 1.0) * 0.015;   // Very subtle sway
+          const swayAngleZ = Math.cos(time * 1.4) * 0.012;  // Very subtle sway
+
+          if (model.isCylinderFallback) {
+            model.position.y = -0.15;
+            model.rotation.x = swayAngleX;
+            model.rotation.z = swayAngleZ;
+          } else {
+            // Anchor standing Y position strictly to the calculated baseline basePositionY
+            if (model.basePositionY !== undefined) {
+              model.position.y = model.basePositionY;
+            } else {
+              model.position.y = -1.4;
+            }
+            // Add extremely subtle sway to make the patient feel alive
+            model.rotation.x = swayAngleX * 0.6;
+            model.rotation.z = swayAngleZ * 0.6;
+          }
+
+          // Apply dynamic bone rotations based on time, speech, or focus gestures
+          if (spineBone || neckBone || headBone || leftArmBone || rightArmBone) {
+            let breathCycle = Math.sin(time * 1.8);
+            let breathCycleSlow = Math.cos(time * 0.9);
+            
+            if (animationState === "idle") {
+              // Natural, visible deep-breathing idle sways
+              targetSpineRotX = breathCycle * 0.04;    // ~2.3 degrees forward/back
+              targetSpineRotY = breathCycleSlow * 0.03; // ~1.7 degrees twist
+              targetSpineRotZ = breathCycle * 0.015;
+              
+              targetNeckRotX = breathCycle * -0.025;
+              targetNeckRotY = breathCycleSlow * -0.02;
+              
+              targetHeadRotX = breathCycle * -0.02;
+              targetHeadRotY = breathCycleSlow * 0.04;
+              
+              // Visible breathing sways for the arms: sways out and in
+              targetLeftArmRotZ = 1.3 - breathCycle * 0.04;
+              targetRightArmRotZ = -1.3 + breathCycle * 0.04;
+              targetLeftArmRotX = breathCycleSlow * 0.03;
+              targetRightArmRotX = -breathCycleSlow * 0.03;
+            } else if (animationState === "speaking") {
+              // Active responsive nodding and natural hand movements to mimic speaking
+              let speakCycleX = Math.sin(time * 9.0) * 0.06;
+              let speakCycleY = Math.cos(time * 5.0) * 0.05;
+              let handGesture = Math.sin(time * 2.8) * 0.15;
+              
+              targetSpineRotX = breathCycle * 0.03 + speakCycleX * 0.2;
+              targetNeckRotX = breathCycle * -0.02 + speakCycleX * 0.3;
+              targetHeadRotX = speakCycleX * 1.3;
+              targetHeadRotY = speakCycleY * 1.0;
+              
+              // Arm gesturing while speaking
+              targetLeftArmRotZ = 1.3 - handGesture * 0.2;
+              targetRightArmRotZ = -1.3 + handGesture * 0.2;
+              targetLeftArmRotX = 0.12 + handGesture * 0.6;
+              targetRightArmRotX = 0.12 - handGesture * 0.6;
+            }
+
+            // Interpolate current bone angles to target rotations smoothly (Damped Lerp)
+            if (spineBone && spineBone.rotation) {
+              spineBone.rotation.x += (targetSpineRotX - spineBone.rotation.x) * 0.08;
+              spineBone.rotation.y += (targetSpineRotY - spineBone.rotation.y) * 0.08;
+              spineBone.rotation.z += (targetSpineRotZ - spineBone.rotation.z) * 0.08;
+            }
+            if (neckBone && neckBone.rotation) {
+              neckBone.rotation.x += (targetNeckRotX - neckBone.rotation.x) * 0.08;
+              neckBone.rotation.y += (targetNeckRotY - neckBone.rotation.y) * 0.08;
+              neckBone.rotation.z += (targetNeckRotZ - neckBone.rotation.z) * 0.08;
+            }
+            if (headBone && headBone.rotation) {
+              headBone.rotation.x += (targetHeadRotX - headBone.rotation.x) * 0.08;
+              headBone.rotation.y += (targetHeadRotY - headBone.rotation.y) * 0.08;
+              headBone.rotation.z += (targetHeadRotZ - headBone.rotation.z) * 0.08;
+            }
+            if (leftArmBone && leftArmBone.rotation) {
+              leftArmBone.rotation.z += (targetLeftArmRotZ - leftArmBone.rotation.z) * 0.08;
+              leftArmBone.rotation.x += (targetLeftArmRotX - leftArmBone.rotation.x) * 0.08;
+              if (leftArmBone.rotation.y !== undefined) {
+                leftArmBone.rotation.y += (targetLeftArmRotY - leftArmBone.rotation.y) * 0.08;
+              }
+            }
+            if (rightArmBone && rightArmBone.rotation) {
+              rightArmBone.rotation.z += (targetRightArmRotZ - rightArmBone.rotation.z) * 0.08;
+              rightArmBone.rotation.x += (targetRightArmRotX - rightArmBone.rotation.x) * 0.08;
+              if (rightArmBone.rotation.y !== undefined) {
+                rightArmBone.rotation.y += (targetRightArmRotY - rightArmBone.rotation.y) * 0.08;
+              }
+            }
+          }
+        }
+        
+        if (typeof window.updateDebugOverlay === "function") {
+          window.updateDebugOverlay();
+        }
+        
+        renderer.render(scene, camera);
+      } catch (err) {
+        console.error("Three.js Animation loop error caught defensively:", err);
+        const errSpan = document.getElementById("ar-debug-errors");
+        if (errSpan) {
+          errSpan.innerHTML = err.message || String(err);
+        }
       }
-      
-      renderer.render(scene, camera);
     }
     animate();
     
@@ -461,6 +737,127 @@ document.addEventListener("DOMContentLoaded", () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
+  }
+
+  // Indonesian TTS Synthesis Engine (Web Speech API)
+  const synth = window.speechSynthesis;
+  let activeUtterance = null;
+
+  function speakText(text) {
+    if (!synth) return;
+    
+    synth.cancel();
+    lastSpokenText = text;
+    
+    if (!voiceEnabled) {
+      triggerSpeakingUI(false);
+      return;
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    const voices = synth.getVoices();
+    const indonesianVoice = voices.find(v => v.lang.includes("id-ID") || v.lang.includes("id_ID"));
+    if (indonesianVoice) {
+      utterance.voice = indonesianVoice;
+    }
+    
+    // Vocal styling fits kid/teen patient archetypes
+    utterance.rate = 0.95; // highly clinical & readable pacing
+    utterance.pitch = 1.06; // compassionate tone
+    
+    utterance.onstart = () => {
+      triggerSpeakingUI(true);
+    };
+    
+    utterance.onend = () => {
+      triggerSpeakingUI(false);
+    };
+    
+    utterance.onerror = () => {
+      triggerSpeakingUI(false);
+    };
+    
+    activeUtterance = utterance;
+    synth.speak(utterance);
+  }
+
+  function triggerSpeakingUI(isSpeaking) {
+    const speechBubble = document.getElementById("patient-speech");
+    const waveform = document.getElementById("voice-waveform");
+    
+    if (isSpeaking) {
+      speechBubble?.classList.add("speaking-pulse");
+      if (waveform) waveform.style.display = "flex";
+      animationState = "speaking";
+    } else {
+      speechBubble?.classList.remove("speaking-pulse");
+      if (waveform) waveform.style.display = "none";
+      animationState = "idle";
+      resetBoneTargets();
+    }
+  }
+
+  // Reset bone angles to neutral breathing pose
+  function resetBoneTargets() {
+    targetSpineRotX = 0;
+    targetSpineRotY = 0;
+    targetSpineRotZ = 0;
+    targetNeckRotX = 0;
+    targetNeckRotY = 0;
+    targetNeckRotZ = 0;
+    targetHeadRotX = 0;
+    targetHeadRotY = 0;
+    targetHeadRotZ = 0;
+    targetLeftArmRotZ = 1.3;
+    targetRightArmRotZ = -1.3;
+    targetLeftArmRotX = 0;
+    targetRightArmRotX = 0;
+    targetLeftArmRotY = 0;
+    targetRightArmRotY = 0;
+  }
+
+  // Rotate and gesture bones to point/draw attention to scanned clinical nodes
+  function applyInteractiveGesture(type) {
+    resetBoneTargets();
+    animationState = "focused";
+    
+    if (type === "hair") {
+      targetNeckRotX = 0.2;     // Tilt head down distinctly
+      targetHeadRotX = 0.25;
+      targetLeftArmRotZ = 1.35;  // Bring arms slightly closer to sides
+      targetRightArmRotZ = -1.35;
+    } else if (type === "eyes") {
+      targetNeckRotY = -0.18;   // Turn neck and head slightly to camera
+      targetHeadRotY = -0.28;
+      targetHeadRotX = 0.06;
+      targetLeftArmRotZ = 1.3;
+      targetRightArmRotZ = -1.3;
+    } else if (type === "mouth") {
+      targetNeckRotX = 0.14;    // Tilt head up slightly to reveal mouth/tongue
+      targetHeadRotX = 0.18;
+      targetHeadRotY = 0.1;
+      targetLeftArmRotZ = 1.3;
+      targetRightArmRotZ = -1.3;
+    } else if (type === "abdomen") {
+      targetSpineRotX = 0.35;   // Lean torso forward distinctly
+      targetNeckRotX = -0.12;
+      targetHeadRotX = 0.18;
+      targetLeftArmRotZ = 1.4; // Move left/right arms out of the way
+      targetRightArmRotZ = -1.4;
+    } else if (type === "skin") {
+      targetSpineRotY = -0.4;   // Rotate torso to reveal lateral thigh/skin
+      targetNeckRotY = 0.18;
+      targetLeftArmRotZ = 0.8; // Lift left arm up slightly to display skin area, not too high
+      targetLeftArmRotX = 0.25;
+      targetRightArmRotZ = -1.3;
+    } else if (type === "nails") {
+      targetSpineRotY = 0.3;    // Twist torso slightly
+      targetRightArmRotZ = -0.8; // Lift right arm/hand up slightly to display fingernails, not too high
+      targetRightArmRotX = 0.25;
+      targetRightArmRotY = 0.15;
+      targetLeftArmRotZ = 1.3;
+    }
   }
 
   // Hotspot Click Scanning Loop
@@ -477,7 +874,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const parentRect = hotspot.parentElement.getBoundingClientRect();
       const childRect = hotspot.getBoundingClientRect();
       
-      // Relative positioning inside parent canvas
       const x = childRect.left - parentRect.left + (childRect.width / 2);
       const y = childRect.top - parentRect.top + (childRect.height / 2);
 
@@ -485,8 +881,9 @@ document.addEventListener("DOMContentLoaded", () => {
       targetReticle.style.top = `${y}px`;
       targetReticle.style.display = "block";
 
-      // Zoom model slightly towards the clicked hotspot area
+      // Zoom model slightly towards the clicked hotspot area and trigger bone gestures immediately!
       applyInteractiveZoom(type);
+      applyInteractiveGesture(type);
 
       // Trigger AR scanning HUD feedback
       scanStatus.textContent = "ANALYSIS IN PROGRESS...";
@@ -519,7 +916,6 @@ document.addEventListener("DOMContentLoaded", () => {
           clearInterval(interval);
           scannedHotspots.add(type);
           
-          // Complete scan
           scanStatus.textContent = "SCAN COMPLETE / DIAG DATA ACTIVE";
           scanStatus.className = "ar-status-badge";
 
@@ -527,6 +923,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const activeCase = cases[currentCaseId];
           const nodeName = hotspot.querySelector(".ar-hotspot-label").textContent;
           const observationContent = activeCase.hotspots[type];
+
+          // Trigger Indonesian first-person speech and dialog bubble sync
+          const symptomDialog = activeCase.hotspotVoices[type];
+          speechBubble.querySelector("p").textContent = `"${symptomDialog}"`;
+          speakText(symptomDialog);
 
           // Check if severe or normal warning color tag
           let tagClass = "tag";
@@ -544,7 +945,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="ai-critique-badge success">NODE DETECTED</span>
                 <strong>NODE PEMERIKSAAN: ${nodeName}</strong>
               </div>
-              <p class="ai-critique-text" style="color: #ffffff; font-weight: 700; font-size: 14px;">
+              <p class="ai-critique-text" style="color: var(--ink); font-weight: 700; font-size: 14px;">
                 ${observationContent}
               </p>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
@@ -593,7 +994,6 @@ document.addEventListener("DOMContentLoaded", () => {
       targetX = 0.45;
     }
     
-    // Smoothly position camera viewport focusing on biological region
     camera.position.set(targetX, targetY, targetZ);
     controls.target.set(targetX, targetY, 0);
   }
@@ -620,12 +1020,45 @@ document.addEventListener("DOMContentLoaded", () => {
     if (camera) camera.position.set(0, 0.5, 4.5);
     if (controls) controls.target.set(0, 0, 0);
     
+    resetBoneTargets();
+    animationState = "idle";
     activeHotspotId = null;
     targetReticle.style.display = "none";
     hotspots.forEach(h => h.classList.remove("active"));
     scanStatus.textContent = "VIEWPORT RESET / STANDBY";
     scanStatus.className = "ar-status-badge";
   });
+
+  // Voice Controls Event Binding
+  btnToggleVoice?.addEventListener("click", () => {
+    voiceEnabled = !voiceEnabled;
+    if (voiceEnabled) {
+      btnToggleVoice.innerHTML = "🔊 SUARA: AKTIF";
+      btnToggleVoice.style.background = "rgba(91, 134, 229, 0.15)";
+      btnToggleVoice.style.color = "#5b86e5";
+      btnToggleVoice.style.borderColor = "rgba(91, 134, 229, 0.3)";
+      if (lastSpokenText) speakText(lastSpokenText);
+    } else {
+      btnToggleVoice.innerHTML = "🔇 SUARA: SENYAP";
+      btnToggleVoice.style.background = "rgba(100, 116, 139, 0.15)";
+      btnToggleVoice.style.color = "#64748b";
+      btnToggleVoice.style.borderColor = "rgba(100, 116, 139, 0.3)";
+      synth.cancel();
+      triggerSpeakingUI(false);
+    }
+  });
+
+  btnReplaySpeech?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (lastSpokenText) speakText(lastSpokenText);
+  });
+
+  // Support voice list updates asynchronously (Chrome bug prevention)
+  if (synth) {
+    synth.onvoiceschanged = () => {
+      // Refresh voice profile silently
+    };
+  }
 
   // AI Validator Engine (Validasi Jawaban User)
   btnVerify?.addEventListener("click", () => {
@@ -641,7 +1074,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Trigger typing indicator in AI box
     aiValidatorChat.innerHTML = `
       <div style="display:flex; flex-direction:column; align-items:center; gap: 8px; justify-content:center; padding: 2rem 0; color:#2ee59d;">
         <span class="ai-critique-badge success" style="animation: pulse-border 1s infinite alternate; background: rgba(18, 164, 111, 0.15); border: 1px solid rgba(18, 164, 111, 0.3); padding: 6px 12px; border-radius: 6px;">AI VALIDATOR PROCESSING...</span>
@@ -669,7 +1101,6 @@ document.addEventListener("DOMContentLoaded", () => {
         badgeText = "DIAGNOSIS & TERAPI TEPAT";
         scoreMessage = `Luar biasa! Diagnosis **${diagSelect.options[diagSelect.selectedIndex].text}** dan tatalaksana **${therapySelect.options[therapySelect.selectedIndex].text}** yang Anda berikan adalah **100% BENAR**!`;
         
-        // Detailed clinical reasoning based on diagnosis
         if (currentCaseId === "kwashiorkor") {
           explanation = `Kwashiorkor terjadi akibat defisiensi energi protein (KEP) berat yang ditandai dengan **edema pitting bilateral** (kaki bengkak air) dan perut buncit (ascites) karena penurunan drastis tekanan osmotik koloid plasma akibat **hipoalbuminemia berat**. Rambut kemerahan jagung (*Flag Sign*) disebabkan kerusakan biosintesis keratin rambut.`;
           advice = `**Tatalaksana WHO Terapi Stabilisasi**: Sangat tepat menggunakan susu formula khusus **F-75** pada fase stabilisasi. Pemberian makanan padat tinggi protein secara langsung harus DILINDUNGI untuk mencegah **Refeeding Syndrome** (gangguan elektrolit fatal akibat lonjakan insulin mendadak).`;
@@ -713,7 +1144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         advice = `**Instruksi AI**: Silakan reset pandangan Anda, klik ulang sisa hotspot berkedip merah/kuning untuk mengumpulkan detail objektif (rambut, mata, perut, kuku, kulit), lalu analisis kembali hubungan gejala tersebut dengan referensi NutriBase.`;
       }
 
-      // Render critique chat block
       aiValidatorChat.innerHTML = `
         <div class="ai-critique-box">
           <div class="ai-critique-header ${scoreClass}">
@@ -723,7 +1153,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <p class="ai-critique-text" style="font-size: 13.5px;">
             ${scoreMessage}
           </p>
-          ${explanation ? `<p class="ai-critique-text" style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; font-size:13px; border-left: 3px solid rgba(255,255,255,0.15);">${explanation}</p>` : ""}
+          ${explanation ? `<p class="ai-critique-text" style="background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 8px; font-size:13px; border-left: 3px solid rgba(0,0,0,0.08);">${explanation}</p>` : ""}
           <p class="ai-critique-advice" style="color: ${scoreClass === 'success' ? '#2ee59d' : '#ffb732'};">
             ${advice}
           </p>
@@ -750,12 +1180,10 @@ document.addEventListener("DOMContentLoaded", () => {
         arCamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
         cameraFeed.srcObject = arCamStream;
         
-        // Start rendering fake diagnostic face grid lines over video
         scanStatus.textContent = "CAMERA FEED / HOLO RETICLE ACTIVE";
         scanStatus.className = "ar-status-badge scanning";
       } catch (err) {
         console.error("Camera access failed:", err);
-        // Fallback display mesh overlay if camera not authorized
         cameraFeed.style.display = "none";
         cameraPlaceholder.style.display = "flex";
         cameraPlaceholder.innerHTML = `
@@ -792,6 +1220,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize 3D context & load model
   init3D();
 
-  // Initialize page on load
-  loadCase("kwashiorkor");
+  // Initialize page on load (Kwashiorkor as default)
+  // Slight delay allows voices to load in browsers if needed
+  setTimeout(() => {
+    loadCase("kwashiorkor");
+  }, 100);
 });
