@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load Case Details
-  function loadCase(caseId) {
+  function loadCase(caseId, shouldSpeak = false) {
     currentCaseId = caseId;
     activeHotspotId = null;
     scannedHotspots.clear();
@@ -275,8 +275,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update subjective speech bubble text
     speechBubble.querySelector("p").textContent = `"${activeCase.spokenIntro}"`;
     
+    // Set lastSpokenText so the "Putar Suara" button works immediately even if silent on load
+    lastSpokenText = activeCase.spokenIntro;
+    
     // Play spoken intro narrative
-    speakText(activeCase.spokenIntro);
+    if (shouldSpeak) {
+      speakText(activeCase.spokenIntro);
+    }
 
     // Reset Observation hud
     observationResults.innerHTML = `
@@ -791,12 +796,12 @@ document.addEventListener("DOMContentLoaded", () => {
       targetSpineRotX = 0.35;   // Lean torso forward distinctly
       targetNeckRotX = -0.12;
       targetHeadRotX = 0.18;
-      targetLeftArmRotZ = 1.4; // Move left/right arms out of the way
+      targetLeftArmRotZ = 1.4;  // Move left/right arms out of the way
       targetRightArmRotZ = -1.4;
     } else if (type === "skin") {
       targetSpineRotY = -0.4;   // Rotate torso to reveal lateral thigh/skin
       targetNeckRotY = 0.18;
-      targetLeftArmRotZ = 0.8; // Lift left arm up slightly to display skin area, not too high
+      targetLeftArmRotZ = 0.8;  // Lift left arm up slightly to display skin area, not too high
       targetLeftArmRotX = 0.25;
       targetRightArmRotZ = -1.3;
     } else if (type === "nails") {
@@ -1171,6 +1176,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize page on load (Kwashiorkor as default)
   // Slight delay allows voices to load in browsers if needed
   setTimeout(() => {
-    loadCase("kwashiorkor");
+    loadCase("kwashiorkor", false);
   }, 100);
 });
