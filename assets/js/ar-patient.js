@@ -509,60 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
         scanStatus.textContent = "HOLOGRAPHIC MESH READY";
         scanStatus.className = "ar-status-badge";
         
-        // VISUAL ON-SCREEN DEBUG LOGGER FOR USER DIAGNOSTICS
-        const debugOverlay = document.createElement("div");
-        debugOverlay.id = "ar-debug-console";
-        debugOverlay.style.position = "absolute";
-        debugOverlay.style.top = "10px";
-        debugOverlay.style.left = "10px";
-        debugOverlay.style.background = "rgba(0,0,0,0.85)";
-        debugOverlay.style.color = "#00ff66";
-        debugOverlay.style.padding = "12px";
-        debugOverlay.style.fontFamily = "monospace";
-        debugOverlay.style.fontSize = "11px";
-        debugOverlay.style.zIndex = "99999";
-        debugOverlay.style.borderRadius = "8px";
-        debugOverlay.style.border = "2px solid #00ff66";
-        debugOverlay.style.boxShadow = "0 0 15px rgba(0,255,102,0.4)";
-        debugOverlay.style.pointerEvents = "auto";
-        debugOverlay.style.maxHeight = "300px";
-        debugOverlay.style.overflowY = "auto";
-        
-        window.updateDebugOverlay = () => {
-          const firstNodes = (window.allFBXNodes || []).slice(0, 25).join(", ");
-          debugOverlay.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
-              <b>[AR PATIENT RIG DIAGNOSTICS]</b>
-              <button onclick="this.parentElement.parentElement.remove()" style="background:#ff3333; color:white; border:none; padding:2px 6px; cursor:pointer; font-size:9px; border-radius:3px;">CLOSE</button>
-            </div>
-            Model Object: ${model ? "LOADED" : "NULL"}<br>
-            Mesh Center (X, Y, Z): ${model ? `${model.position.x.toFixed(2)}, ${model.position.y.toFixed(2)}, ${model.position.z.toFixed(2)}` : "N/A"}<br>
-            Bones Found:<br>
-            - Spine: ${spineBone ? `<font color=#00ff66>${spineBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Neck: ${neckBone ? `<font color=#00ff66>${neckBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Head: ${headBone ? `<font color=#00ff66>${headBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Left Arm: ${leftArmBone ? `<font color=#00ff66>${leftArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Right Arm: ${rightArmBone ? `<font color=#00ff66>${rightArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Left Forearm: ${leftForeArmBone ? `<font color=#00ff66>${leftForeArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            - Right Forearm: ${rightForeArmBone ? `<font color=#00ff66>${rightForeArmBone.name}</font>` : "<font color=red>NOT FOUND</font>"}<br>
-            Last Rotation Z: ${leftArmBone ? leftArmBone.rotation.z.toFixed(2) : "N/A"}<br>
-            Error Logs: <span id="ar-debug-errors" style="color:#ff3333;">None</span><br>
-            <div style="font-size: 9px; color: #888; max-width: 320px; word-wrap: break-word; margin-top: 4px;">
-              <b>First 25 FBX Nodes Traversed:</b><br>
-              ${firstNodes || "None"}
-            </div>
-          `;
-        };
-        
-        window.updateDebugOverlay();
-        document.body.appendChild(debugOverlay);
-        
-        window.addEventListener("error", (e) => {
-          const errSpan = document.getElementById("ar-debug-errors");
-          if (errSpan) {
-            errSpan.innerHTML = `${e.message} at ${e.filename}:${e.lineno}`;
-          }
-        });
+        // VISUAL ON-SCREEN DEBUG LOGGER FOR USER DIAGNOSTICS - DISABLED
+        window.updateDebugOverlay = () => {};
 
         console.log("NutriVerse AR - Resolved Bones:", {
           headBone: headBone ? headBone.name : "NOT FOUND",
