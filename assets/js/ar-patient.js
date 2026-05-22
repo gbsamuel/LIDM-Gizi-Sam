@@ -124,8 +124,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let verifiedStreak = 0;
   let casesDiagnosed = 0;
 
+  // Three.js State Variables
+  let scene, camera, renderer, controls, model;
+
   // DOM Elements
-  const patientSVG = document.getElementById("patient-mesh");
   const caseButtons = document.querySelectorAll("[data-case]");
   const speechBubble = document.getElementById("patient-speech");
   const telemetryHr = document.getElementById("tele-hr");
@@ -145,6 +147,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const therapySelect = document.getElementById("select-therapy");
   const btnVerify = document.getElementById("btn-verify-answer");
   const aiValidatorChat = document.getElementById("ai-chat-box");
+
+  // Position Hotspots absolutely in front of the 3D canvas viewport
+  const hotspotPositions = {
+    hair: { top: "16%", left: "49%" },
+    eyes: { top: "22%", left: "44%" },
+    mouth: { top: "26%", left: "51%" },
+    skin: { top: "40%", left: "37%" },
+    abdomen: { top: "54%", left: "49%" },
+    nails: { top: "56%", left: "62%" }
+  };
+
+  hotspots.forEach(hotspot => {
+    const type = hotspot.dataset.hotspot;
+    if (hotspotPositions[type]) {
+      hotspot.style.position = "absolute";
+      hotspot.style.top = hotspotPositions[type].top;
+      hotspot.style.left = hotspotPositions[type].left;
+    }
+  });
 
   // Telemetry Heartbeat simulation
   let telemetryInterval = null;
@@ -219,89 +240,227 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Animate patient mesh mutations based on medical case
-    mutatePatientSVG(activeCase.visualState);
+    // Update the 3D model lighting colors for the medical case study
+    updateCaseLights(caseId);
 
     // Reset dropdown values
     diagSelect.selectedIndex = 0;
     therapySelect.selectedIndex = 0;
     
     // Reset scanner badge
-    scanStatus.textContent = "STANDBY / HUD READY";
-    scanStatus.className = "ar-status-badge";
+    if (renderer) {
+      scanStatus.textContent = "STANDBY / HUD READY";
+      scanStatus.className = "ar-status-badge";
+    }
   }
 
-  // Mutate Patient SVG Visual States to mock physical changes
-  function mutatePatientSVG(state) {
-    const hair = document.getElementById("svg-hair");
-    const skin = document.getElementById("svg-body-base");
-    const abdomen = document.getElementById("svg-abdomen");
-    const cheeks = document.querySelectorAll(".svg-cheek");
-    const eyes = document.querySelectorAll(".svg-eye-glow");
-    const limbs = document.querySelectorAll(".svg-limb");
-
-    if (hair) {
-      hair.style.fill = state.hairColor;
-      hair.style.stroke = state.hairColor === "#22252a" ? "none" : "#e67e22";
+  // Update Three.js holographic colors dynamically based on case study
+  function updateCaseLights(caseId) {
+    if (!scene) return;
+    
+    let accentColor = 0x2ee59d; // Default neon green
+    let emissiveColor = 0x02120e;
+    
+    if (caseId === "kwashiorkor") {
+      accentColor = 0xf39c12; // Amber/Orange-Red for Flag Sign
+      emissiveColor = 0x301e02;
+    } else if (caseId === "vad") {
+      accentColor = 0xf2a51a; // Golden Yellow for Xerophthalmia
+      emissiveColor = 0x2d1e02;
+    } else if (caseId === "anemia") {
+      accentColor = 0xa5f3fc; // Pale Blue/White for Pallor
+      emissiveColor = 0x051e22;
+    } else if (caseId === "pellagra") {
+      accentColor = 0xe2574f; // Deep Red for Casal's Necklace
+      emissiveColor = 0x300502;
     }
-
-    if (skin) {
-      skin.style.fill = state.skinColor;
-      if (currentCaseId === "anemia") {
-        skin.style.opacity = "0.75"; // Pale look
-      } else {
-        skin.style.opacity = "1";
+    
+    // Traverse model meshes and update wireframe and emissive colors
+    if (model) {
+      model.traverse((child) => {
+        if (child.isMesh && child.material) {
+          child.material.emissive.setHex(emissiveColor);
+          
+          // Update wireframe colors of child line segments
+          child.children.forEach(c => {
+            if (c.isLineSegments && c.material) {
+              c.material.color.setHex(accentColor);
+            }
+          });
+        }
+      });
+    }
+    
+    // Update directional backlight and spotlight colors in the scene
+    scene.traverse((child) => {
+      if (child.isDirectionalLight && child.position.z < 0) {
+        child.color.setHex(accentColor);
       }
-    }
-
-    if (abdomen) {
-      abdomen.style.transform = state.abdomenScale;
-      // ascites bloated visual warning
-      if (currentCaseId === "kwashiorkor") {
-        abdomen.style.fill = "#d35400";
-        abdomen.style.stroke = "#ffbe76";
-        abdomen.style.strokeWidth = "2px";
-      } else {
-        abdomen.style.fill = "url(#bodyGrad)";
-        abdomen.style.stroke = "rgba(18, 164, 111, 0.4)";
-        abdomen.style.strokeWidth = "1px";
-      }
-    }
-
-    // Cheeks & Eyes
-    cheeks.forEach(cheek => {
-      if (currentCaseId === "anemia") {
-        cheek.style.fill = "#f5f6fa"; // Dead pale cheeks
-        cheek.style.opacity = "0.9";
-      } else if (currentCaseId === "kwashiorkor") {
-        cheek.style.fill = "#e74c3c"; // Swollen puffed face (moon face)
-        cheek.style.opacity = "0.35";
-      } else {
-        cheek.style.fill = "#ff7979";
-        cheek.style.opacity = "0.2";
+      if (child.isSpotLight) {
+        child.color.setHex(accentColor);
       }
     });
+  }
 
-    eyes.forEach(eye => {
-      eye.style.fill = state.eyeGlow;
-      eye.style.filter = currentCaseId === "vad" ? "drop-shadow(0 0 5px #f2a51a)" : "none";
-    });
-
-    // Crazy pavement / Casal's necklace dermatitis texture simulations
-    limbs.forEach(limb => {
-      if (currentCaseId === "kwashiorkor") {
-        limb.style.stroke = "#c0392b";
-        limb.style.strokeDasharray = "5,3";
-      } else if (currentCaseId === "pellagra") {
-        limb.style.stroke = "#7f8c8d";
-        limb.style.strokeWidth = "2px";
-        limb.style.strokeDasharray = "none";
-      } else {
-        limb.style.stroke = "rgba(18, 164, 111, 0.3)";
-        limb.style.strokeWidth = "1px";
-        limb.style.strokeDasharray = "none";
+  // Initialize Three.js WebGL 3D Holographic Rendering Environment
+  function init3D() {
+    const container = document.getElementById("ar-3d-canvas-container");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    // Create Scene with sci-fi fog
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x060c0a, 0.05);
+    
+    // Camera
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.set(0, 0.5, 4.5);
+    
+    // WebGL Renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+    
+    // Interactive OrbitControls
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 + 0.1;
+    controls.minDistance = 1.5;
+    controls.maxDistance = 8;
+    
+    // Ambient & Studio Lights
+    const ambientLight = new THREE.AmbientLight(0x0c2f2c, 1.5);
+    scene.add(ambientLight);
+    
+    const dirLightFront = new THREE.DirectionalLight(0x0ea5e9, 2.0);
+    dirLightFront.position.set(2, 4, 5);
+    scene.add(dirLightFront);
+    
+    const dirLightBack = new THREE.DirectionalLight(0x2ee59d, 2.5);
+    dirLightBack.position.set(-2, 2, -3);
+    scene.add(dirLightBack);
+    
+    const spotLight = new THREE.SpotLight(0x2ee59d, 4);
+    spotLight.position.set(0, 5, 0);
+    spotLight.angle = Math.PI / 4;
+    spotLight.penumbra = 0.5;
+    scene.add(spotLight);
+    
+    // High-tech holographic grid floor
+    const gridHelper = new THREE.GridHelper(10, 20, 0x12a46f, 0x052e1e);
+    gridHelper.position.y = -1.4;
+    scene.add(gridHelper);
+    
+    // Load the Rigged FBX model from RenderPeople
+    const loader = new THREE.FBXLoader();
+    scanStatus.textContent = "LOADING 3D PATIENT MODEL (0%)...";
+    scanStatus.className = "ar-status-badge scanning";
+    
+    loader.load(
+      "assets/models/rp_carla_rigged_001_yup_a.fbx",
+      function (object) {
+        model = object;
+        
+        // Auto-scale and center object using box dimensions
+        const box = new THREE.Box3().setFromObject(object);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2.7 / maxDim;
+        object.scale.setScalar(scale);
+        
+        object.position.x = -center.x * scale;
+        object.position.y = -box.min.y * scale - 1.4;
+        object.position.z = -center.z * scale;
+        
+        // Apply beautiful sci-fi translucent materials
+        object.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            
+            child.material = new THREE.MeshPhongMaterial({
+              color: 0x05241b,
+              emissive: 0x02120e,
+              transparent: true,
+              opacity: 0.75,
+              shininess: 30,
+              flatShading: true,
+              side: THREE.DoubleSide
+            });
+            
+            // Add custom glowing wireframe helper
+            const wireframe = new THREE.WireframeGeometry(child.geometry);
+            const line = new THREE.LineSegments(wireframe);
+            line.material.color.setHex(0x2ee59d);
+            line.material.transparent = true;
+            line.material.opacity = 0.2;
+            child.add(line);
+          }
+        });
+        
+        scene.add(object);
+        
+        scanStatus.textContent = "HOLOGRAPHIC MESH READY";
+        scanStatus.className = "ar-status-badge";
+        
+        // Update styling colors to match case
+        updateCaseLights(currentCaseId);
+      },
+      function (xhr) {
+        if (xhr.total > 0) {
+          const percentComplete = Math.round((xhr.loaded / xhr.total) * 100);
+          scanStatus.textContent = `LOADING 3D PATIENT MODEL (${percentComplete}%)...`;
+        } else {
+          scanStatus.textContent = "LOADING 3D PATIENT MODEL...";
+        }
+      },
+      function (error) {
+        console.error("Error loading FBX model:", error);
+        scanStatus.textContent = "3D MESH ERROR / FALLBACK LOADED";
+        scanStatus.className = "ar-status-badge error";
+        
+        // Fallback volumetric grid shape
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2.5, 16);
+        const material = new THREE.MeshPhongMaterial({ color: 0x12a46f, wireframe: true });
+        const fallbackMesh = new THREE.Mesh(geometry, material);
+        fallbackMesh.position.y = -0.15;
+        scene.add(fallbackMesh);
+        model = fallbackMesh;
       }
-    });
+    );
+    
+    // Renderer Render Tick loop
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      controls.update();
+      
+      // Slow aesthetic holographic rotation
+      if (model) {
+        model.rotation.y += 0.05 * delta;
+      }
+      
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.addEventListener("resize", onWindowResize);
+  }
+  
+  function onWindowResize() {
+    if (!camera || !renderer) return;
+    const container = document.getElementById("ar-3d-canvas-container");
+    if (!container) return;
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
   }
 
   // Hotspot Click Scanning Loop
@@ -402,65 +561,71 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Apply interactive SVG translation based on clicking target nodes to create "3D focus depth"
+  // Dynamic camera focus zooming based on scanned diagnostic hotspot coordinates in 3D Space
   function applyInteractiveZoom(type) {
-    let transform = "";
+    if (!camera || !controls) return;
+    
+    let targetY = 0;
+    let targetZ = 4.5;
+    let targetX = 0;
+    
     if (type === "hair") {
-      transform = "scale(1.2) translateY(24px)";
+      targetY = 0.9;
+      targetZ = 2.0;
     } else if (type === "eyes") {
-      transform = "scale(1.28) translateY(18px)";
+      targetY = 0.75;
+      targetZ = 1.8;
+      targetX = -0.15;
     } else if (type === "mouth") {
-      transform = "scale(1.25) translateY(5px)";
+      targetY = 0.65;
+      targetZ = 1.8;
+      targetX = 0.05;
     } else if (type === "abdomen") {
-      transform = "scale(1.15) translateY(-25px)";
+      targetY = -0.15;
+      targetZ = 2.2;
     } else if (type === "skin") {
-      transform = "scale(1.1) translateX(-15px) translateY(-10px)";
+      targetY = 0.15;
+      targetZ = 2.3;
+      targetX = -0.3;
     } else if (type === "nails") {
-      transform = "scale(1.25) translateX(-25px) translateY(-50px)";
-    } else {
-      transform = "scale(1)";
+      targetY = -0.25;
+      targetZ = 1.9;
+      targetX = 0.45;
     }
     
-    // Incorporate overall controls zoomLevel and rotationAngle
-    patientSVG.style.transform = `rotate(${rotationAngle}deg) ${transform}`;
+    // Smoothly position camera viewport focusing on biological region
+    camera.position.set(targetX, targetY, targetZ);
+    controls.target.set(targetX, targetY, 0);
   }
 
-  // 3D Navigation Controls
+  // Interactive 3D Navigation Controls
   document.getElementById("btn-rotate-l")?.addEventListener("click", () => {
-    rotationAngle -= 20;
-    updateSVGTransform();
+    if (model) model.rotation.y -= 0.25;
   });
 
   document.getElementById("btn-rotate-r")?.addEventListener("click", () => {
-    rotationAngle += 20;
-    updateSVGTransform();
+    if (model) model.rotation.y += 0.25;
   });
 
   document.getElementById("btn-zoom-in")?.addEventListener("click", () => {
-    zoomLevel = Math.min(1.6, zoomLevel + 0.15);
-    updateSVGTransform();
+    if (camera) camera.position.z = Math.max(1.2, camera.position.z - 0.4);
   });
 
   document.getElementById("btn-zoom-out")?.addEventListener("click", () => {
-    zoomLevel = Math.max(0.7, zoomLevel - 0.15);
-    updateSVGTransform();
+    if (camera) camera.position.z = Math.min(8.0, camera.position.z + 0.4);
   });
 
   document.getElementById("btn-reset-view")?.addEventListener("click", () => {
-    rotationAngle = 0;
-    zoomLevel = 1;
+    if (model) model.rotation.set(0, 0, 0);
+    if (camera) camera.position.set(0, 0.5, 4.5);
+    if (controls) controls.target.set(0, 0, 0);
+    
     activeHotspotId = null;
     targetReticle.style.display = "none";
     hotspots.forEach(h => h.classList.remove("active"));
-    patientSVG.style.transform = "scale(1) rotate(0deg) translate(0, 0)";
-    
     scanStatus.textContent = "VIEWPORT RESET / STANDBY";
     scanStatus.className = "ar-status-badge";
   });
-
-  function updateSVGTransform() {
-    patientSVG.style.transform = `scale(${zoomLevel}) rotate(${rotationAngle}deg)`;
-  }
 
   // AI Validator Engine (Validasi Jawaban User)
   btnVerify?.addEventListener("click", () => {
@@ -623,6 +788,9 @@ document.addEventListener("DOMContentLoaded", () => {
       loadCase(btn.dataset.case);
     });
   });
+
+  // Initialize 3D context & load model
+  init3D();
 
   // Initialize page on load
   loadCase("kwashiorkor");
