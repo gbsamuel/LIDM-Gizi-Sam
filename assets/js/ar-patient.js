@@ -348,13 +348,17 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 
-  // State Management
+  // Gamified Level State Management
+  let activeCasesPool = ["ap", "mr", "na", "rs", "ds"];
+  let randomizedLevels = [];
+  let currentLevelIndex = 0;
   let currentCaseId = "ap";
+  let verifiedStreak = 0;
+
   let activeHotspotId = null;
   let rotationAngle = 0;
   let zoomLevel = 1;
   let scannedHotspots = new Set();
-  let verifiedStreak = 0;
   let casesDiagnosed = 0;
 
   // Three.js State Variables
@@ -405,15 +409,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let targetRightArmRotZ = 0;
 
   // DOM Elements
-  const caseButtons = document.querySelectorAll("[data-case]");
-  const speechBubble = document.getElementById("patient-speech");
   const telemetryHr = document.getElementById("tele-hr");
   const telemetryTemp = document.getElementById("tele-temp");
   const telemetryZscore = document.getElementById("tele-zscore");
-  const hotspots = document.querySelectorAll(".ar-hotspot");
   const targetReticle = document.getElementById("ar-reticle");
   const scanStatus = document.getElementById("scan-status-badge");
-  const observationResults = document.getElementById("observation-results");
   const btnStartAR = document.getElementById("btn-start-ar-cam");
   const arCameraOverlay = document.getElementById("ar-cam-overlay");
   const cameraFeed = document.getElementById("camera-feed");
@@ -421,32 +421,14 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Custom speech synthesis controls
   const btnToggleVoice = document.getElementById("btn-toggle-voice");
-  const btnReplaySpeech = document.getElementById("btn-replay-speech");
 
-  // Quiz controls
-  const diagSelect = document.getElementById("select-diagnosis");
-  const therapySelect = document.getElementById("select-therapy");
-  const btnVerify = document.getElementById("btn-verify-answer");
-  const aiValidatorChat = document.getElementById("ai-chat-box");
+  // New Gamified Chatbot DOM Elements
+  const chatMessagesContainer = document.getElementById("chat-messages-container");
+  const chatbotUserInput = document.getElementById("chatbot-user-input");
+  const btnSubmitChat = document.getElementById("btn-submit-chat");
+  const levelBadge = document.getElementById("level-badge");
+  const streakHud = document.getElementById("streak-hud");
 
-  // Position Hotspots absolutely in front of the 3D canvas viewport
-  const hotspotPositions = {
-    hair: { top: "16%", left: "49%" },
-    eyes: { top: "22%", left: "44%" },
-    mouth: { top: "26%", left: "51%" },
-    skin: { top: "40%", left: "37%" },
-    abdomen: { top: "54%", left: "49%" },
-    nails: { top: "56%", left: "62%" }
-  };
-
-  hotspots.forEach(hotspot => {
-    const type = hotspot.dataset.hotspot;
-    if (hotspotPositions[type]) {
-      hotspot.style.position = "absolute";
-      hotspot.style.top = hotspotPositions[type].top;
-      hotspot.style.left = hotspotPositions[type].left;
-    }
-  });
 
   // Telemetry Heartbeat simulation
   let telemetryInterval = null;
@@ -515,11 +497,11 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     }
 
-    // 2. Tab Pemeriksaan Klinis
+    // 2. Tab Pemeriksaan Klinis & Observasi
     const clinicalTab = document.getElementById("hud-content-klinis");
     if (clinicalTab) {
       clinicalTab.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:12px; padding:4px 0;">
+        <div style="display:flex; flex-direction:column; gap:12px; padding:4px 0; max-height:360px; overflow-y:auto; padding-right:4px;">
           <div style="background:rgba(255,255,255,0.06); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
             <div style="font-size:10px; font-weight:800; color:#64748b; font-family:monospace; text-transform:uppercase; margin-bottom:6px;">TANDA VITAL & LAB</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
@@ -568,6 +550,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div style="background:rgba(91,134,229,0.04); padding:10px 14px; border-radius:10px; border:1px solid rgba(91,134,229,0.1);">
+            <div style="font-size:10px; font-weight:800; color:#5b86e5; font-family:monospace; text-transform:uppercase; margin-bottom:6px;">🔬 DETAIL TEMUAN OBSERVASI FISIK</div>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:11.5px; line-height:1.45; color:var(--ink);">
+              <div><strong>💇 Rambut:</strong> <span style="color:var(--muted);">${activeCase.hotspots.hair}</span></div>
+              <div style="border-top:1px solid rgba(0,0,0,0.03); padding-top:4px;"><strong>👁️ Mata:</strong> <span style="color:var(--muted);">${activeCase.hotspots.eyes}</span></div>
+              <div style="border-top:1px solid rgba(0,0,0,0.03); padding-top:4px;"><strong>👄 Mulut & Lidah:</strong> <span style="color:var(--muted);">${activeCase.hotspots.mouth}</span></div>
+              <div style="border-top:1px solid rgba(0,0,0,0.03); padding-top:4px;"><strong>💪 Kulit:</strong> <span style="color:var(--muted);">${activeCase.hotspots.skin}</span></div>
+              <div style="border-top:1px solid rgba(0,0,0,0.03); padding-top:4px;"><strong>💅 Kuku:</strong> <span style="color:var(--muted);">${activeCase.hotspots.nails}</span></div>
+              <div style="border-top:1px solid rgba(0,0,0,0.03); padding-top:4px;"><strong>🤰 Abdomen:</strong> <span style="color:var(--muted);">${activeCase.hotspots.abdomen}</span></div>
+            </div>
           </div>
         </div>
       `;
@@ -625,63 +619,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeCase = cases[caseId];
     if (!activeCase) return;
     
-    // Update active tab styles
-    caseButtons.forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.case === caseId);
-    });
-
-    // Update subjective speech bubble text
-    speechBubble.querySelector("p").textContent = `"${activeCase.spokenIntro}"`;
-    
-    // Set lastSpokenText so the "Putar Suara" button works immediately even if silent on load
+    // Set lastSpokenText so the speak system works
     lastSpokenText = activeCase.spokenIntro;
     
     // Play spoken intro narrative
     if (shouldSpeak) {
       speakText(activeCase.spokenIntro);
     }
-
-    // Reset Observation hud
-    observationResults.innerHTML = `
-      <div class="ai-empty-state" style="padding: 1.5rem 0;">
-        <i style="font-style: normal; font-size: 20px; font-weight: bold; color: var(--green);">◈</i>
-        <span>Silakan klik hotspot sirkuler berkedip pada tubuh pasien untuk memicu pemindaian visual AR.</span>
-      </div>
-    `;
-
-    // Reset AI panel
-    aiValidatorChat.innerHTML = `
-      <div class="ai-empty-state">
-        <i style="font-style: normal; font-size: 20px; font-weight: bold; color: var(--green);">✦</i>
-        <span>Pilihlah tebakan diagnosis penyakit dan tatalaksana di atas, lalu minta validasi AI untuk memeriksa ketepatan jawaban Anda.</span>
-      </div>
-    `;
     
     // Populate dynamic tab data
     populateHUDData(caseId);
 
     // Update fixed telemetry values
-    telemetryTemp.textContent = activeCase.telemetry.temp;
-    telemetryZscore.textContent = activeCase.telemetry.zscore;
+    if (telemetryTemp) telemetryTemp.textContent = activeCase.telemetry.temp;
+    if (telemetryZscore) telemetryZscore.textContent = activeCase.telemetry.zscore;
     startTelemetryPulse();
 
     // Hide target reticle
-    targetReticle.style.display = "none";
-
-    // Set interactive hot spot warning colors
-    hotspots.forEach(hotspot => {
-      hotspot.classList.remove("active");
-      const type = hotspot.dataset.hotspot;
-      
-      hotspot.className = "ar-hotspot"; // Reset
-      if (activeCase.hotspots[type].toLowerCase().includes("normal")) {
-        hotspot.classList.add("info-cyan");
-      } else if (activeCase.hotspots[type].toLowerCase().includes("sedikit") || activeCase.hotspots[type].toLowerCase().includes("agak")) {
-        hotspot.classList.add("warn-yellow");
-      } else {
-        hotspot.classList.add("warn-red");
-      }
-    });
+    if (targetReticle) targetReticle.style.display = "none";
 
     // Set visual state values on the 3D model (Skeletal transformations & height transformations)
     if (model) {
@@ -708,13 +663,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update the 3D model lighting colors for the medical case study
     updateCaseLights(caseId);
-
-    // Reset dropdown values
-    diagSelect.selectedIndex = 0;
-    therapySelect.selectedIndex = 0;
     
     // Reset scanner badge
-    if (renderer) {
+    if (renderer && scanStatus) {
       scanStatus.textContent = "STANDBY / HUD READY";
       scanStatus.className = "ar-status-badge";
     }
@@ -790,18 +741,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     container.innerHTML = "";
     
-    // Create Scene with futuristic hospital background texture
+    // Create Scene with clean white background
     scene = new THREE.Scene();
-    
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load("assets/img/hospital_background.png", (texture) => {
-      scene.background = texture;
-      scene.fog = new THREE.FogExp2(0x0a111e, 0.01);
-    }, undefined, (err) => {
-      console.error("Failed to load hospital background texture:", err);
-      scene.background = new THREE.Color(0xf1f5f9);
-      scene.fog = new THREE.FogExp2(0xf1f5f9, 0.015);
-    });
+    scene.background = new THREE.Color(0xffffff);
     
     // Camera
     camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
@@ -840,10 +782,7 @@ document.addEventListener("DOMContentLoaded", () => {
     spotLight.penumbra = 0.5;
     scene.add(spotLight);
     
-    // High-end medical room clean grid floor
-    const gridHelper = new THREE.GridHelper(10, 20, 0x94a3b8, 0xe2e8f0);
-    gridHelper.position.y = -1.4;
-    scene.add(gridHelper);
+    // Grid floor removed for static clinical view
     
     // Load the Rigged FBX model from RenderPeople
     const loader = new THREE.FBXLoader();
@@ -973,8 +912,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Dynamic game-like rigged skeletal animations
         if (model) {
-          // Slow aesthetic backdrop rotation
-          model.rotation.y += 0.08 * delta;
+          // Auto-rotation disabled for static patient view
 
           // Realistic standing sway: no hovering/floating offset, feet firmly on grid
           const hoverOffsetY = 0; // Disable floating
@@ -1179,42 +1117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     targetRightArmRotZ = initialRightArmRot.z;
   }
 
-  // Rotate and gesture bones to point/draw attention to scanned clinical nodes
-  function applyInteractiveGesture(type) {
-    resetBoneTargets();
-    animationState = "focused";
-    
-    if (type === "hair") {
-      targetNeckRotX = initialNeckRot.x + 0.2;     // Tilt head down distinctly
-      targetHeadRotX = initialHeadRot.x + 0.25;
-      targetLeftArmRotZ = initialLeftArmRot.z + 0.05;  // Bring arms slightly closer to sides
-      targetRightArmRotZ = initialRightArmRot.z - 0.05;
-    } else if (type === "eyes") {
-      targetNeckRotY = initialNeckRot.y - 0.18;   // Turn neck and head slightly to camera
-      targetHeadRotY = initialHeadRot.y - 0.28;
-      targetHeadRotX = initialHeadRot.x + 0.06;
-    } else if (type === "mouth") {
-      targetNeckRotX = initialNeckRot.x + 0.14;    // Tilt head up slightly to reveal mouth/tongue
-      targetHeadRotX = initialHeadRot.x + 0.18;
-      targetHeadRotY = initialHeadRot.y + 0.1;
-    } else if (type === "abdomen") {
-      targetSpineRotX = initialSpineRot.x + 0.35;   // Lean torso forward distinctly
-      targetNeckRotX = initialNeckRot.x - 0.12;
-      targetHeadRotX = initialHeadRot.x + 0.18;
-      targetLeftArmRotZ = initialLeftArmRot.z - 0.2;  // Move left/right arms out of the way
-      targetRightArmRotZ = initialRightArmRot.z - 0.2;
-    } else if (type === "skin") {
-      targetSpineRotY = initialSpineRot.y - 0.4;   // Rotate torso to reveal lateral thigh/skin
-      targetNeckRotY = initialNeckRot.y + 0.18;
-      targetLeftArmRotZ = initialLeftArmRot.z - 0.6;  // Lift left arm up slightly to display skin area, not too high
-      targetLeftArmRotX = initialLeftArmRot.x + 0.25;
-    } else if (type === "nails") {
-      targetSpineRotY = initialSpineRot.y + 0.3;    // Twist torso slightly
-      targetRightArmRotZ = initialRightArmRot.z - 0.6; // Lift right arm/hand up slightly to display fingernails, not too high
-      targetRightArmRotX = initialRightArmRot.x + 0.25;
-      targetRightArmRotY = initialRightArmRot.y + 0.15;
-    }
-  }
+
 
   // Futuristic Sub-Tab Switcher Event Listeners
   const tabButtons = document.querySelectorAll(".hud-tab-btn");
@@ -1232,162 +1135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tabPanels.forEach(p => {
       if (p.id === `hud-content-${targetTab}`) {
         p.style.display = "block";
-      } else {
-        p.style.display = "none";
-      }
-    });
-  }
-
-  // Hotspot Click Scanning Loop
-  hotspots.forEach(hotspot => {
-    hotspot.addEventListener("click", () => {
-      const type = hotspot.dataset.hotspot;
-      
-      // Auto switch active tab to Scanner HUD so user sees scanning process
-      forceSwitchTab("scanner");
-
-      // Deactivate other hotspots
-      hotspots.forEach(h => h.classList.remove("active"));
-      hotspot.classList.add("active");
-      activeHotspotId = type;
-
-      // Position Glowing Reticle over hotspot
-      const parentRect = hotspot.parentElement.getBoundingClientRect();
-      const childRect = hotspot.getBoundingClientRect();
-      
-      const x = childRect.left - parentRect.left + (childRect.width / 2);
-      const y = childRect.top - parentRect.top + (childRect.height / 2);
-
-      targetReticle.style.left = `${x}px`;
-      targetReticle.style.top = `${y}px`;
-      targetReticle.style.display = "block";
-
-      // Zoom model slightly towards the clicked hotspot area and trigger bone gestures immediately!
-      applyInteractiveZoom(type);
-      applyInteractiveGesture(type);
-
-      // Trigger AR scanning HUD feedback
-      scanStatus.textContent = "ANALYSIS IN PROGRESS...";
-      scanStatus.className = "ar-status-badge scanning";
-
-      // Mock scanning telemetry load
-      observationResults.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 0.8rem; padding: 1rem 0;">
-          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #ffb732;">
-            <span>AR BIO-SCANNER ACTIVE</span>
-            <span id="scan-pct">0%</span>
-          </div>
-          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow:hidden;">
-            <div id="scan-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ffb732, #2ee59d); transition: width 0.05s linear; box-shadow: 0 0 10px #2ee59d;"></div>
-          </div>
-          <span style="font-size: 11px; color: #64748b; text-align: center; font-family: monospace;">ANALYZING CELLULAR METABOLISM NODE...</span>
-        </div>
-      `;
-
-      let pct = 0;
-      const interval = setInterval(() => {
-        pct += 5;
-        const bar = document.getElementById("scan-bar");
-        const pctText = document.getElementById("scan-pct");
-        
-        if (bar) bar.style.width = `${pct}%`;
-        if (pctText) pctText.textContent = `${pct}%`;
-
-        if (pct >= 100) {
-          clearInterval(interval);
-          scannedHotspots.add(type);
-          
-          scanStatus.textContent = "SCAN COMPLETE / DIAG DATA ACTIVE";
-          scanStatus.className = "ar-status-badge";
-
-          // Display visual clinical observation report
-          const activeCase = cases[currentCaseId];
-          const nodeName = hotspot.querySelector(".ar-hotspot-label").textContent;
-          const observationContent = activeCase.hotspots[type];
-
-          // Trigger Indonesian first-person speech and dialog bubble sync
-          const symptomDialog = activeCase.hotspotVoices[type];
-          speechBubble.querySelector("p").textContent = `"${symptomDialog}"`;
-          speakText(symptomDialog);
-
-          // Check if severe or normal warning color tag
-          let tagClass = "tag";
-          if (observationContent.toLowerCase().includes("normal")) {
-            tagClass = "tag blue";
-          } else if (observationContent.toLowerCase().includes("sedikit") || observationContent.toLowerCase().includes("agak")) {
-            tagClass = "tag gold";
-          } else {
-            tagClass = "tag coral";
-          }
-
-          observationResults.innerHTML = `
-            <div class="ai-critique-box">
-              <div class="ai-critique-header success">
-                <span class="ai-critique-badge success">NODE DETECTED</span>
-                <strong>NODE PEMERIKSAAN: ${nodeName}</strong>
-              </div>
-              <p class="ai-critique-text" style="color: var(--ink); font-weight: 700; font-size: 13.5px;">
-                ${observationContent}
-              </p>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                <div class="tag-row" style="margin-top:0;">
-                  <span class="${tagClass}">Skrining Visual AR</span>
-                  <span class="tag">Node ${type.toUpperCase()}</span>
-                </div>
-                <span style="font-size: 11px; color:#64748b; font-family:monospace;">STREAK SCAN: ${scannedHotspots.size}/6</span>
-              </div>
-            </div>
-          `;
-        }
-      }, 40);
-    });
-  });
-
-  // Dynamic camera focus zooming based on scanned diagnostic hotspot coordinates in 3D Space
-  function applyInteractiveZoom(type) {
-    if (!camera || !controls) return;
-    
-    let targetY = 0;
-    let targetZ = 4.5;
-    let targetX = 0;
-    
-    if (type === "hair") {
-      targetY = 0.9;
-      targetZ = 2.0;
-    } else if (type === "eyes") {
-      targetY = 0.75;
-      targetZ = 1.8;
-      targetX = -0.15;
-    } else if (type === "mouth") {
-      targetY = 0.65;
-      targetZ = 1.8;
-      targetX = 0.05;
-    } else if (type === "abdomen") {
-      targetY = -0.15;
-      targetZ = 2.2;
-    } else if (type === "skin") {
-      targetY = 0.15;
-      targetZ = 2.3;
-      targetX = -0.3;
-    } else if (type === "nails") {
-      targetY = -0.25;
-      targetZ = 1.9;
-      targetX = 0.45;
-    }
-    
-    camera.position.set(targetX, targetY, targetZ);
-    controls.target.set(targetX, targetY, 0);
-  }
-
-  // Interactive 3D Navigation Controls
-  document.getElementById("btn-rotate-l")?.addEventListener("click", () => {
-    if (model) model.rotation.y -= 0.25;
-  });
-
-  document.getElementById("btn-rotate-r")?.addEventListener("click", () => {
-    if (model) model.rotation.y += 0.25;
-  });
-
+      } else {  // Zoom and Camera controls
   document.getElementById("btn-zoom-in")?.addEventListener("click", () => {
     if (camera) camera.position.z = Math.max(1.2, camera.position.z - 0.4);
   });
@@ -1399,7 +1147,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-reset-view")?.addEventListener("click", () => {
     if (model) {
       model.rotation.set(0, 0, 0);
-      // Reset skeletal transformations
       if (spineBone) {
         if (currentCaseId === "mr") spineBone.scale.set(1.15, 1.15, 1.35);
         else if (currentCaseId === "na" || currentCaseId === "ap") spineBone.scale.set(0.9, 0.9, 0.9);
@@ -1412,10 +1159,11 @@ document.addEventListener("DOMContentLoaded", () => {
     resetBoneTargets();
     animationState = "idle";
     activeHotspotId = null;
-    targetReticle.style.display = "none";
-    hotspots.forEach(h => h.classList.remove("active"));
-    scanStatus.textContent = "VIEWPORT RESET / STANDBY";
-    scanStatus.className = "ar-status-badge";
+    if (targetReticle) targetReticle.style.display = "none";
+    if (scanStatus) {
+      scanStatus.textContent = "VIEWPORT RESET / STANDBY";
+      scanStatus.className = "ar-status-badge";
+    }
     forceSwitchTab("profil");
   });
 
@@ -1438,128 +1186,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  btnReplaySpeech?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (lastSpokenText) speakText(lastSpokenText);
-  });
-
   // Support voice list updates asynchronously (Chrome bug prevention)
   if (synth) {
     synth.onvoiceschanged = () => {
       // Refresh voice profile silently
     };
   }
-
-  // AI Validator Engine (Validasi Jawaban User untuk 5 Kasus Siswa SMA)
-  btnVerify?.addEventListener("click", () => {
-    const userDiag = diagSelect.value;
-    const userTherapy = therapySelect.value;
-
-    if (!userDiag) {
-      alert("Silakan pilih Tebakan Penyakit / Diagnosis Anda terlebih dahulu.");
-      return;
-    }
-    if (!userTherapy) {
-      alert("Silakan tentukan Rekomendasi Tatalaksana Gizi terlebih dahulu.");
-      return;
-    }
-
-    aiValidatorChat.innerHTML = `
-      <div style="display:flex; flex-direction:column; align-items:center; gap: 8px; justify-content:center; padding: 2rem 0; color:#2ee59d;">
-        <span class="ai-critique-badge success" style="animation: pulse-border 1s infinite alternate; background: rgba(18, 164, 111, 0.15); border: 1px solid rgba(18, 164, 111, 0.3); padding: 6px 12px; border-radius: 6px;">AI VALIDATOR PROCESSING...</span>
-        <span style="font-size:12px; font-family:monospace; color:#64748b;">MENGANALISIS KECELASAN GEJALA & REKOMENDASI TERAPI...</span>
-      </div>
-    `;
-
-    setTimeout(() => {
-      const activeCase = cases[currentCaseId];
-      const isDiagCorrect = userDiag === activeCase.correctDiagnosis;
-      const isTherapyCorrect = userTherapy === activeCase.correctTherapy;
-
-      let scoreMessage = "";
-      let scoreClass = "error";
-      let headerText = "VALIDASI AI: SALAH";
-      let badgeText = "DIAGNOSIS INKOREK";
-      let explanation = "";
-      let advice = "";
-
-      if (isDiagCorrect && isTherapyCorrect) {
-        verifiedStreak++;
-        casesDiagnosed++;
-        scoreClass = "success";
-        headerText = "VALIDASI AI: SEMPURNA (100%)";
-        badgeText = "DIAGNOSIS & TERAPI TEPAT";
-        scoreMessage = `Luar biasa! Diagnosis **${diagSelect.options[diagSelect.selectedIndex].text}** dan tatalaksana **${therapySelect.options[therapySelect.selectedIndex].text}** yang Anda berikan adalah **100% BENAR**!`;
-        
-        if (currentCaseId === "ap") {
-          explanation = `**Analisis Medis**: Siswa AP mengalami anemia defisiensi besi disertai risiko gizi kurang. Hal ini didukung oleh data antropometri IMT 16.8 (Gizi Kurang) dan klinis berupa konjungtiva pucat, lemas, serta hasil lab Hb sebesar 10.2 g/dL. Dietary recall menunjukkan asupan yang kurang bervariasi, rendah sumber zat besi heme, dan kebiasaan minum teh segera setelah makan yang mengandung senyawa tanin yang mengikat zat besi sehingga menghambat penyerapannya.`;
-          advice = `**Rekomendasi Terapi**: Sangat tepat! Peningkatan asupan zat besi heme (seperti hati ayam, daging, ikan) disertai vitamin C (untuk mempermudah absorpsi Fe3+ menjadi Fe2+) sangat penting. Edukasi untuk menghindari konsumsi teh segera setelah makan adalah kunci keberhasilan terapi anemia pada remaja putri ini.`;
-        } else if (currentCaseId === "mr") {
-          explanation = `**Analisis Medis**: Siswa MR mengalami obesitas sentral (BB 88 kg, IMT 31.2) dengan risiko prediabetes/resistensi insulin yang dibuktikan secara klinis melalui temuan Acanthosis Nigricans (bercak hitam menebal di leher belakang) dan peningkatan Glukosa Darah Puasa (118 mg/dL). Hal ini disebabkan dietary recall yang menunjukkan konsumsi karbohidrat simpleks (minuman manis botol 3-4x sehari) dan lemak jenuh yang sangat tinggi secara kronis.`;
-          advice = `**Rekomendasi Terapi**: Sangat tepat! Edukasi pembatasan minuman manis berpemanas jenuh, peningkatan asupan serat dari sayur/buah untuk menghambat penyerapan glukosa, serta aktivitas fisik teratur minimal 150 menit per minggu sangat krusial untuk mencegah progresi menjadi Diabetes Melitus Tipe 2.`;
-        } else if (currentCaseId === "na") {
-          explanation = `**Analisis Medis**: Siswa NA mengalami risiko defisiensi Vitamin B Kompleks (khususnya vitamin B2/riboflavin, B3/niasin, dan B12) akibat pola diet tidak seimbang (diet ketat tanpa protein hewani). Manifestasi klinis patognomonis berupa Angular Cheilitis (luka sudut bibir pecah), lidah kemerahan meradang (glossitis), kulit kering, serta turgor lemak subkutan yang sangat tipis (IMT 16.2 - Gizi Kurang).`;
-          advice = `**Rekomendasi Terapi**: Sangat tepat! Edukasi mengenai bahaya diet pembatasan ekstrem sangat penting. Peningkatan konsumsi protein hewani/nabati, susu, sayuran hijau, telur, dan asupan gizi makro seimbang mutlak diperlukan untuk meredakan gejala angular cheilitis dalam beberapa hari.`;
-        } else if (currentCaseId === "rs") {
-          explanation = `**Analisis Medis**: Siswa RS mengalami gangguan pertumbuhan remaja (stunting/pendek) dengan Z-score TB/U berada di bawah -2 SD (-2.8 SD) akibat asupan energi dan protein yang sangat rendah (kronis). Hal ini dikonfirmasi melalui dietary recall yang menunjukkan asupan protein yang sangat buruk (sering mi instan) dan hanya makan 2 kali sehari, memicu muscle wasting ringan (massa otot kurang) dan fisik mudah lelah.`;
-          advice = `**Rekomendasi Terapi**: Sangat tepat! Peningkatan asupan energi total dan protein bernilai biologis tinggi (seperti telur, susu, ikan, ayam) secara konsisten sangat penting untuk memfasilitasi kejar tumbuh kembang linear (catch-up growth) pada fase remaja ini.`;
-        } else if (currentCaseId === "ds") {
-          explanation = `**Analisis Medis**: Siswa DS mengalami anemia ringan akibat asupan zat besi kurang adekuat yang dipicu oleh kebiasaan melewatkan sarapan pagi dan diperberat dengan kehilangan darah berkala saat menstruasi yang menimbulkan nyeri kram abdomen hebat (dismenore). Hasil pemeriksaan Hb menunjukkan 11.4 g/dL (anemia ringan untuk remaja putri).`;
-          advice = `**Rekomendasi Terapi**: Sangat tepat! Pemberian sumber zat besi heme dikombinasikan dengan edukasi makanan tinggi vitamin C serta pengaturan pola makan teratur tiga kali sehari merupakan tatalaksana gizi terbaik untuk mengatasi anemia ringan dan dismenore pada siswa DS.`;
-        }
-      } else if (isDiagCorrect && !isTherapyCorrect) {
-        scoreClass = "warning";
-        headerText = "VALIDASI AI: EVALUASI KORSET";
-        badgeText = "DIAGNOSIS BENAR, TERAPI SALAH";
-        scoreMessage = `Diagnosis Anda tentang **${diagSelect.options[diagSelect.selectedIndex].text}** sudah **TEPAT**, tetapi rekomendasi tatalaksana gizi yang Anda pilih (**${therapySelect.options[therapySelect.selectedIndex].text}**) adalah **SALAH**.`;
-        
-        if (currentCaseId === "ap") {
-          explanation = `Anda berhasil mengidentifikasi kasus anemia defisiensi besi pada AP, namun tatalaksana yang Anda rekomendasikan tidak tepat sasaran. Remaja AP memerlukan asupan zat besi tinggi dan edukasi tanin teh.`;
-          advice = `**Instruksi AI**: Gantilah tatalaksana ke opsi **Konsumsi Zat Besi & Vit C, Hindari Teh Segera Setelah Makan (AP)** untuk hasil optimal.`;
-        } else if (currentCaseId === "mr") {
-          explanation = `Diagnosis Obesitas & Prediabetes pada MR sudah benar. Namun terapi yang dipilih kurang efektif untuk menurunkan resistensi insulin dan mengurangi berat badan secara berkelanjutan.`;
-          advice = `**Instruksi AI**: Gantilah tatalaksana ke opsi **Batasi Gula/Lemak & Tingkatkan Aktivitas Fisik 150 Menit/Minggu (MR)** untuk memperbaiki sensitivitas insulin.`;
-        } else if (currentCaseId === "na") {
-          explanation = `Diagnosis Defisiensi B Kompleks pada NA sudah tepat. Namun terapi yang Anda pilih tidak menyelesaikan akar masalah diet pembatasan ekstrem protein hewani.`;
-          advice = `**Instruksi AI**: Gantilah tatalaksana ke opsi **Diet Seimbang, Peningkatan Protein Hewani/Nabati & Susu (NA)** untuk memenuhi deplesi zat gizi mikro.`;
-        } else if (currentCaseId === "rs") {
-          explanation = `Diagnosis gangguan pertumbuhan (stunting) pada RS benar. Namun pilihan terapi Anda kurang memadai dalam memberikan asupan gizi padat kalori tinggi protein untuk memulihkan massa otot.`;
-          advice = `**Instruksi AI**: Gantilah tatalaksana ke opsi **Peningkatan Asupan Energi & Protein Tinggi (RS)** untuk mendorong metabolisme kejar tumbuh linear.`;
-        } else if (currentCaseId === "ds") {
-          explanation = `Diagnosis anemia ringan pada DS benar. Namun terapi yang Anda pilih tidak dirancang untuk menangani asupan tidak adekuat dan kehilangan zat besi akibat dismenore menstruasi.`;
-          advice = `**Instruksi AI**: Gantilah tatalaksana ke opsi **Konsumsi Zat Besi & Vit C, Perbaikan Pola Makan & Monitoring Hb (DS)**.`;
-        }
-      } else {
-        verifiedStreak = 0;
-        scoreClass = "error";
-        headerText = "VALIDASI AI: INKOREK";
-        badgeText = "DIAGNOSIS KELIRU";
-        scoreMessage = `Jawaban Diagnosis **${diagSelect.options[diagSelect.selectedIndex].text}** yang Anda pilih adalah **SALAH**.`;
-        
-        explanation = `Gejala klinis (seperti: "${activeCase.complaint.substring(0, 80)}...") serta data objektif yang Anda kumpulkan dari pemindaian visual AR tidak cocok dengan patofisiologi penyakit yang Anda pilih.`;
-        advice = `**Instruksi AI**: Silakan reset pandangan Anda, klik sisa hotspot berkedip merah/kuning untuk mengumpulkan detail objektif (rambut, mata, perut, kuku, kulit) di tab Pemindai, pelajari data Antropometri & Dietary Recall, lalu analisis kembali hubungan gejala tersebut.`;
-      }
-
-      aiValidatorChat.innerHTML = `
-        <div class="ai-critique-box">
-          <div class="ai-critique-header ${scoreClass}">
-            <span class="ai-critique-badge ${scoreClass}">${badgeText}</span>
-            <strong>${headerText}</strong>
-          </div>
-          <p class="ai-critique-text" style="font-size: 13.5px;">
-            ${scoreMessage}
-          </p>
-          ${explanation ? `<p class="ai-critique-text" style="background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 8px; font-size:12.5px; border-left: 3px solid rgba(0,0,0,0.08);">${explanation}</p>` : ""}
-          <p class="ai-critique-advice" style="color: ${scoreClass === 'success' ? '#2ee59d' : '#ffb732'}; font-size: 12.5px; font-weight: 700;">
-            ${advice}
-          </p>
-          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top: 8px; font-size: 11px; color:#64748b; text-align:right; font-family:monospace;">
-            STREAK AKTIF: ${verifiedStreak} | DIAGNOSTIC LEVEL: ${verifiedStreak >= 3 ? 'SPESIALIS GIZI AR' : 'RESIDEN PEMBELAJAR'}
-          </div>
-        </div>
-      `;
-    }, 1500);
-  });
 
   // Simulated Holographic Webcam AR Visor Cam
   let arCamStream = null;
@@ -1576,8 +1208,10 @@ document.addEventListener("DOMContentLoaded", () => {
         arCamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
         cameraFeed.srcObject = arCamStream;
         
-        scanStatus.textContent = "CAMERA FEED / HOLO RETICLE ACTIVE";
-        scanStatus.className = "ar-status-badge scanning";
+        if (scanStatus) {
+          scanStatus.textContent = "CAMERA FEED / HOLO RETICLE ACTIVE";
+          scanStatus.className = "ar-status-badge scanning";
+        }
       } catch (err) {
         console.error("Camera access failed:", err);
         cameraFeed.style.display = "none";
@@ -1601,25 +1235,270 @@ document.addEventListener("DOMContentLoaded", () => {
         arCamStream = null;
       }
 
-      scanStatus.textContent = "STANDBY / HUD READY";
-      scanStatus.className = "ar-status-badge";
+      if (scanStatus) {
+        scanStatus.textContent = "STANDBY / HUD READY";
+        scanStatus.className = "ar-status-badge";
+      }
     }
   });
 
-  // Handle case button clicks
-  caseButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      loadCase(btn.dataset.case);
-    });
+  // ================= GAMIFIED LEVEL CHATBOT CONTROLLER =================
+  
+  // Shuffle cases helper
+  function shuffleCases() {
+    const pool = ["ap", "mr", "na", "rs", "ds"];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    randomizedLevels = pool;
+    currentLevelIndex = 0;
+  }
+
+  // Add chat bubble
+  function addChatMessage(sender, text) {
+    if (!chatMessagesContainer) return;
+    const wrapper = document.createElement("div");
+    wrapper.className = `chat-bubble-wrapper ${sender}`;
+    
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${sender}`;
+    
+    if (sender === "ai") {
+      let formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+      bubble.innerHTML = formattedText;
+    } else if (sender === "user") {
+      bubble.textContent = text;
+    } else {
+      bubble.innerHTML = text;
+    }
+    
+    wrapper.appendChild(bubble);
+    chatMessagesContainer.appendChild(wrapper);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+  }
+
+  // Simulated AI typing animations
+  function showTypingIndicator() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "chat-bubble-wrapper ai temp-typing-indicator";
+    
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble ai";
+    bubble.innerHTML = `
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    wrapper.appendChild(bubble);
+    chatMessagesContainer.appendChild(wrapper);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const indicator = chatMessagesContainer.querySelector(".temp-typing-indicator");
+    if (indicator) indicator.remove();
+  }
+
+  // Load level active case and greet user
+  function initiateLevel() {
+    if (randomizedLevels.length === 0) {
+      shuffleCases();
+    }
+    
+    const caseId = randomizedLevels[currentLevelIndex];
+    loadCase(caseId, false);
+    
+    if (levelBadge) {
+      levelBadge.textContent = `LEVEL ${currentLevelIndex + 1}/5 - KASUS ACAK`;
+    }
+    if (streakHud) {
+      streakHud.textContent = `STREAK: ${verifiedStreak}`;
+    }
+    
+    const activeCase = cases[caseId];
+    
+    const introText = `Halo Dokter! Selamat datang di **Level ${currentLevelIndex + 1}** dari simulasi gizi klinis. 🩺<br><br>` + 
+      `Pasien kita saat ini adalah **${activeCase.name}**.<br>` +
+      `Keluhan utama: *"${activeCase.complaint}"*<br><br>` +
+      `Silakan periksa detail data di panel kanan (**Profil & Antro**, **Pemeriksaan Klinis**, dan **Dietary Recall**). ` + 
+      `Ketikkan **Diagnosis Gizi** serta **Rekomendasi Terapi** Anda di kolom bawah ini, lalu kirimkan untuk dievaluasi oleh AI Supervisor.`;
+      
+    addChatMessage("ai", introText);
+    speakText(`Halo Dokter! Selamat datang di Level ${currentLevelIndex + 1}. Pasien kita saat ini adalah ${activeCase.name}. Silakan periksa detail data pasien di panel kanan dan berikan analisis Anda.`);
+  }
+
+  // Parse user text and evaluate keywords
+  function handleUserInput() {
+    if (!chatbotUserInput) return;
+    const userText = chatbotUserInput.value;
+    if (!userText.trim()) return;
+    
+    addChatMessage("user", userText);
+    chatbotUserInput.value = "";
+    
+    showTypingIndicator();
+    
+    setTimeout(() => {
+      removeTypingIndicator();
+      const caseId = randomizedLevels[currentLevelIndex];
+      const activeCase = cases[caseId];
+      
+      const lowerText = userText.toLowerCase();
+      let isDiagCorrect = false;
+      let isTherapyCorrect = false;
+      
+      // Smart matching keywords for client-side evaluation
+      if (caseId === "ap") {
+        isDiagCorrect = lowerText.includes("anemia") || lowerText.includes("zat besi") || lowerText.includes("hb");
+        isTherapyCorrect = lowerText.includes("suplemen") || lowerText.includes("tambah darah") || lowerText.includes("vitamin c") || lowerText.includes("vit c") || lowerText.includes("teh");
+      } else if (caseId === "mr") {
+        isDiagCorrect = lowerText.includes("obesitas") || lowerText.includes("prediabetes") || lowerText.includes("insulin") || lowerText.includes("kegemukan") || lowerText.includes("acanthosis");
+        isTherapyCorrect = lowerText.includes("gula") || lowerText.includes("manis") || lowerText.includes("olahraga") || lowerText.includes("aktivitas") || lowerText.includes("serat") || lowerText.includes("menit");
+      } else if (caseId === "na") {
+        isDiagCorrect = lowerText.includes("b kompleks") || lowerText.includes("vitamin b") || lowerText.includes("cheilitis") || lowerText.includes("bibir pecah") || lowerText.includes("glossitis");
+        isTherapyCorrect = lowerText.includes("protein") || lowerText.includes("hewani") || lowerText.includes("susu") || lowerText.includes("telur") || lowerText.includes("diet seimbang");
+      } else if (caseId === "rs") {
+        isDiagCorrect = lowerText.includes("stunting") || lowerText.includes("pendek") || lowerText.includes("stunted") || lowerText.includes("tumbuh");
+        isTherapyCorrect = lowerText.includes("energi") || lowerText.includes("protein") || lowerText.includes("tinggi") || lowerText.includes("telur") || lowerText.includes("susu") || lowerText.includes("ikan");
+      } else if (caseId === "ds") {
+        isDiagCorrect = lowerText.includes("anemia") || lowerText.includes("dismenore") || lowerText.includes("haid") || lowerText.includes("menstruasi") || lowerText.includes("nyeri");
+        isTherapyCorrect = lowerText.includes("zat besi") || lowerText.includes("suplemen") || lowerText.includes("sarapan") || lowerText.includes("makan teratur");
+      }
+      
+      if (isDiagCorrect && isTherapyCorrect) {
+        verifiedStreak++;
+        casesDiagnosed++;
+        
+        if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
+        
+        let correctText = "";
+        if (caseId === "ap") {
+          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+            `**Diagnosis Tepat:** Anda berhasil mengidentifikasi kasus **Anemia Defisiensi Besi** dan status **Gizi Kurang** pada AP.<br><br>` +
+            `**Evaluasi Terapi:** Sangat bagus! Penambahan asupan besi heme (seperti hati, daging), asupan vitamin C untuk memperlancar absorpsi zat besi, serta edukasi untuk **menghindari minum teh setelah makan** (karena senyawa tanin mengikat zat besi) adalah tatalaksana yang sempurna untuk AP.`;
+        } else if (caseId === "mr") {
+          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+            `**Diagnosis Tepat:** Diagnosis **Obesitas Sentral** dengan risiko **Prediabetes & Resistensi Insulin** pada MR sangat tepat.<br><br>` +
+            `**Evaluasi Terapi:** Luar biasa! Pengurangan asupan gula sederhana, peningkatan serat larut, serta aktivitas fisik teratur minimal 150 menit/minggu adalah pilar tatalaksana terbaik untuk membalikkan prediabetes pada remaja laki-laki ini.`;
+        } else if (caseId === "na") {
+          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+            `**Diagnosis Tepat:** Anda mendeteksi **Defisiensi Vitamin B Kompleks (Riboflavin/B2 & B12)** secara klinis dari gejala **Angular Cheilitis** (luka sudut bibir) dan **Glossitis** pada NA.<br><br>` +
+            `**Evaluasi Terapi:** Sangat tepat! Menghentikan diet pembatasan ekstrem dan meningkatkan konsumsi protein hewani, telur, susu, dan sayuran hijau akan memperbaiki defisiensi gizi mikro ini dengan sangat cepat.`;
+        } else if (caseId === "rs") {
+          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+            `**Diagnosis Tepat:** Anda mengidentifikasi **Gangguan Pertumbuhan / Tinggi Badan Sangat Pendek (Stunting Kronis)** pada RS berdasarkan Z-score TB/U (-2.8 SD).<br><br>` +
+            `**Evaluasi Terapi:** Sempurna! RS membutuhkan asupan tinggi energi dan protein bernilai biologis tinggi (telur, susu, ikan) untuk mendukung catch-up growth (kejar tumbuh linear) pada fase remaja ini.`;
+        } else if (caseId === "ds") {
+          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+            `**Diagnosis Tepat:** Anda berhasil mendiagnosis **Anemia Ringan (Hb 11.4)** disertai gejala kram menstruasi berat (**Dismenore**) pada DS.<br><br>` +
+            `**Evaluasi Terapi:** Hebat! Rekomendasi Anda mengenai pemantauan asupan zat besi heme, dikombinasikan dengan edukasi makan teratur dan **tidak melewatkan sarapan pagi** adalah langkah tatalaksana gizi yang sangat tepat.`;
+        }
+        
+        addChatMessage("ai", correctText);
+        
+        // Show next level button
+        setTimeout(() => {
+          if (currentLevelIndex < 4) {
+            const systemMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
+              `◈ Level ${currentLevelIndex + 1} Selesai dengan Sempurna! ◈<br>` +
+              `<button class="chatbot-next-level-btn" id="btn-next-level">Lanjut ke Level ${currentLevelIndex + 2} ➜</button>` +
+              `</div>`;
+            addChatMessage("system", systemMsg);
+            
+            const btnNext = document.getElementById("btn-next-level");
+            if (btnNext) {
+              btnNext.addEventListener("click", () => {
+                currentLevelIndex++;
+                chatMessagesContainer.innerHTML = "";
+                initiateLevel();
+              });
+            }
+          } else {
+            // Final victory
+            const winMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
+              `🏆 CONGRATULATIONS! 🏆<br>` +
+              `Anda telah berhasil menyelesaikan semua 5 Level Kasus Klinis Gizi dengan sempurna!<br>` +
+              `Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRIVERSE**.<br><br>` +
+              `<button class="chatbot-next-level-btn" id="btn-restart-game">Mulai Ulang Simulasi ↺</button>` +
+              `</div>`;
+            addChatMessage("system", winMsg);
+            
+            const btnRestart = document.getElementById("btn-restart-game");
+            if (btnRestart) {
+              btnRestart.addEventListener("click", () => {
+                verifiedStreak = 0;
+                chatMessagesContainer.innerHTML = "";
+                shuffleCases();
+                initiateLevel();
+              });
+            }
+          }
+        }, 600);
+      } else if (isDiagCorrect && !isTherapyCorrect) {
+        let helpText = "";
+        if (caseId === "ap") {
+          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+            `Diagnosis Anda tentang **Anemia** sudah tepat. Namun, tatalaksana gizi Anda belum lengkap. ` +
+            `Ingat bahwa AP memiliki kebiasaan minum teh manis hangat langsung setelah makan siang dan malam. Teh mengandung senyawa tanin yang mengikat zat besi non-heme. ` + 
+            `Silakan perbaiki terapi gizi Anda (sebutkan tentang vitamin C, asupan zat besi, atau menghindari teh setelah makan).`;
+        } else if (caseId === "mr") {
+          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+            `Diagnosis Anda tentang **Obesitas / Prediabetes** sudah tepat. Namun, rekomendasi terapi gizi Anda belum menyentuh akar masalah. ` +
+            `MR mengonsumsi karbohidrat olahan dan gula tinggi (3-4 es kopi/soda sehari). ` +
+            `Silakan sebutkan rencana olahraga/aktivitas fisik, atau pembatasan asupan manis/gula.`;
+        } else if (caseId === "na") {
+          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+            `Diagnosis Anda tentang **Defisiensi Vitamin B / Angular Cheilitis** sudah tepat. Namun, terapi gizi Anda kurang spesifik. ` +
+            `NA sedang menjalani diet ekstrem tanpa mengonsumsi protein hewani sama sekali. ` +
+            `Ia membutuhkan diet seimbang dengan makanan kaya protein hewani atau susu/telur. Silakan lengkapi jawaban Anda.`;
+        } else if (caseId === "rs") {
+          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+            `Diagnosis Anda tentang **Gangguan Pertumbuhan / Stunting** sudah tepat. Namun, terapi gizi Anda belum memadai untuk kejar tumbuh. ` +
+            `RS memerlukan asupan protein berkualitas biologis tinggi dan padat kalori (seperti susu, telur, ikan) untuk catch-up growth. Silakan lengkapi jawaban Anda.`;
+        } else if (caseId === "ds") {
+          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+            `Diagnosis Anda tentang **Anemia / Dismenore** sudah tepat. Namun, terapi Anda belum menyentuh kebiasaan makannya. ` +
+            `DS sering melewatkan sarapan pagi yang memperberat anemia ringannya saat haid. ` +
+            `Silakan sebutkan tentang zat besi, sarapan pagi, atau makan teratur.`;
+        }
+        addChatMessage("ai", helpText);
+      } else {
+        verifiedStreak = 0;
+        if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
+        
+        let errorText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          `Diagnosis Anda belum tepat Dokter. Gejala klinis pasien dan dietary recall 24-jamnya tidak mendukung kesimpulan tersebut.<br><br>` +
+          `**Petunjuk Supervisor:** Perhatikan tanda vital dan hasil laboratorium di panel kanan, lalu telaah kebiasaan makannya secara mendalam. Silakan coba analisis kembali!`;
+        addChatMessage("ai", errorText);
+      }
+    }, 1500);
+  }
+
+  // Bind chatbot inputs
+  btnSubmitChat?.addEventListener("click", () => {
+    handleUserInput();
+  });
+
+  chatbotUserInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleUserInput();
+    }
   });
 
   // Initialize 3D context & load model
   init3D();
 
-  // Initialize page on load (Siswa AP as default)
-  // Slight delay allows voices to load in browsers if needed
+  // Initialize level gamification and case on load
   setTimeout(() => {
-    loadCase("ap", false);
-  }, 100);
+    shuffleCases();
+    initiateLevel();
+  }, 200);
 });
 

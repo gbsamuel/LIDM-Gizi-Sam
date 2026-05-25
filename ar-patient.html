@@ -42,237 +42,136 @@
     </section>
 
     <section class="section">
-      <div class="section-inner ar-layout-grid">
+      <div class="section-inner" style="display: flex; flex-direction: column; gap: 24px;">
         
-        <!-- COLUMN 1: AR VIEWPORT (THE 3D PATIENT VIEW) -->
-        <div class="ar-viewport-card reveal-on-scroll delay-100">
-          <div class="ar-viewport-header">
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-              <span style="font-size: 11px; font-weight: 800; color: #94a3b8; font-family: monospace;">AR SCREENER HUD v2.5</span>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span id="scan-status-badge" class="ar-status-badge">STANDBY / HUD READY</span>
-                <button id="btn-toggle-voice" class="ar-status-badge" style="cursor: pointer; background: rgba(91, 134, 229, 0.15); color: #5b86e5; border: 1px solid rgba(91, 134, 229, 0.3); outline: none;">
-                  🔊 SUARA: AKTIF
-                </button>
+        <!-- TOP ROW: 3D VIEWPORT & PATIENT DETAILS SIDE-BY-SIDE -->
+        <div class="ar-layout-grid">
+          
+          <!-- COLUMN 1: AR VIEWPORT (THE 3D PATIENT VIEW) -->
+          <div class="ar-viewport-card reveal-on-scroll delay-100">
+            <div class="ar-viewport-header">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 800; color: #94a3b8; font-family: monospace;">AR SCREENER HUD v3.0</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span id="scan-status-badge" class="ar-status-badge">STANDBY / HUD READY</span>
+                  <button id="btn-toggle-voice" class="ar-status-badge" style="cursor: pointer; background: rgba(91, 134, 229, 0.15); color: #5b86e5; border: 1px solid rgba(91, 134, 229, 0.3); outline: none;">
+                    🔊 SUARA: AKTIF
+                  </button>
+                </div>
               </div>
-            </div>
-            <button class="button primary" id="btn-start-ar-cam" style="cursor: pointer; font-size: 11px; padding: 6px 14px; min-height: auto;">
-              Aktifkan Kamera AR (Visor HUD)
-            </button>
-          </div>
-
-          <div class="ar-canvas-area" id="viewport-canvas">
-            <!-- Cyber Backdrop -->
-            <div class="ar-grid-backdrop"></div>
-            
-            <!-- Scanning sweep beam -->
-            <div class="scanning-sweep"></div>
-
-            <!-- Voice Active Waveform HUD -->
-            <div class="voice-waveform-hud" id="voice-waveform" style="display: none;">
-              <div class="waveform-bar"></div>
-              <div class="waveform-bar"></div>
-              <div class="waveform-bar"></div>
-              <div class="waveform-bar"></div>
-              <div class="waveform-bar"></div>
-              <span style="font-family: monospace; font-size: 9px; color: #2ee59d; margin-left: 6px;">PASIEN BERBICARA...</span>
+              <button class="button primary" id="btn-start-ar-cam" style="cursor: pointer; font-size: 11px; padding: 6px 14px; min-height: auto;">
+                Aktifkan Kamera AR (Visor HUD)
+              </button>
             </div>
 
-            <!-- Subjective Patient Complaint Speech Bubble -->
-            <div class="patient-speech-bubble" id="patient-speech">
-              <button class="voice-replay-btn" id="btn-replay-speech" title="Dengarkan Suara Pasien">🔊 Putar Suara</button>
-              <p>"Dokter, anak saya lemas sekali..."</p>
-            </div>
-
-            <!-- Dashboard Target Reticle -->
-            <div class="target-reticle" id="ar-reticle"></div>
-
-            <!-- Webcam AR view overlay -->
-            <div class="ar-camera-overlay" id="ar-cam-overlay">
-              <video id="camera-feed" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; border-radius: 14px;"></video>
-              <div id="camera-placeholder" style="display: none;"></div>
+            <div class="ar-canvas-area" id="viewport-canvas" style="background: #ffffff; box-shadow: none; border: 1px solid rgba(0,0,0,0.08);">
+              <!-- Cyber Backdrop (Invisible or clean) -->
+              <div class="ar-grid-backdrop" style="display: none;"></div>
               
-              <!-- Face Calibration holographic overlays -->
-              <div class="camera-grid-crosshair"></div>
-              <div class="camera-bounding-box" style="top: 25%; left: 35%; width: 30%; height: 35%;">
-                [ CALIBRATING RETINA EYE_NODE ]
+              <!-- Scanning sweep beam (Invisible or clean) -->
+              <div class="scanning-sweep" style="display: none;"></div>
+
+              <!-- Voice Active Waveform HUD -->
+              <div class="voice-waveform-hud" id="voice-waveform" style="display: none;">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <span style="font-family: monospace; font-size: 9px; color: #2ee59d; margin-left: 6px;">PASIEN BERBICARA...</span>
               </div>
-              <div class="camera-bounding-box" style="top: 55%; left: 40%; width: 20%; height: 12%; border-color:#2ee59d; color:#2ee59d;">
-                [ CHEILOSIS_SCANNER ACTIVE ]
+
+              <!-- Dashboard Target Reticle (Invisible or clean) -->
+              <div class="target-reticle" id="ar-reticle"></div>
+
+              <!-- Webcam AR view overlay -->
+              <div class="ar-camera-overlay" id="ar-cam-overlay">
+                <video id="camera-feed" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; border-radius: 14px;"></video>
+                <div id="camera-placeholder" style="display: none;"></div>
+                
+                <!-- Face Calibration holographic overlays -->
+                <div class="camera-grid-crosshair"></div>
+                <div class="camera-bounding-box" style="top: 25%; left: 35%; width: 30%; height: 35%;">
+                  [ CALIBRATING RETINA EYE_NODE ]
+                </div>
+                <div class="camera-bounding-box" style="top: 55%; left: 40%; width: 20%; height: 12%; border-color:#2ee59d; color:#2ee59d;">
+                  [ CHEILOSIS_SCANNER ACTIVE ]
+                </div>
+                <div style="position: absolute; bottom: 10px; left: 15px; font-family: monospace; font-size: 9px; color: #2ee59d;">
+                  &gt; REALTIME BIOMETRIC READOUT FEED ACTIVE<br>
+                  &gt; RESOLUTION: 1080P // FPS: 60 // ISO: AUTO
+                </div>
               </div>
-              <div style="position: absolute; bottom: 10px; left: 15px; font-family: monospace; font-size: 9px; color: #2ee59d;">
-                &gt; REALTIME BIOMETRIC READOUT FEED ACTIVE<br>
-                &gt; RESOLUTION: 1080P // FPS: 60 // ISO: AUTO
+
+              <!-- 3D PATIENT THREE.JS CANVAS CONTAINER -->
+              <div id="ar-3d-canvas-container" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: auto;"></div>
+
+              <!-- Visualizer Navigation & Scale Dash Controls -->
+              <div class="ar-view-controls">
+                <button class="ar-control-btn" id="btn-zoom-in" title="Perbesar">+</button>
+                <button class="ar-control-btn" id="btn-zoom-out" title="Perkecil">-</button>
+                <button class="ar-control-btn" id="btn-reset-view" title="Reset Pandangan" style="font-size:12px; font-weight:900;">RESET</button>
               </div>
             </div>
+            <p class="muted" style="margin-top: 1rem; font-size: 13px;">Model 3D pasien ditampilkan secara statis. Gunakan kontrol zoom di sudut kanan bawah untuk menyesuaikan perbesaran mesh pasien.</p>
+          </div>
 
-            <!-- 3D PATIENT THREE.JS CANVAS CONTAINER -->
-            <div id="ar-3d-canvas-container" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: auto;"></div>
+          <!-- COLUMN 2: SCI-FI TELEMETRY HUD & PATIENT DETAIL SYSTEM -->
+          <div class="ar-hud-card reveal-on-scroll delay-200">
+            <h2 class="ar-hud-title">📋 Detail Data Pasien</h2>
 
-            <!-- PULSING DIAGNOSTIC HOTSPOTS (Click to Scan) -->
-            <!-- 1. Hair Hotspot -->
-            <div class="ar-hotspot" data-hotspot="hair">
-              <span class="ar-hotspot-label">PEMERIKSAAN RAMBUT</span>
+            <!-- FUTURISTIC SUB-TAB HUD NAVIGATION -->
+            <div class="hud-tab-nav" style="display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; margin-top: 4px;">
+              <button class="hud-tab-btn active" data-tab="profil" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">📊 Profil & Antro</button>
+              <button class="hud-tab-btn" data-tab="klinis" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">🩺 Pemeriksaan Klinis</button>
+              <button class="hud-tab-btn" data-tab="dietary" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">🍎 Dietary Recall</button>
             </div>
 
-            <!-- 2. Eyes Hotspot -->
-            <div class="ar-hotspot" data-hotspot="eyes">
-              <span class="ar-hotspot-label">PEMERIKSAAN MATA</span>
-            </div>
+            <!-- TAB CONTENTS PANE -->
+            <div class="hud-tab-content-container" style="min-height: 380px;">
+              <!-- Tab 1: Profil & Antropometri -->
+              <div class="hud-tab-panel active" id="hud-content-profil" style="display: block;">
+                <!-- Dynamically populated via JS -->
+              </div>
 
-            <!-- 3. Mouth Hotspot -->
-            <div class="ar-hotspot" data-hotspot="mouth">
-              <span class="ar-hotspot-label">PEMERIKSAAN MULUT & LIDAH</span>
-            </div>
+              <!-- Tab 2: Pemeriksaan Klinis -->
+              <div class="hud-tab-panel" id="hud-content-klinis" style="display: none;">
+                <!-- Dynamically populated via JS -->
+              </div>
 
-            <!-- 4. Skin Hotspot -->
-            <div class="ar-hotspot" data-hotspot="skin">
-              <span class="ar-hotspot-label">INTEGUMEN / KULIT</span>
-            </div>
-
-            <!-- 5. Abdomen Hotspot -->
-            <div class="ar-hotspot" data-hotspot="abdomen">
-              <span class="ar-hotspot-label">PEMERIKSAAN ABDOMEN</span>
-            </div>
-
-            <!-- 6. Nails Hotspot -->
-            <div class="ar-hotspot" data-hotspot="nails">
-              <span class="ar-hotspot-label">STRUKTUR KUKU</span>
-            </div>
-
-            <!-- Visualizer Navigation & Scale Dash Controls -->
-            <div class="ar-view-controls">
-              <button class="ar-control-btn" id="btn-rotate-l" title="Putar Kiri">↺</button>
-              <button class="ar-control-btn" id="btn-rotate-r" title="Putar Kanan">↻</button>
-              <button class="ar-control-btn" id="btn-zoom-in" title="Perbesar">+</button>
-              <button class="ar-control-btn" id="btn-zoom-out" title="Perkecil">-</button>
-              <button class="ar-control-btn" id="btn-reset-view" title="Reset Pandangan" style="font-size:12px; font-weight:900;">RESET</button>
+              <!-- Tab 3: Dietary Recall 24 Jam -->
+              <div class="hud-tab-panel" id="hud-content-dietary" style="display: none;">
+                <!-- Dynamically populated via JS -->
+              </div>
             </div>
           </div>
-          <p class="muted" style="margin-top: 1rem; font-size: 13px;">Gunakan kontrol navigasi di sudut kanan bawah untuk mensimulasikan rotasi 3D dan perbesaran mesh pasien.</p>
+
         </div>
 
-        <!-- COLUMN 2: SCI-FI TELEMETRY HUD & AI VALIDATION SYSTEM -->
-        <div class="ar-hud-card reveal-on-scroll delay-200">
-          <h2 class="ar-hud-title">Simulasi Kasus Klinis</h2>
-          <div class="ar-case-selector" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
-            <button class="ar-case-btn active" data-case="ap">
-              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#e2574f;"></span>
-              Kasus 1: Siswa AP
-            </button>
-            <button class="ar-case-btn" data-case="mr">
-              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f2a51a;"></span>
-              Kasus 2: Siswa MR
-            </button>
-            <button class="ar-case-btn" data-case="na">
-              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#e2574f;"></span>
-              Kasus 3: Siswa NA
-            </button>
-            <button class="ar-case-btn" data-case="rs">
-              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#5b86e5;"></span>
-              Kasus 4: Siswa RS
-            </button>
-            <button class="ar-case-btn" data-case="ds">
-              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#38bdf8;"></span>
-              Kasus 5: Siswa DS
-            </button>
-          </div>
-
-          <!-- FUTURISTIC SUB-TAB HUD NAVIGATION -->
-          <div class="hud-tab-nav" style="display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; margin-top: 4px;">
-            <button class="hud-tab-btn active" data-tab="profil" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">📊 Profil</button>
-            <button class="hud-tab-btn" data-tab="klinis" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">🩺 Klinis</button>
-            <button class="hud-tab-btn" data-tab="dietary" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">🍎 Dietary</button>
-            <button class="hud-tab-btn" data-tab="scanner" style="flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 700; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">👁️ Pemindai</button>
-          </div>
-
-          <!-- TAB CONTENTS PANE -->
-          <div class="hud-tab-content-container" style="min-height: 200px;">
-            <!-- Tab 1: Profil & Antropometri -->
-            <div class="hud-tab-panel active" id="hud-content-profil" style="display: block;">
-              <!-- Dynamically populated via JS -->
-            </div>
-
-            <!-- Tab 2: Pemeriksaan Klinis -->
-            <div class="hud-tab-panel" id="hud-content-klinis" style="display: none;">
-              <!-- Dynamically populated via JS -->
-            </div>
-
-            <!-- Tab 3: Dietary Recall 24 Jam -->
-            <div class="hud-tab-panel" id="hud-content-dietary" style="display: none;">
-              <!-- Dynamically populated via JS -->
-            </div>
-
-            <!-- Tab 4: Pemindai AR (HUD Active Scanner) -->
-            <div class="hud-tab-panel" id="hud-content-scanner" style="display: none;">
-              <!-- BIOMETRIC DATA METER -->
-              <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
-                <span style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Biometrik Telemetri Pasien</span>
-                <div class="telemetry-row">
-                  <div class="telemetry-item">
-                    <span>PULSE RATE (HR)</span>
-                    <strong id="tele-hr">82 BPM</strong>
-                  </div>
-                  <div class="telemetry-item">
-                    <span>BODY TEMP</span>
-                    <strong id="tele-temp">36.6 °C</strong>
-                  </div>
-                  <div class="telemetry-item">
-                    <span>Z-SCORE IMT/U</span>
-                    <strong id="tele-zscore">-1.1 SD</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- SCAN OBSERVATIONS BOARD -->
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <span style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Hasil Pemindaian Hotspot AR</span>
-                <div class="ai-validator-chat" id="observation-results" style="min-height: 120px; padding: 12px;">
-                  <!-- Dynamic observation content fills here -->
-                </div>
+        <!-- BOTTOM ROW: INTERACTIVE AI SUPERVISOR CHATBOT CONTAINER -->
+        <div class="chatbot-card reveal-on-scroll delay-300">
+          <div class="chatbot-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="chatbot-avatar">🤖</div>
+              <div>
+                <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--ink); letter-spacing: 0.5px;">AI CLINICAL SUPERVISOR</h3>
+                <span id="level-badge" class="level-status-badge">LEVEL 1/5 - KASUS ACAK</span>
               </div>
             </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="streak-hud" style="font-size: 11px; font-weight: 800; color: #5b86e5; font-family: monospace; background: rgba(91, 134, 229, 0.08); padding: 4px 10px; border-radius: 99px;">STREAK: 0</span>
+            </div>
           </div>
-
-          <!-- USER DIAGNOSIS & REKOMENDASI FORM -->
-          <div style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;">
-            <h2 class="ar-hud-title">Tebak Diagnosis & Terapi</h2>
-            
-            <div class="diag-form-row">
-              <label for="select-diagnosis">Tebak Penyakit / Masalah Gizi:</label>
-              <select class="diag-select" id="select-diagnosis">
-                <option value="" disabled selected>-- Pilih Diagnosis Penyakit Gizi --</option>
-                <option value="anemia-gizi-kurang">Anemia Defisiensi Besi disertai Risiko Gizi Kurang (AP)</option>
-                <option value="obesitas-prediabetes">Obesitas dengan Risiko Resistensi Insulin/Prediabetes (MR)</option>
-                <option value="defisiensi-b-kompleks">Risiko Defisiensi Vitamin B Kompleks & Mikronutrien (NA)</option>
-                <option value="gangguan-pertumbuhan">Risiko Gangguan Pertumbuhan/Stunting (RS)</option>
-                <option value="anemia-ringan">Anemia Ringan Akibat Asupan Zat Besi Kurang Adekuat (DS)</option>
-              </select>
-            </div>
-
-            <div class="diag-form-row">
-              <label for="select-therapy">Rekomendasi Tatalaksana Pangan:</label>
-              <select class="diag-select" id="select-therapy">
-                <option value="" disabled selected>-- Pilih Tindakan / Rekomendasi Terapi --</option>
-                <option value="iron-folate-diet">Konsumsi Zat Besi & Vit C, Hindari Teh Segera Setelah Makan (AP)</option>
-                <option value="limit-sugar-activity">Batasi Gula/Lemak & Tingkatkan Aktivitas Fisik 150 Menit/Minggu (MR)</option>
-                <option value="balanced-diet-protein">Diet Seimbang, Peningkatan Protein Hewani/Nabati & Susu (NA)</option>
-                <option value="high-energy-protein">Peningkatan Asupan Energi & Protein Tinggi (Telur/Ikan/Susu) (RS)</option>
-                <option value="iron-diet-monitoring">Konsumsi Zat Besi & Vit C, Perbaikan Pola Makan & Monitoring Hb (DS)</option>
-              </select>
-            </div>
-
-            <button class="button primary" id="btn-verify-answer" style="cursor: pointer; width: 100%; margin-top: 6px; font-weight:900; letter-spacing:0.5px;">
-              Kirim Jawaban untuk Validasi AI
+          
+          <div class="chatbot-messages" id="chat-messages-container">
+            <!-- Chat messages dynamically filled by JavaScript -->
+          </div>
+          
+          <div class="chatbot-input-container">
+            <textarea id="chatbot-user-input" class="chatbot-input-field" placeholder="Tuliskan diagnosis gizi dan rekomendasi tatalaksana pangan Anda di sini untuk dievaluasi oleh AI Supervisor..." rows="2"></textarea>
+            <button id="btn-submit-chat" class="button primary chatbot-send-btn">
+              Kirim Analisis
             </button>
-          </div>
-
-          <!-- AI CLINICAL VALIDATION CONSOLE -->
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <span style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Validasi Konseling AI</span>
-            <div class="ai-validator-chat" id="ai-chat-box">
-              <!-- AI Diagnostic evaluation output fills here -->
-            </div>
           </div>
         </div>
 
