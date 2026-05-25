@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let targetHeadRotY = 0;
   let targetHeadRotZ = 0;
 
-  let targetLeftArmRotZ = 1.3;
+  let targetLeftArmRotZ = -1.3;
   let targetRightArmRotZ = -1.3;
   let targetLeftArmRotX = 0;
   let targetRightArmRotX = 0;
@@ -610,10 +610,10 @@ document.addEventListener("DOMContentLoaded", () => {
               targetHeadRotY = breathCycleSlow * 0.04;
               
               // Visible breathing sways for the arms: sways out and in
-              targetLeftArmRotZ = 1.3 - breathCycle * 0.04;
+              targetLeftArmRotZ = -1.3 + breathCycle * 0.04;
               targetRightArmRotZ = -1.3 + breathCycle * 0.04;
               targetLeftArmRotX = breathCycleSlow * 0.03;
-              targetRightArmRotX = -breathCycleSlow * 0.03;
+              targetRightArmRotX = breathCycleSlow * 0.03;
             } else if (animationState === "speaking") {
               // Active responsive nodding and natural hand movements to mimic speaking
               let speakCycleX = Math.sin(time * 9.0) * 0.06;
@@ -626,10 +626,10 @@ document.addEventListener("DOMContentLoaded", () => {
               targetHeadRotY = speakCycleY * 1.0;
               
               // Arm gesturing while speaking
-              targetLeftArmRotZ = 1.3 - handGesture * 0.2;
+              targetLeftArmRotZ = -1.3 + handGesture * 0.2;
               targetRightArmRotZ = -1.3 + handGesture * 0.2;
               targetLeftArmRotX = 0.12 + handGesture * 0.6;
-              targetRightArmRotX = 0.12 - handGesture * 0.6;
+              targetRightArmRotX = 0.12 + handGesture * 0.6;
             }
 
             // Interpolate current bone angles to target rotations smoothly (Damped Lerp)
@@ -762,7 +762,7 @@ document.addEventListener("DOMContentLoaded", () => {
     targetHeadRotX = 0;
     targetHeadRotY = 0;
     targetHeadRotZ = 0;
-    targetLeftArmRotZ = 1.3;
+    targetLeftArmRotZ = -1.3;
     targetRightArmRotZ = -1.3;
     targetLeftArmRotX = 0;
     targetRightArmRotX = 0;
@@ -778,30 +778,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (type === "hair") {
       targetNeckRotX = 0.2;     // Tilt head down distinctly
       targetHeadRotX = 0.25;
-      targetLeftArmRotZ = 1.35;  // Bring arms slightly closer to sides
+      targetLeftArmRotZ = -1.35;  // Bring arms slightly closer to sides
       targetRightArmRotZ = -1.35;
     } else if (type === "eyes") {
       targetNeckRotY = -0.18;   // Turn neck and head slightly to camera
       targetHeadRotY = -0.28;
       targetHeadRotX = 0.06;
-      targetLeftArmRotZ = 1.3;
+      targetLeftArmRotZ = -1.3;
       targetRightArmRotZ = -1.3;
     } else if (type === "mouth") {
       targetNeckRotX = 0.14;    // Tilt head up slightly to reveal mouth/tongue
       targetHeadRotX = 0.18;
       targetHeadRotY = 0.1;
-      targetLeftArmRotZ = 1.3;
+      targetLeftArmRotZ = -1.3;
       targetRightArmRotZ = -1.3;
     } else if (type === "abdomen") {
       targetSpineRotX = 0.35;   // Lean torso forward distinctly
       targetNeckRotX = -0.12;
       targetHeadRotX = 0.18;
-      targetLeftArmRotZ = 1.4;  // Move left/right arms out of the way
+      targetLeftArmRotZ = -1.4;  // Move left/right arms out of the way
       targetRightArmRotZ = -1.4;
     } else if (type === "skin") {
       targetSpineRotY = -0.4;   // Rotate torso to reveal lateral thigh/skin
       targetNeckRotY = 0.18;
-      targetLeftArmRotZ = 0.8;  // Lift left arm up slightly to display skin area, not too high
+      targetLeftArmRotZ = -0.8;  // Lift left arm up slightly to display skin area, not too high
       targetLeftArmRotX = 0.25;
       targetRightArmRotZ = -1.3;
     } else if (type === "nails") {
@@ -809,7 +809,7 @@ document.addEventListener("DOMContentLoaded", () => {
       targetRightArmRotZ = -0.8; // Lift right arm/hand up slightly to display fingernails, not too high
       targetRightArmRotX = 0.25;
       targetRightArmRotY = 0.15;
-      targetLeftArmRotZ = 1.3;
+      targetLeftArmRotZ = -1.3;
     }
   }
 
