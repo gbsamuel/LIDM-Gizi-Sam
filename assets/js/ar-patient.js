@@ -411,10 +411,18 @@ document.addEventListener("DOMContentLoaded", () => {
     
     container.innerHTML = "";
     
-    // Create Scene with bright clinical fog and clean medical room background
+    // Create Scene with futuristic hospital background texture
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf1f5f9);
-    scene.fog = new THREE.FogExp2(0xf1f5f9, 0.015);
+    
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load("assets/img/hospital_background.png", (texture) => {
+      scene.background = texture;
+      scene.fog = new THREE.FogExp2(0x0a111e, 0.01);
+    }, undefined, (err) => {
+      console.error("Failed to load hospital background texture:", err);
+      scene.background = new THREE.Color(0xf1f5f9);
+      scene.fog = new THREE.FogExp2(0xf1f5f9, 0.015);
+    });
     
     // Camera
     camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
