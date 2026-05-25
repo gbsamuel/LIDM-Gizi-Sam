@@ -174,6 +174,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let leftForeArmBone = null;
   let rightForeArmBone = null;
 
+  // Initial bind pose rotations stored from FBX load
+  let initialSpineRot = new THREE.Euler();
+  let initialNeckRot = new THREE.Euler();
+  let initialHeadRot = new THREE.Euler();
+  let initialLeftArmRot = new THREE.Euler();
+  let initialRightArmRot = new THREE.Euler();
+  let initialLeftForeArmRot = new THREE.Euler();
+  let initialRightForeArmRot = new THREE.Euler();
+
   let animationState = "idle"; // "idle" | "speaking" | "focused"
   let voiceEnabled = true;
   let lastSpokenText = "";
@@ -191,12 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let targetHeadRotY = 0;
   let targetHeadRotZ = 0;
 
-  let targetLeftArmRotZ = -1.3;
-  let targetRightArmRotZ = -1.3;
   let targetLeftArmRotX = 0;
-  let targetRightArmRotX = 0;
   let targetLeftArmRotY = 0;
+  let targetLeftArmRotZ = 0;
+  let targetRightArmRotX = 0;
   let targetRightArmRotY = 0;
+  let targetRightArmRotZ = 0;
 
   // DOM Elements
   const caseButtons = document.querySelectorAll("[data-case]");
@@ -485,22 +494,29 @@ document.addEventListener("DOMContentLoaded", () => {
           
           if (cleanName === "head" && !headBone) {
             headBone = child;
+            initialHeadRot.copy(child.rotation);
           } else if (cleanName === "neck" && !neckBone) {
             neckBone = child;
+            initialNeckRot.copy(child.rotation);
           } else if ((cleanName === "spine_01" || cleanName === "spine") && !spineBone) {
             spineBone = child;
+            initialSpineRot.copy(child.rotation);
           } else if (cleanName === "shoulder_l" && !leftShoulderBone) {
             leftShoulderBone = child;
           } else if (cleanName === "shoulder_r" && !rightShoulderBone) {
             rightShoulderBone = child;
           } else if (cleanName === "upperarm_l" && !leftArmBone) {
             leftArmBone = child;
+            initialLeftArmRot.copy(child.rotation);
           } else if (cleanName === "upperarm_r" && !rightArmBone) {
             rightArmBone = child;
+            initialRightArmRot.copy(child.rotation);
           } else if (cleanName === "lowerarm_l" && !leftForeArmBone) {
             leftForeArmBone = child;
+            initialLeftForeArmRot.copy(child.rotation);
           } else if (cleanName === "lowerarm_r" && !rightForeArmBone) {
             rightForeArmBone = child;
+            initialRightForeArmRot.copy(child.rotation);
           }
 
           if (child.isMesh) {
@@ -530,6 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         updateCaseLights(currentCaseId);
+        resetBoneTargets();
       },
       function (xhr) {
         if (xhr.total > 0) {
@@ -599,37 +616,37 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (animationState === "idle") {
               // Natural, visible deep-breathing idle sways
-              targetSpineRotX = breathCycle * 0.04;    // ~2.3 degrees forward/back
-              targetSpineRotY = breathCycleSlow * 0.03; // ~1.7 degrees twist
-              targetSpineRotZ = breathCycle * 0.015;
+              targetSpineRotX = initialSpineRot.x + breathCycle * 0.04;    // ~2.3 degrees forward/back
+              targetSpineRotY = initialSpineRot.y + breathCycleSlow * 0.03; // ~1.7 degrees twist
+              targetSpineRotZ = initialSpineRot.z + breathCycle * 0.015;
               
-              targetNeckRotX = breathCycle * -0.025;
-              targetNeckRotY = breathCycleSlow * -0.02;
+              targetNeckRotX = initialNeckRot.x + breathCycle * -0.025;
+              targetNeckRotY = initialNeckRot.y + breathCycleSlow * -0.02;
               
-              targetHeadRotX = breathCycle * -0.02;
-              targetHeadRotY = breathCycleSlow * 0.04;
+              targetHeadRotX = initialHeadRot.x + breathCycle * -0.02;
+              targetHeadRotY = initialHeadRot.y + breathCycleSlow * 0.04;
               
-              // Visible breathing sways for the arms: sways out and in
-              targetLeftArmRotZ = -1.3 + breathCycle * 0.04;
-              targetRightArmRotZ = -1.3 + breathCycle * 0.04;
-              targetLeftArmRotX = breathCycleSlow * 0.03;
-              targetRightArmRotX = breathCycleSlow * 0.03;
+              // Very subtle breathing sways for the arms: sways out and in
+              targetLeftArmRotZ = initialLeftArmRot.z + breathCycle * 0.02;
+              targetRightArmRotZ = initialRightArmRot.z - breathCycle * 0.02;
+              targetLeftArmRotX = initialLeftArmRot.x + breathCycleSlow * 0.02;
+              targetRightArmRotX = initialRightArmRot.x - breathCycleSlow * 0.02;
             } else if (animationState === "speaking") {
               // Active responsive nodding and natural hand movements to mimic speaking
               let speakCycleX = Math.sin(time * 9.0) * 0.06;
               let speakCycleY = Math.cos(time * 5.0) * 0.05;
               let handGesture = Math.sin(time * 2.8) * 0.15;
               
-              targetSpineRotX = breathCycle * 0.03 + speakCycleX * 0.2;
-              targetNeckRotX = breathCycle * -0.02 + speakCycleX * 0.3;
-              targetHeadRotX = speakCycleX * 1.3;
-              targetHeadRotY = speakCycleY * 1.0;
+              targetSpineRotX = initialSpineRot.x + breathCycle * 0.03 + speakCycleX * 0.2;
+              targetNeckRotX = initialNeckRot.x + breathCycle * -0.02 + speakCycleX * 0.3;
+              targetHeadRotX = initialHeadRot.x + speakCycleX * 1.3;
+              targetHeadRotY = initialHeadRot.y + speakCycleY * 1.0;
               
-              // Arm gesturing while speaking
-              targetLeftArmRotZ = -1.3 + handGesture * 0.2;
-              targetRightArmRotZ = -1.3 + handGesture * 0.2;
-              targetLeftArmRotX = 0.12 + handGesture * 0.6;
-              targetRightArmRotX = 0.12 + handGesture * 0.6;
+              // Symmetrical hand gestures raising up and forward slightly relative to initial A-pose
+              targetLeftArmRotZ = initialLeftArmRot.z - 0.3 - handGesture * 0.15;
+              targetRightArmRotZ = initialRightArmRot.z - 0.3 + handGesture * 0.15;
+              targetLeftArmRotX = initialLeftArmRot.x + 0.15 + handGesture * 0.3;
+              targetRightArmRotX = initialRightArmRot.x + 0.15 - handGesture * 0.3;
             }
 
             // Interpolate current bone angles to target rotations smoothly (Damped Lerp)
@@ -753,21 +770,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Reset bone angles to neutral breathing pose
   function resetBoneTargets() {
-    targetSpineRotX = 0;
-    targetSpineRotY = 0;
-    targetSpineRotZ = 0;
-    targetNeckRotX = 0;
-    targetNeckRotY = 0;
-    targetNeckRotZ = 0;
-    targetHeadRotX = 0;
-    targetHeadRotY = 0;
-    targetHeadRotZ = 0;
-    targetLeftArmRotZ = -1.3;
-    targetRightArmRotZ = -1.3;
-    targetLeftArmRotX = 0;
-    targetRightArmRotX = 0;
-    targetLeftArmRotY = 0;
-    targetRightArmRotY = 0;
+    targetSpineRotX = initialSpineRot.x;
+    targetSpineRotY = initialSpineRot.y;
+    targetSpineRotZ = initialSpineRot.z;
+    
+    targetNeckRotX = initialNeckRot.x;
+    targetNeckRotY = initialNeckRot.y;
+    targetNeckRotZ = initialNeckRot.z;
+    
+    targetHeadRotX = initialHeadRot.x;
+    targetHeadRotY = initialHeadRot.y;
+    targetHeadRotZ = initialHeadRot.z;
+    
+    targetLeftArmRotX = initialLeftArmRot.x;
+    targetLeftArmRotY = initialLeftArmRot.y;
+    targetLeftArmRotZ = initialLeftArmRot.z;
+    
+    targetRightArmRotX = initialRightArmRot.x;
+    targetRightArmRotY = initialRightArmRot.y;
+    targetRightArmRotZ = initialRightArmRot.z;
   }
 
   // Rotate and gesture bones to point/draw attention to scanned clinical nodes
@@ -776,40 +797,34 @@ document.addEventListener("DOMContentLoaded", () => {
     animationState = "focused";
     
     if (type === "hair") {
-      targetNeckRotX = 0.2;     // Tilt head down distinctly
-      targetHeadRotX = 0.25;
-      targetLeftArmRotZ = -1.35;  // Bring arms slightly closer to sides
-      targetRightArmRotZ = -1.35;
+      targetNeckRotX = initialNeckRot.x + 0.2;     // Tilt head down distinctly
+      targetHeadRotX = initialHeadRot.x + 0.25;
+      targetLeftArmRotZ = initialLeftArmRot.z + 0.05;  // Bring arms slightly closer to sides
+      targetRightArmRotZ = initialRightArmRot.z - 0.05;
     } else if (type === "eyes") {
-      targetNeckRotY = -0.18;   // Turn neck and head slightly to camera
-      targetHeadRotY = -0.28;
-      targetHeadRotX = 0.06;
-      targetLeftArmRotZ = -1.3;
-      targetRightArmRotZ = -1.3;
+      targetNeckRotY = initialNeckRot.y - 0.18;   // Turn neck and head slightly to camera
+      targetHeadRotY = initialHeadRot.y - 0.28;
+      targetHeadRotX = initialHeadRot.x + 0.06;
     } else if (type === "mouth") {
-      targetNeckRotX = 0.14;    // Tilt head up slightly to reveal mouth/tongue
-      targetHeadRotX = 0.18;
-      targetHeadRotY = 0.1;
-      targetLeftArmRotZ = -1.3;
-      targetRightArmRotZ = -1.3;
+      targetNeckRotX = initialNeckRot.x + 0.14;    // Tilt head up slightly to reveal mouth/tongue
+      targetHeadRotX = initialHeadRot.x + 0.18;
+      targetHeadRotY = initialHeadRot.y + 0.1;
     } else if (type === "abdomen") {
-      targetSpineRotX = 0.35;   // Lean torso forward distinctly
-      targetNeckRotX = -0.12;
-      targetHeadRotX = 0.18;
-      targetLeftArmRotZ = -1.4;  // Move left/right arms out of the way
-      targetRightArmRotZ = -1.4;
+      targetSpineRotX = initialSpineRot.x + 0.35;   // Lean torso forward distinctly
+      targetNeckRotX = initialNeckRot.x - 0.12;
+      targetHeadRotX = initialHeadRot.x + 0.18;
+      targetLeftArmRotZ = initialLeftArmRot.z - 0.2;  // Move left/right arms out of the way
+      targetRightArmRotZ = initialRightArmRot.z - 0.2;
     } else if (type === "skin") {
-      targetSpineRotY = -0.4;   // Rotate torso to reveal lateral thigh/skin
-      targetNeckRotY = 0.18;
-      targetLeftArmRotZ = -0.8;  // Lift left arm up slightly to display skin area, not too high
-      targetLeftArmRotX = 0.25;
-      targetRightArmRotZ = -1.3;
+      targetSpineRotY = initialSpineRot.y - 0.4;   // Rotate torso to reveal lateral thigh/skin
+      targetNeckRotY = initialNeckRot.y + 0.18;
+      targetLeftArmRotZ = initialLeftArmRot.z - 0.6;  // Lift left arm up slightly to display skin area, not too high
+      targetLeftArmRotX = initialLeftArmRot.x + 0.25;
     } else if (type === "nails") {
-      targetSpineRotY = 0.3;    // Twist torso slightly
-      targetRightArmRotZ = -0.8; // Lift right arm/hand up slightly to display fingernails, not too high
-      targetRightArmRotX = 0.25;
-      targetRightArmRotY = 0.15;
-      targetLeftArmRotZ = -1.3;
+      targetSpineRotY = initialSpineRot.y + 0.3;    // Twist torso slightly
+      targetRightArmRotZ = initialRightArmRot.z - 0.6; // Lift right arm/hand up slightly to display fingernails, not too high
+      targetRightArmRotX = initialRightArmRot.x + 0.25;
+      targetRightArmRotY = initialRightArmRot.y + 0.15;
     }
   }
 
