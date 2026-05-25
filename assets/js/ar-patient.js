@@ -1135,7 +1135,13 @@ document.addEventListener("DOMContentLoaded", () => {
     tabPanels.forEach(p => {
       if (p.id === `hud-content-${targetTab}`) {
         p.style.display = "block";
-      } else {  // Zoom and Camera controls
+      } else {
+        p.style.display = "none";
+      }
+    });
+  }
+
+  // Zoom and Camera controls
   document.getElementById("btn-zoom-in")?.addEventListener("click", () => {
     if (camera) camera.position.z = Math.max(1.2, camera.position.z - 0.4);
   });
