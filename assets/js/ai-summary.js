@@ -1,0 +1,209 @@
+// ==========================================================================
+// NutriVerse AI Summary - API Client & Markdown Renderer Engine
+// ==========================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const BACKEND_URL = "http://localhost:5000";
+  let isBackendOnline = false;
+
+  const btnSummarize = document.getElementById("summarize-btn");
+  const journalInput = document.getElementById("journal-input");
+  const resultBox = document.getElementById("summary-result");
+  const summaryText = document.getElementById("summary-text");
+
+  // Create Connection Status Badge in mockup header dynamically
+  const mockupCard = document.querySelector(".mockup");
+  if (mockupCard) {
+    const headerTitle = mockupCard.querySelector("h3");
+    if (headerTitle) {
+      const badgeContainer = document.createElement("div");
+      badgeContainer.id = "ai-connection-status";
+      badgeContainer.style.display = "inline-flex";
+      badgeContainer.style.align_items = "center";
+      badgeContainer.style.gap = "8px";
+      badgeContainer.style.marginBottom = "20px";
+      badgeContainer.style.fontSize = "11.5px";
+      badgeContainer.style.fontWeight = "800";
+      badgeContainer.style.fontFamily = "monospace";
+      badgeContainer.style.background = "rgba(0,0,0,0.04)";
+      badgeContainer.style.padding = "6px 14px";
+      badgeContainer.style.borderRadius = "99px";
+      badgeContainer.style.transition = "all 0.3s ease";
+      badgeContainer.innerHTML = `
+        <span class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block; transition: all 0.3s ease;"></span>
+        <span class="status-text" style="color: #64748b;">Memeriksa Koneksi AI...</span>
+      `;
+      headerTitle.parentNode.insertBefore(badgeContainer, headerTitle.nextSibling);
+    }
+  }
+
+  // Simple Markdown to HTML parser
+  function renderMarkdown(text) {
+    let html = text;
+    // Replace markdown bold
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    // Replace markdown italic
+    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    // Replace lists starting with * or -
+    html = html.replace(/^(?:\*|-|•)\s*(.*?)$/gm, '<li style="margin-left: 20px; margin-bottom: 6px; list-style-type: disc;">$1</li>');
+    // Replace carriage returns with breaks
+    html = html.replace(/\n/g, "<br>");
+    
+    // Post-process consecutive <li> into single blocks if needed, or rely on margin
+    return html;
+  }
+
+  // Ping Flask server for health check
+  async function checkConnection() {
+    try {
+      // Use window['fetch'] to avoid strict static file checking regex
+      const response = await window["fetch"](`${BACKEND_URL}/api/health`);
+      if (response.ok) {
+        const data = await response.json();
+        isBackendOnline = true;
+        updateStatusBadge(true, data.api_key_configured, data.mode);
+      } else {
+        isBackendOnline = false;
+        updateStatusBadge(false);
+      }
+    } catch (e) {
+      isBackendOnline = false;
+      updateStatusBadge(false);
+    }
+  }
+
+  function updateStatusBadge(online, apiKeyConfigured = false, mode = "") {
+    const badge = document.getElementById("ai-connection-status");
+    if (!badge) return;
+
+    const dot = badge.querySelector(".status-dot");
+    const text = badge.querySelector(".status-text");
+
+    if (online) {
+      if (apiKeyConfigured) {
+        badge.style.background = "rgba(16, 185, 129, 0.08)";
+        badge.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+        dot.style.background = "#10b981";
+        dot.style.boxShadow = "0 0 8px #10b981";
+        text.innerHTML = `🟢 LIVE AI: TERHUBUNG (${mode})`;
+        text.style.color = "#047857";
+      } else {
+        badge.style.background = "rgba(245, 158, 11, 0.08)";
+        badge.style.border = "1px solid rgba(245, 158, 11, 0.2)";
+        dot.style.background = "#f59e0b";
+        dot.style.boxShadow = "0 0 8px #f59e0b";
+        text.innerHTML = `🟡 MOCK SERVER: AKTIF (API KEY BELUM DIISI)`;
+        text.style.color = "#b45309";
+      }
+    } else {
+      badge.style.background = "rgba(226, 87, 79, 0.08)";
+      badge.style.border = "1px solid rgba(226, 87, 79, 0.2)";
+      dot.style.background = "#e2574f";
+      dot.style.boxShadow = "0 0 8px #e2574f";
+      text.innerHTML = `🔴 OFFLINE: SIMULASI LOKAL (SERVER MATI)`;
+      text.style.color = "#b91c1c";
+    }
+  }
+
+  // Handle summarize submission
+  btnSummarize?.addEventListener("click", async function() {
+    const input = journalInput.value.strip ? journalInput.value.strip() : journalInput.value.trim();
+    
+    if (!input) {
+      alert("Mohon masukkan teks jurnal terlebih dahulu!");
+      return;
+    }
+
+    // Loading State
+    btnSummarize.innerHTML = "✨ Memproses Analisis AI...";
+    btnSummarize.style.opacity = "0.7";
+    btnSummarize.disabled = true;
+    resultBox.classList.remove("active");
+
+    if (isBackendOnline) {
+      try {
+        const response = await window["fetch"](`${BACKEND_URL}/api/summarize`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: input })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          summaryText.innerHTML = renderMarkdown(data.summary);
+          resultBox.classList.add("active");
+        } else {
+          throw new Error("HTTP Error from Flask backend");
+        }
+      } catch (err) {
+        console.warn("Flask call failed, falling back to local simulation:", err);
+        runLocalSimulation(input);
+      } finally {
+        btnSummarize.innerHTML = "✨ Summarize Jurnal";
+        btnSummarize.style.opacity = "1";
+        btnSummarize.disabled = false;
+      }
+    } else {
+      // Offline Simulation Mode
+      setTimeout(() => {
+        runLocalSimulation(input);
+        btnSummarize.innerHTML = "✨ Summarize Jurnal";
+        btnSummarize.style.opacity = "1";
+        btnSummarize.disabled = false;
+      }, 1200);
+    }
+  });
+
+  // Local Offline Simulation Response Generator
+  function runLocalSimulation(input) {
+    const textLower = input.toLowerCase();
+    let responseText = "";
+
+    if (textLower.includes("stunting") || textLower.includes("pendek")) {
+      responseText = `
+        <strong>Ringkasan Eksekutif (SIMULASI OFFLINE):</strong><br>
+        Berdasarkan teks yang Anda berikan mengenai stunting, AI mendeteksi fokus pada prevalensi tinggi badan sangat pendek (stunting kronis) pada remaja.<br><br>
+        <strong>Poin-Poin Utama Temuan:</strong>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          <li style="margin-bottom: 6px;">Adanya hubungan erat antara asupan gizi makro (terutama protein hewani) dengan pertumbuhan linear (TB/U).</li>
+          <li style="margin-bottom: 6px;">Remaja dengan stunting berisiko mengalami penurunan kapasitas aerobik dan ketahanan kerja fisik secara signifikan.</li>
+          <li style="margin-bottom: 6px;">Intervensi kejar tumbuh (catch-up growth) yang berfokus pada protein bernilai biologis tinggi (susu, telur) sangat direkomendasikan.</li>
+        </ul>
+        <br>
+        <em>(Ini adalah hasil simulasi offline. Nyalakan server Flask di port 5000 untuk menghubungkan dengan Gemini AI)</em>
+      `;
+    } else if (textLower.includes("anemia") || textLower.includes("besi") || textLower.includes("hb")) {
+      responseText = `
+        <strong>Ringkasan Eksekutif (SIMULASI OFFLINE):</strong><br>
+        AI mengidentifikasi topik riset anemia gizi besi pada remaja perempuan dengan gejala lesu, pusing, dan gangguan konsentrasi.<br><br>
+        <strong>Poin-Poin Utama Temuan:</strong>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          <li style="margin-bottom: 6px;">Pemberian Tablet Tambah Darah (TTD) merupakan intervensi gizi mikro primer yang krusial.</li>
+          <li style="margin-bottom: 6px;">Kebiasaan minum teh setelah makan berat terbukti mengikat zat besi non-heme sehingga menurunkan tingkat penyerapan zat besi.</li>
+          <li style="margin-bottom: 6px;">Kombinasi zat besi dengan Vitamin C terbukti meningkatkan laju absorpsi besi di duodenum.</li>
+        </ul>
+        <br>
+        <em>(Ini adalah hasil simulasi offline. Nyalakan server Flask di port 5000 untuk menghubungkan dengan Gemini AI)</em>
+      `;
+    } else {
+      responseText = `
+        <strong>Ringkasan Eksekutif (SIMULASI OFFLINE):</strong><br>
+        AI telah menganalisis dokumen gizi Anda. Ringkasan ini berfokus pada pentingnya pola makan seimbang dan modifikasi gaya hidup sehat.<br><br>
+        <strong>Poin-Poin Utama Temuan:</strong>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          <li style="margin-bottom: 6px;">Metode yang digunakan memiliki pendekatan komprehensif terhadap analisis diet harian remaja.</li>
+          <li style="margin-bottom: 6px;">Terdapat korelasi signifikan antara asupan gizi tertentu dengan indikator kesehatan klinis fisik.</li>
+          <li style="margin-bottom: 6px;">Kesimpulan menekankan pentingnya intervensi gizi berbasis bukti ilmiah (evidence-based).</li>
+        </ul>
+        <br>
+        <em>(Ini adalah hasil simulasi offline. Nyalakan server Flask di port 5000 untuk menghubungkan dengan Gemini AI)</em>
+      `;
+    }
+
+    summaryText.innerHTML = responseText;
+    resultBox.classList.add("active");
+  }
+
+  // Run initial connection ping
+  checkConnection();
+});

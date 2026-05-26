@@ -87,44 +87,6 @@
     </div>
   </footer>
   <script src="assets/js/main.js"></script>
-  <script>
-    document.getElementById('summarize-btn').addEventListener('click', function() {
-      const input = document.getElementById('journal-input').value;
-      const resultBox = document.getElementById('summary-result');
-      const summaryText = document.getElementById('summary-text');
-      const btn = this;
-
-      if (!input.trim()) {
-        alert('Mohon masukkan teks jurnal terlebih dahulu!');
-        return;
-      }
-
-      // Loading state
-      btn.innerHTML = 'Memproses...';
-      btn.style.opacity = '0.7';
-      btn.disabled = true;
-      resultBox.classList.remove('active');
-
-      // Simulate AI process
-      setTimeout(() => {
-        btn.innerHTML = '✨ Summarize Jurnal';
-        btn.style.opacity = '1';
-        btn.disabled = false;
-        
-        summaryText.innerHTML = `
-          <strong>Ringkasan Eksekutif:</strong><br>
-          Berdasarkan teks yang diberikan, AI mengidentifikasi poin-poin utama berikut:
-          <ul style="margin-top: 10px; padding-left: 20px;">
-            <li style="margin-bottom: 6px;">Metode yang digunakan memiliki pendekatan komprehensif terhadap analisis diet.</li>
-            <li style="margin-bottom: 6px;">Terdapat korelasi signifikan antara asupan gizi tertentu dengan indikator kesehatan klinis.</li>
-            <li style="margin-bottom: 6px;">Kesimpulan menekankan pentingnya intervensi gizi berbasis bukti (evidence-based).</li>
-          </ul>
-          <em>(Ini adalah simulasi hasil AI Summary yang siap dihubungkan dengan API LLM)</em>
-        `;
-        
-        resultBox.classList.add('active');
-      }, 1500);
-    });
-  </script>
+  <script src="assets/js/ai-summary.js"></script>
 </body>
 </html>

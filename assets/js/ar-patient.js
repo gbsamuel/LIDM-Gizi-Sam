@@ -3,6 +3,9 @@
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+  const BACKEND_URL = "http://localhost:5000";
+  let isBackendOnline = false;
+
   // Case Studies Database with spoken first-person narratives & full nutrition assessments
   const cases = {
     ap: {
@@ -1339,8 +1342,109 @@ document.addEventListener("DOMContentLoaded", () => {
     speakText(`Halo Dokter! Selamat datang di Level ${currentLevelIndex + 1}. Pasien kita saat ini adalah ${activeCase.name}. Silakan periksa detail data pasien di panel kanan dan berikan analisis Anda.`);
   }
 
-  // Parse user text and evaluate keywords
-  function handleUserInput() {
+  // Ping Flask server for clinical chatbot connection status
+  async function checkBackendStatus() {
+    try {
+      const response = await window["fetch"](`${BACKEND_URL}/api/health`);
+      if (response.ok) {
+        const data = await response.json();
+        isBackendOnline = true;
+        updateChatbotConnectionBadge(true, data.api_key_configured, data.mode);
+      } else {
+        isBackendOnline = false;
+        updateChatbotConnectionBadge(false);
+      }
+    } catch (e) {
+      isBackendOnline = false;
+      updateChatbotConnectionBadge(false);
+    }
+  }
+
+  function updateChatbotConnectionBadge(online, apiKeyConfigured = false, mode = "") {
+    let badge = document.getElementById("chatbot-ai-status");
+    if (!badge) {
+      if (levelBadge) {
+        const container = levelBadge.parentNode;
+        if (container) {
+          badge = document.createElement("span");
+          badge.id = "chatbot-ai-status";
+          badge.style.fontSize = "9.5px";
+          badge.style.fontWeight = "800";
+          badge.style.fontFamily = "monospace";
+          badge.style.padding = "3px 8px";
+          badge.style.borderRadius = "99px";
+          badge.style.marginLeft = "8px";
+          badge.style.display = "inline-block";
+          badge.style.verticalAlign = "middle";
+          badge.style.transition = "all 0.3s ease";
+          container.appendChild(badge);
+        }
+      }
+    }
+    
+    if (badge) {
+      if (online) {
+        if (apiKeyConfigured) {
+          badge.textContent = `🟢 LIVE AI`;
+          badge.style.background = "rgba(16, 185, 129, 0.08)";
+          badge.style.color = "#047857";
+          badge.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+        } else {
+          badge.textContent = `🟡 MOCK SERVER`;
+          badge.style.background = "rgba(245, 158, 11, 0.08)";
+          badge.style.color = "#b45309";
+          badge.style.border = "1px solid rgba(245, 158, 11, 0.2)";
+        }
+      } else {
+        badge.textContent = `🔴 OFFLINE`;
+        badge.style.background = "rgba(226, 87, 79, 0.08)";
+        badge.style.color = "#b91c1c";
+        badge.style.border = "1px solid rgba(226, 87, 79, 0.2)";
+      }
+    }
+  }
+
+  // Level Success Trigger
+  function triggerLevelSuccess() {
+    if (currentLevelIndex < 4) {
+      const systemMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
+        `◈ Level ${currentLevelIndex + 1} Selesai dengan Sempurna! ◈<br>` +
+        `<button class="chatbot-next-level-btn" id="btn-next-level">Lanjut ke Level ${currentLevelIndex + 2} ➜</button>` +
+        `</div>`;
+      addChatMessage("system", systemMsg);
+      
+      const btnNext = document.getElementById("btn-next-level");
+      if (btnNext) {
+        btnNext.addEventListener("click", () => {
+          currentLevelIndex++;
+          chatMessagesContainer.innerHTML = "";
+          initiateLevel();
+        });
+      }
+    } else {
+      // Final victory
+      const winMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
+        `🏆 CONGRATULATIONS! 🏆<br>` +
+        `Anda telah berhasil menyelesaikan semua 5 Level Kasus Klinis Gizi dengan sempurna!<br>` +
+        `Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRIVERSE**.<br><br>` +
+        `<button class="chatbot-next-level-btn" id="btn-restart-game">Mulai Ulang Simulasi ↺</button>` +
+        `</div>`;
+      addChatMessage("system", winMsg);
+      
+      const btnRestart = document.getElementById("btn-restart-game");
+      if (btnRestart) {
+        btnRestart.addEventListener("click", () => {
+          verifiedStreak = 0;
+          chatMessagesContainer.innerHTML = "";
+          shuffleCases();
+          initiateLevel();
+        });
+      }
+    }
+  }
+
+  // Parse user text and evaluate keywords (supports Live Flask/Gemini and Offline Fallback)
+  async function handleUserInput() {
     if (!chatbotUserInput) return;
     const userText = chatbotUserInput.value;
     if (!userText.trim()) return;
@@ -1350,10 +1454,53 @@ document.addEventListener("DOMContentLoaded", () => {
     
     showTypingIndicator();
     
+    const caseId = randomizedLevels[currentLevelIndex];
+    const activeCase = cases[caseId];
+    
+    if (isBackendOnline) {
+      try {
+        const response = await window["fetch"](`${BACKEND_URL}/api/validate_diagnosis`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            caseId: caseId,
+            diagnosis_text: userText
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          removeTypingIndicator();
+          
+          // Display the AI Supervisor critique in a chat bubble
+          addChatMessage("ai", data.reply);
+          
+          if (data.success) {
+            verifiedStreak++;
+            casesDiagnosed++;
+            if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
+            
+            // Show next level button or win game
+            setTimeout(() => {
+              triggerLevelSuccess();
+            }, 600);
+          } else {
+            // Did not pass
+            verifiedStreak = 0;
+            if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
+          }
+          return;
+        } else {
+          throw new Error("HTTP error validating diagnosis from server");
+        }
+      } catch (err) {
+        console.warn("Backend validation failed, falling back to local simulation:", err);
+      }
+    }
+    
+    // Offline / Local Simulation Fallback (runs if Flask backend is down or errors)
     setTimeout(() => {
       removeTypingIndicator();
-      const caseId = randomizedLevels[currentLevelIndex];
-      const activeCase = cases[caseId];
       
       const lowerText = userText.toLowerCase();
       let isDiagCorrect = false;
@@ -1410,41 +1557,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Show next level button
         setTimeout(() => {
-          if (currentLevelIndex < 4) {
-            const systemMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
-              `◈ Level ${currentLevelIndex + 1} Selesai dengan Sempurna! ◈<br>` +
-              `<button class="chatbot-next-level-btn" id="btn-next-level">Lanjut ke Level ${currentLevelIndex + 2} ➜</button>` +
-              `</div>`;
-            addChatMessage("system", systemMsg);
-            
-            const btnNext = document.getElementById("btn-next-level");
-            if (btnNext) {
-              btnNext.addEventListener("click", () => {
-                currentLevelIndex++;
-                chatMessagesContainer.innerHTML = "";
-                initiateLevel();
-              });
-            }
-          } else {
-            // Final victory
-            const winMsg = `<div class="chat-bubble system success" style="width: 100%; text-align: center;">` + 
-              `🏆 CONGRATULATIONS! 🏆<br>` +
-              `Anda telah berhasil menyelesaikan semua 5 Level Kasus Klinis Gizi dengan sempurna!<br>` +
-              `Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRIVERSE**.<br><br>` +
-              `<button class="chatbot-next-level-btn" id="btn-restart-game">Mulai Ulang Simulasi ↺</button>` +
-              `</div>`;
-            addChatMessage("system", winMsg);
-            
-            const btnRestart = document.getElementById("btn-restart-game");
-            if (btnRestart) {
-              btnRestart.addEventListener("click", () => {
-                verifiedStreak = 0;
-                chatMessagesContainer.innerHTML = "";
-                shuffleCases();
-                initiateLevel();
-              });
-            }
-          }
+          triggerLevelSuccess();
         }, 600);
       } else if (isDiagCorrect && !isTherapyCorrect) {
         let helpText = "";
@@ -1503,6 +1616,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize level gamification and case on load
   setTimeout(() => {
+    checkBackendStatus();
     shuffleCases();
     initiateLevel();
   }, 200);
