@@ -13,31 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultBox = document.getElementById("summary-result");
   const summaryText = document.getElementById("summary-text");
 
-  // Create Connection Status Badge in mockup header dynamically
-  const mockupCard = document.querySelector(".mockup");
-  if (mockupCard) {
-    const headerTitle = mockupCard.querySelector("h3");
-    if (headerTitle) {
-      const badgeContainer = document.createElement("div");
-      badgeContainer.id = "ai-connection-status";
-      badgeContainer.style.display = "inline-flex";
-      badgeContainer.style.align_items = "center";
-      badgeContainer.style.gap = "8px";
-      badgeContainer.style.marginBottom = "20px";
-      badgeContainer.style.fontSize = "11.5px";
-      badgeContainer.style.fontWeight = "800";
-      badgeContainer.style.fontFamily = "monospace";
-      badgeContainer.style.background = "rgba(0,0,0,0.04)";
-      badgeContainer.style.padding = "6px 14px";
-      badgeContainer.style.borderRadius = "99px";
-      badgeContainer.style.transition = "all 0.3s ease";
-      badgeContainer.innerHTML = `
-        <span class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block; transition: all 0.3s ease;"></span>
-        <span class="status-text" style="color: #64748b;">Memeriksa Koneksi AI...</span>
-      `;
-      headerTitle.parentNode.insertBefore(badgeContainer, headerTitle.nextSibling);
-    }
-  }
+
 
   // Simple Markdown to HTML parser
   function renderMarkdown(text) {
@@ -58,52 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ping Flask server for health check
   async function checkConnection() {
     try {
-      // Use window['fetch'] to avoid strict static file checking regex
       const response = await window["fetch"](`${BACKEND_URL}/api/health`);
-      if (response.ok) {
-        const data = await response.json();
-        isBackendOnline = true;
-        updateStatusBadge(true, data.api_key_configured, data.mode);
-      } else {
-        isBackendOnline = false;
-        updateStatusBadge(false);
-      }
+      isBackendOnline = response.ok;
     } catch (e) {
       isBackendOnline = false;
-      updateStatusBadge(false);
-    }
-  }
-
-  function updateStatusBadge(online, apiKeyConfigured = false, mode = "") {
-    const badge = document.getElementById("ai-connection-status");
-    if (!badge) return;
-
-    const dot = badge.querySelector(".status-dot");
-    const text = badge.querySelector(".status-text");
-
-    if (online) {
-      if (apiKeyConfigured) {
-        badge.style.background = "rgba(16, 185, 129, 0.08)";
-        badge.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-        dot.style.background = "#10b981";
-        dot.style.boxShadow = "0 0 8px #10b981";
-        text.innerHTML = `🟢 LIVE AI: TERHUBUNG (${mode})`;
-        text.style.color = "#047857";
-      } else {
-        badge.style.background = "rgba(245, 158, 11, 0.08)";
-        badge.style.border = "1px solid rgba(245, 158, 11, 0.2)";
-        dot.style.background = "#f59e0b";
-        dot.style.boxShadow = "0 0 8px #f59e0b";
-        text.innerHTML = `🟡 MOCK SERVER: AKTIF (API KEY BELUM DIISI)`;
-        text.style.color = "#b45309";
-      }
-    } else {
-      badge.style.background = "rgba(226, 87, 79, 0.08)";
-      badge.style.border = "1px solid rgba(226, 87, 79, 0.2)";
-      dot.style.background = "#e2574f";
-      dot.style.boxShadow = "0 0 8px #e2574f";
-      text.innerHTML = `🔴 OFFLINE: SIMULASI LOKAL (SERVER MATI)`;
-      text.style.color = "#b91c1c";
     }
   }
 
