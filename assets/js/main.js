@@ -460,7 +460,9 @@ function initGlobalNutriBot() {
 
   // State Riwayat Chat Lokal untuk Konteks Percakapan Gemini
   let chatHistory = [];
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+    ? "http://localhost:5000"
+    : window.location.origin;
 
   // Parser Markdown Sederhana agar chat bubble AI rapi (mengubah **teks** dan bullet list)
   function formatMarkdown(text) {

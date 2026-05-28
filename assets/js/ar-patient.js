@@ -3,7 +3,9 @@
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+    ? "http://localhost:5000"
+    : window.location.origin;
   let isBackendOnline = false;
 
   // Case Studies Database with spoken first-person narratives & full nutrition assessments
