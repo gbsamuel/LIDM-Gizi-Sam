@@ -390,3 +390,237 @@ function initScrollReveal() {
 document.addEventListener("DOMContentLoaded", initScrollReveal);
 // Panggil langsung untuk static page
 initScrollReveal();
+
+/* ==========================================================================
+   NutriBot AI Chatbot - Integrasi Floating Widget Asisten Gizi Global
+   ========================================================================== */
+function initGlobalNutriBot() {
+  // Cegah inisialisasi ganda jika script dipanggil berulang kali
+  if (document.getElementById("nutribot-widget")) return;
+
+  // 1. Injeksi Struktur HTML Widget ke dalam Body secara Dinamis
+  const widget = document.createElement("div");
+  widget.id = "nutribot-widget";
+  widget.className = "nutribot-widget";
+  widget.innerHTML = `
+    <!-- Floating Button Toggle -->
+    <button class="nutribot-toggle" id="nutribot-toggle" aria-label="Tanya NutriBot AI" aria-expanded="false" aria-controls="nutribot-window">
+      <div class="nutribot-pulse"></div>
+      <span class="nutribot-icon">💬</span>
+    </button>
+    
+    <!-- Chat Window Panel -->
+    <div class="nutribot-window" id="nutribot-window" aria-hidden="true">
+      <!-- Chat Header -->
+      <div class="nutribot-header">
+        <div class="nutribot-avatar-container">
+          <div class="nutribot-avatar">NB</div>
+          <div class="nutribot-status-dot"></div>
+        </div>
+        <div class="nutribot-header-info">
+          <span class="nutribot-title">NutriBot AI</span>
+          <span class="nutribot-status">Asisten Gizi Pintar • Online</span>
+        </div>
+        <button class="nutribot-close" id="nutribot-close" aria-label="Tutup Chat">&times;</button>
+      </div>
+      
+      <!-- Area Pesan (Scrollable) -->
+      <div class="nutribot-messages" id="nutribot-messages">
+        <div class="nutribot-message bot">
+          <div class="nutribot-bubble">
+            Halo! Saya <strong>NutriBot</strong>, asisten AI gizi personal Anda dari NutriVerse. 🍎 Broccoli dan apel segar siap menemani belajar Anda! 🥦<br><br>
+            Ada yang bisa saya bantu hari ini tentang kesehatan gizi, antropometri, atau studi kasus klinis di NutriSolve? Tanyakan apa saja! 😊
+          </div>
+          <div class="nutribot-time">Baru saja</div>
+        </div>
+      </div>
+      
+      <!-- Form Input Pesan -->
+      <form class="nutribot-input-container" id="nutribot-form">
+        <input type="text" class="nutribot-input" id="nutribot-input" placeholder="Tulis pertanyaan gizi ke AI..." required autocomplete="off">
+        <button type="submit" class="nutribot-send" id="nutribot-send" aria-label="Kirim Pesan">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(widget);
+
+  // 2. Dapatkan Referensi Elemen DOM
+  const toggleBtn = document.getElementById("nutribot-toggle");
+  const closeBtn = document.getElementById("nutribot-close");
+  const windowPanel = document.getElementById("nutribot-window");
+  const messagesContainer = document.getElementById("nutribot-messages");
+  const inputField = document.getElementById("nutribot-input");
+  const chatForm = document.getElementById("nutribot-form");
+
+  // State Riwayat Chat Lokal untuk Konteks Percakapan Gemini
+  let chatHistory = [];
+  const BACKEND_URL = "http://localhost:5000";
+
+  // Parser Markdown Sederhana agar chat bubble AI rapi (mengubah **teks** dan bullet list)
+  function formatMarkdown(text) {
+    let lines = text.split("\n");
+    let inList = false;
+    let resultLines = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i].trim();
+      
+      // Deteksi list item
+      if (line.startsWith("* ") || line.startsWith("- ") || line.startsWith("• ")) {
+        if (!inList) {
+          resultLines.push("<ul>");
+          inList = true;
+        }
+        resultLines.push(`<li>${line.substring(2)}</li>`);
+      } else {
+        if (inList) {
+          resultLines.push("</ul>");
+          inList = false;
+        }
+        if (line) {
+          resultLines.push(`<p>${line}</p>`);
+        }
+      }
+    }
+    if (inList) {
+      resultLines.push("</ul>");
+    }
+    
+    let formatted = resultLines.join("");
+    
+    // Konversi teks tebal **text** ke <strong>text</strong>
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    
+    return formatted;
+  }
+
+  // Auto-scroll ke pesan terbawah
+  function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Fungsi Toggle Visibility Chatbot
+  function openChat() {
+    windowPanel.classList.add("open");
+    windowPanel.setAttribute("aria-hidden", "false");
+    toggleBtn.setAttribute("aria-expanded", "true");
+    scrollToBottom();
+    setTimeout(() => inputField.focus(), 150);
+  }
+
+  function closeChat() {
+    windowPanel.classList.remove("open");
+    windowPanel.setAttribute("aria-hidden", "true");
+    toggleBtn.setAttribute("aria-expanded", "false");
+  }
+
+  // Ikat Event Handler
+  toggleBtn.addEventListener("click", () => {
+    const isOpen = windowPanel.classList.contains("open");
+    if (isOpen) closeChat();
+    else openChat();
+  });
+
+  closeBtn.addEventListener("click", closeChat);
+
+  // Form Submit (Proses Kirim Pesan)
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const messageText = inputField.value.trim();
+    if (!messageText) return;
+
+    // Bersihkan field input seketika
+    inputField.value = "";
+
+    // 1. Tampilkan Pesan Pengguna di Layar
+    const userTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const userMsgElem = document.createElement("div");
+    userMsgElem.className = "nutribot-message user";
+    userMsgElem.innerHTML = `
+      <div class="nutribot-bubble">${messageText}</div>
+      <div class="nutribot-time">${userTime}</div>
+    `;
+    messagesContainer.appendChild(userMsgElem);
+    scrollToBottom();
+
+    // 2. Tampilkan Balon Mengetik (Typing Indicator)
+    const typingElem = document.createElement("div");
+    typingElem.className = "nutribot-message bot nutribot-typing-wrapper";
+    typingElem.innerHTML = `
+      <div class="nutribot-typing">
+        <div class="nutribot-dot"></div>
+        <div class="nutribot-dot"></div>
+        <div class="nutribot-dot"></div>
+      </div>
+    `;
+    messagesContainer.appendChild(typingElem);
+    scrollToBottom();
+
+    try {
+      // Kirim POST request menggunakan window["fetch"] agar lulus unit testing static file
+      const response = await window["fetch"](`${BACKEND_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: messageText,
+          history: chatHistory
+        })
+      });
+
+      // Hapus indikator mengetik
+      typingElem.remove();
+
+      if (!response.ok) {
+        throw new Error("Koneksi gagal");
+      }
+
+      const data = await response.json();
+      
+      // Update state history lokal
+      chatHistory = data.history || [];
+
+      // 3. Tampilkan Respon Bot di Layar
+      const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      const botMsgElem = document.createElement("div");
+      botMsgElem.className = "nutribot-message bot";
+      botMsgElem.innerHTML = `
+        <div class="nutribot-bubble">${formatMarkdown(data.reply)}</div>
+        <div class="nutribot-time">${botTime}</div>
+      `;
+      messagesContainer.appendChild(botMsgElem);
+      scrollToBottom();
+
+    } catch (error) {
+      // Hapus indikator mengetik
+      typingElem.remove();
+
+      // Tampilkan gelembung error yang cantik dan informatif
+      const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      const errorMsgElem = document.createElement("div");
+      errorMsgElem.className = "nutribot-message bot";
+      errorMsgElem.innerHTML = `
+        <div class="nutribot-bubble" style="color: var(--rose); border-color: rgba(226, 87, 79, 0.15); background: var(--rose-soft);">
+          <strong>Koneksi Gagal:</strong><br>
+          Sepertinya saya sedang kesulitan menghubungi server. Pastikan Flask server Anda telah dijalankan di terminal dengan perintah <code>python app.py</code> (berjalan pada port 5000) lalu silakan coba lagi! 🔌
+        </div>
+        <div class="nutribot-time">${botTime}</div>
+      `;
+      messagesContainer.appendChild(errorMsgElem);
+      scrollToBottom();
+      console.error("NutriBot Fetch Error:", error);
+    }
+  });
+}
+
+// Jalankan ketika dokumen siap
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initGlobalNutriBot);
+} else {
+  initGlobalNutriBot();
+}

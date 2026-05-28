@@ -278,6 +278,95 @@ def validate_diagnosis():
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({"error": "Missing 'message' in request payload."}), 400
+        
+        user_message = data['message'].strip()
+        history = data.get('history', [])
+        
+        if not user_message:
+            return jsonify({"error": "Message cannot be empty."}), 400
+
+        # Jika API Key terpasang (tidak menggunakan placeholder default)
+        is_mock_key = api_key == "ISI_API_KEY_KAMU_DISINI" or not api_key
+        
+        if model and not is_mock_key:
+            # Format history untuk SDK Gemini (harus memiliki role 'user' atau 'model')
+            chat_history = []
+            for h in history:
+                role = 'user' if h['role'] == 'user' else 'model'
+                chat_history.append({
+                    'role': role,
+                    'parts': [h['text']]
+                })
+            
+            system_instruction = (
+                "Kamu adalah NutriBot, asisten AI interaktif dan pakar gizi ramah dari NutriVerse.\n"
+                "Tugasmu adalah membantu siswa, mahasiswa, dan masyarakat umum dalam belajar gizi, memahami asesmen antropometri (BB/U, TB/U, IMT/U, LILA), "
+                "memahami gejala klinis defisiensi gizi (seperti anemia, angular cheilitis, obesitas, stunting), dan merancang diet sehat.\n"
+                "Berikan jawaban yang ramah, ringkas, mudah dipahami, akurat secara medis, dan mendidik.\n"
+                "Gunakan Bahasa Indonesia yang interaktif dan gunakan emoji gizi yang relevan (seperti 🍎, 🥦, 🥗, 🥛, 🥚, 🩺).\n"
+                "Selalu berikan saran diet berbasis bahan pangan lokal Indonesia."
+            )
+            
+            try:
+                # Gunakan model baru dengan system instruction khusus NutriBot
+                chat_model = genai.GenerativeModel(
+                    'gemini-1.5-flash',
+                    system_instruction=system_instruction
+                )
+            except Exception:
+                # Fallback jika versi google-generativeai lama tidak mendukung system_instruction
+                chat_model = genai.GenerativeModel('gemini-1.5-flash')
+                user_message = f"[PERAN: Kamu adalah NutriBot, pakar gizi ramah NutriVerse. Jawablah secara ramah, singkat, ber-emoji gizi, dan berbasis pangan lokal].\n\nPertanyaan: {user_message}"
+            
+            # Memulai chat session dengan history
+            gemini_chat = chat_model.start_chat(history=chat_history)
+            response = gemini_chat.send_message(user_message)
+            
+            return jsonify({
+                "reply": response.text,
+                "history": history + [
+                    {"role": "user", "text": user_message},
+                    {"role": "model", "text": response.text}
+                ]
+            })
+        else:
+            # Smart simulated/mock fallback jika berjalan tanpa API Key
+            msg_lower = user_message.lower()
+            reply = ""
+            
+            if any(w in msg_lower for w in ["halo", "hai", "pagi", "siang", "sore", "malam", "assalamualaikum"]):
+                reply = "Halo! Saya **NutriBot**, asisten gizi pintar Anda di NutriVerse. 🍎🥦 Ada yang bisa saya bantu hari ini tentang pola makan sehat, berat badan, atau keluhan kesehatan?"
+            elif any(w in msg_lower for w in ["stunting", "pendek", "tinggi"]):
+                reply = "**Stunting** adalah masalah gizi kronis akibat kurangnya asupan gizi dalam jangka waktu lama (sejak janin hingga usia 2 tahun). Pada remaja stunted (seperti kasus RS di NutriSolve, TB/U < -2 SD), penanganan utamanya adalah menerapkan diet **Tinggi Energi Tinggi Protein (TETP)**. Prioritaskan protein hewani berkualitas tinggi seperti **telur** 🥚, **susu** 🥛, dan **ikan** 🐟 untuk mengejar tumbuh (*catch-up growth*) sebelum lempeng epifisis tulang menutup."
+            elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):
+                reply = "**Anemia Defisiensi Besi** sering terjadi pada remaja putri (seperti AP dan DS). Gejalanya meliputi sering pusing, pucat, dan cepat lelah. \n\nTatalaksana yang tepat:\n1. Suplementasi **Tablet Tambah Darah** (zat besi & asam folat) 💊.\n2. Tingkatkan konsumsi **besi heme** (hati ayam 🥩, telur 🥚, daging).\n3. Kombinasikan dengan **Vitamin C** (jeruk 🍊, pepaya) agar zat besi diserap 3x lipat lebih baik.\n4. 🚫 **HINDARI minum teh atau kopi** setelah makan karena kandungan tanin dapat mengikat zat besi sehingga gagal diserap tubuh."
+            elif any(w in msg_lower for w in ["obesitas", "gemuk", "insulin", "gula", "manis", "leher hitam"]):
+                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam dan menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
+            elif any(w in msg_lower for w in ["angular", "cheilitis", "sariawan", "bibir pecah", "vitamin b"]):
+                reply = "Luka robek di sudut bibir (**Angular Cheilitis**) dan lidah meradang (**Glossitis**) seperti kasus NA adalah tanda klinis klasik dari **Defisiensi Vitamin B Kompleks** (terutama B2/Riboflavin dan B12). Ini sering dipicu oleh diet ketat ekstrim yang tidak seimbang.\n\nSumber makanan kaya Vitamin B Kompleks:\n- Protein hewani (daging, ayam, ikan) 🐟🍗\n- Telur dan produk susu 🥚🥛\n- Sayuran berdaun hijau 🥬\n- Hindari diet ekstrem tanpa bimbingan klinis!"
+            elif any(w in msg_lower for w in ["nutrisolve", "dss", "fitur"]):
+                reply = "Di **NutriSolve**, Anda bisa mengakses empat simulasi pendukung keputusan (DSS) gizi:\n1. **Anthropometry**: Menghitung Z-Score BB/U, TB/U, dan IMT/U untuk balita/remaja, serta estimasi berat/tinggi badan pasien klinis.\n2. **Clinical**: Simulasi scan klinis tanda-tanda malnutrisi gizi.\n3. **Dietary**: Formulari asupan makanan harian dan recall 24 jam.\n4. **AR Patient**: Visualisasi 3D biometrik pasien terintegrasi AI.\n\nSemua fitur tersebut dirancang sangat interaktif untuk melatih pemahaman klinis Anda! 💻"
+            elif any(w in msg_lower for w in ["terima kasih", "makasih", "thanks", "suwun", "nuhun"]):
+                reply = "Sama-sama! Sangat menyenangkan bisa berdiskusi dengan Anda. Jaga kesehatan dan konsumsi makanan bergizi seimbang ya! 🍎🥗🥛 Jika ada pertanyaan lain, silakan tanyakan saja!"
+            else:
+                reply = "Pertanyaan Anda sangat menarik! Sebagai **NutriBot**, saya menyarankan Anda untuk selalu menerapkan prinsip **Gizi Seimbang** sesuai dengan panduan *Isi Piringku* (karbohidrat, protein 🍗, sayuran 🥦, dan buah 🍎 dalam porsi seimbang).\n\n*(Catatan: Saat ini NutriBot berjalan dalam **Mode Simulasi** karena Kunci API Gemini asli belum diaktifkan di file `.env`. Anda dapat memasukkan kunci API di file `.env` proyek Anda untuk mengaktifkan kecerdasan AI penuh!)*"
+            
+            return jsonify({
+                "reply": reply,
+                "history": history + [
+                    {"role": "user", "text": user_message},
+                    {"role": "model", "text": reply}
+                ]
+            })
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+
 if __name__ == '__main__':
     # Run on port 5000 as specified in the guide
     app.run(debug=True, port=5000)
