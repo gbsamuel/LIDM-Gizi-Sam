@@ -22,6 +22,38 @@ else:
     model = None
     print("[WARNING] GEMINI_API_KEY tidak ditemukan. Aplikasi berjalan dalam MODE SIMULASI BACKEND.")
 
+def generate_with_fallback(prompt, system_instruction=None, history=None):
+    # Urutan model yang dicoba jika terjadi limit kuota atau 404
+    models_to_try = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash']
+    
+    last_error = None
+    for model_name in models_to_try:
+        try:
+            if system_instruction:
+                m = genai.GenerativeModel(model_name, system_instruction=system_instruction)
+            else:
+                m = genai.GenerativeModel(model_name)
+            
+            if history is not None:
+                # Memulai chat session dengan history
+                gemini_chat = m.start_chat(history=history)
+                response = gemini_chat.send_message(prompt)
+                return response.text, model_name
+            else:
+                # Direct generate content
+                response = m.generate_content(prompt)
+                return response.text, model_name
+        except Exception as e:
+            err_str = str(e).lower()
+            # Jika ini adalah error kuota (429) atau model tidak ditemukan (404), kita coba model berikutnya
+            if any(w in err_str for w in ["quota", "exhausted", "429", "not found", "404"]):
+                print(f"[FALLBACK] Model {model_name} gagal: {str(e)}. Mencoba model berikutnya...")
+                last_error = e
+                continue
+            else:
+                raise e
+    raise last_error
+
 # Grounding Database untuk Kasus Gizi (Reference Ground Truth)
 CASES = {
     "ap": {
@@ -133,10 +165,17 @@ def summarize():
                 "Jaga penjelasan tetap padat, faktual, bebas dari basa-basi umum, dan langsung ke substansi ilmiah."
             )
             
-            response = model.generate_content(
-                f"{system_prompt}\n\nJURNAL ILMIAH:\n{journal_text}"
-            )
-            return jsonify({"summary": response.text})
+            try:
+                reply_text, active_model = generate_with_fallback(
+                    f"{system_prompt}\n\nJURNAL ILMIAH:\n{journal_text}"
+                )
+                return jsonify({"summary": reply_text})
+            except Exception as e:
+                # Jika kuota habis pada semua model, gunakan fallback pintar
+                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
+                    print("[MOCK FALLBACK] Kuota habis, beralih ke simulasi ringkasan jurnal.")
+                else:
+                    raise e
         else:
             # Smart Simulated/Mock summary fallback based on text matching
             text_lower = journal_text.lower()
@@ -244,9 +283,23 @@ def validate_diagnosis():
             )
             
             prompt = f"JAWABAN DIAGNOSIS DAN TERAPI PENGGUNA:\n{user_input}"
-            response = model.generate_content(f"{system_prompt}\n\n{prompt}")
             
-            ai_reply = response.text
+            try:
+                ai_reply, active_model = generate_with_fallback(f"{system_prompt}\n\n{prompt}")
+            except Exception as e:
+                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
+                    # Fallback ke evaluasi simulasi jika kuota API habis
+                    return jsonify({
+                        "success": base_score >= 80,
+                        "score": base_score,
+                        "reply": (
+                            "**[PERINGATAN: Kuota Google AI Studio Anda Habis - Mode Simulasi Supervisor Aktif]**\n\n"
+                            f"{case_data['mock_critique']}"
+                        ),
+                        "diagnosis_correct": is_diag_correct,
+                        "therapy_correct": is_therapy_correct
+                    })
+                raise e
             
             # Extract score from response if written as "SKOR: X%" or similar, otherwise fallback to base_score
             score_match = re.search(r'SKOR:\s*(\d+)%', ai_reply, re.IGNORECASE)
@@ -314,27 +367,34 @@ def chat():
             )
             
             try:
-                # Gunakan model baru dengan system instruction khusus NutriBot
-                chat_model = genai.GenerativeModel(
-                    'gemini-3.5-flash',
-                    system_instruction=system_instruction
+                reply_text, active_model = generate_with_fallback(
+                    prompt=user_message,
+                    system_instruction=system_instruction,
+                    history=chat_history
                 )
-            except Exception:
-                # Fallback jika versi google-generativeai lama tidak mendukung system_instruction
-                chat_model = genai.GenerativeModel('gemini-3.5-flash')
-                user_message = f"[PERAN: Kamu adalah NutriBot, pakar gizi ramah NutriVerse. Jawablah secara ramah, singkat, ber-emoji gizi, dan berbasis pangan lokal].\n\nPertanyaan: {user_message}"
-            
-            # Memulai chat session dengan history
-            gemini_chat = chat_model.start_chat(history=chat_history)
-            response = gemini_chat.send_message(user_message)
-            
-            return jsonify({
-                "reply": response.text,
-                "history": history + [
-                    {"role": "user", "text": user_message},
-                    {"role": "model", "text": response.text}
-                ]
-            })
+                return jsonify({
+                    "reply": reply_text,
+                    "history": history + [
+                        {"role": "user", "text": user_message},
+                        {"role": "model", "text": reply_text}
+                    ]
+                })
+            except Exception as e:
+                # Jika terjadi error kuota habis (429) pada seluruh model, berikan pesan edukasi
+                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
+                    reply = (
+                        "Aduh, sepertinya **kuota gratis harian Google AI Studio Anda hari ini sudah habis** (batas gratis adalah 20 kali tanya jawab). 📈\n\n"
+                        "Jangan khawatir! Anda bisa mencoba kembali besok pagi saat kuota Anda disetel ulang oleh Google, atau Anda bisa menghubungkan penagihan berbayar di Google AI Studio.\n\n"
+                        "Sementara itu, jika ada hal lain tentang materi gizi sekolah yang ingin Anda diskusikan, silakan tanyakan saja! Saya akan menjawab dalam *Mode Simulasi* pintar. 😊"
+                    )
+                    return jsonify({
+                        "reply": reply,
+                        "history": history + [
+                            {"role": "user", "text": user_message},
+                            {"role": "model", "text": reply}
+                        ]
+                    })
+                raise e
         else:
             # Smart simulated/mock fallback jika berjalan tanpa API Key
             msg_lower = user_message.lower()
@@ -347,7 +407,7 @@ def chat():
             elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):
                 reply = "**Anemia Defisiensi Besi** sering terjadi pada remaja putri (seperti AP dan DS). Gejalanya meliputi sering pusing, pucat, dan cepat lelah. \n\nTatalaksana yang tepat:\n1. Suplementasi **Tablet Tambah Darah** (zat besi & asam folat) 💊.\n2. Tingkatkan konsumsi **besi heme** (hati ayam 🥩, telur 🥚, daging).\n3. Kombinasikan dengan **Vitamin C** (jeruk 🍊, pepaya) agar zat besi diserap 3x lipat lebih baik.\n4. 🚫 **HINDARI minum teh atau kopi** setelah makan karena kandungan tanin dapat mengikat zat besi sehingga gagal diserap tubuh."
             elif any(w in msg_lower for w in ["obesitas", "gemuk", "insulin", "gula", "manis", "leher hitam"]):
-                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam dan menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
+                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam and menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
             elif any(w in msg_lower for w in ["angular", "cheilitis", "sariawan", "bibir pecah", "vitamin b"]):
                 reply = "Luka robek di sudut bibir (**Angular Cheilitis**) dan lidah meradang (**Glossitis**) seperti kasus NA adalah tanda klinis klasik dari **Defisiensi Vitamin B Kompleks** (terutama B2/Riboflavin dan B12). Ini sering dipicu oleh diet ketat ekstrim yang tidak seimbang.\n\nSumber makanan kaya Vitamin B Kompleks:\n- Protein hewani (daging, ayam, ikan) 🐟🍗\n- Telur dan produk susu 🥚🥛\n- Sayuran berdaun hijau 🥬\n- Hindari diet ekstrem tanpa bimbingan klinis!"
             elif any(w in msg_lower for w in ["nutrisolve", "dss", "fitur"]):
