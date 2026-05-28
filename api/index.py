@@ -226,16 +226,16 @@ def validate_diagnosis():
         
         case_id = data['caseId']
         user_input = data['diagnosis_text'].strip()
+        history = data.get('history', [])
         
         if case_id not in CASES:
             return jsonify({"error": f"Case ID '{case_id}' not found."}), 404
         
         case_data = CASES[case_id]
         
-        # Smart keyword matching inside server backend as a base metric
+        # Smart keyword matching inside server backend as a base metric/fallback
         lower_input = user_input.lower()
         
-        # Evaluate keywords to determine success status
         is_diag_correct = False
         is_therapy_correct = False
         
@@ -253,6 +253,19 @@ def validate_diagnosis():
             is_therapy_correct = "energi" in lower_input or "protein" in lower_input or "tinggi" in lower_input or "telur" in lower_input or "susu" in lower_input or "ikan" in lower_input
         elif case_id == "ds":
             is_diag_correct = "anemia" in lower_input or "dismenore" in lower_input or "haid" in lower_input or "menstruasi" in lower_input or "nyeri" in lower_input
+            is_therapy_correct = "zat besi" in lower_input or "suplemen" in period_lower if 'period_lower' in locals() else lower_input or "sarapan" in lower_input or "makan teratur" in lower_input
+
+        # Fix specific typo or logic error in period check for ds if period_lower doesn't exist
+        is_therapy_correct = False
+        if case_id == "ap":
+            is_therapy_correct = "suplemen" in lower_input or "tambah darah" in lower_input or "vitamin c" in lower_input or "vit c" in lower_input or "teh" in lower_input
+        elif case_id == "mr":
+            is_therapy_correct = "gula" in lower_input or "manis" in lower_input or "olahraga" in lower_input or "aktivitas" in lower_input or "serat" in lower_input
+        elif case_id == "na":
+            is_therapy_correct = "protein" in lower_input or "hewani" in lower_input or "susu" in lower_input or "telur" in lower_input or "diet seimbang" in lower_input
+        elif case_id == "rs":
+            is_therapy_correct = "energi" in lower_input or "protein" in lower_input or "tinggi" in lower_input or "telur" in lower_input or "susu" in lower_input or "ikan" in lower_input
+        elif case_id == "ds":
             is_therapy_correct = "zat besi" in lower_input or "suplemen" in lower_input or "sarapan" in lower_input or "makan teratur" in lower_input
 
         # Calculate base score based on keyword success
@@ -260,11 +273,20 @@ def validate_diagnosis():
         if is_diag_correct: base_score += 50
         if is_therapy_correct: base_score += 50
         
+        is_mock_key = api_key == "ISI_API_KEY_KAMU_DISINI" or not api_key
+        
         # If Gemini model is available, let the real AI generate a professional clinical supervisor review!
-        if model:
+        if model and not is_mock_key:
+            chat_history = []
+            for h in history:
+                role = 'user' if h['role'] == 'user' else 'model'
+                chat_history.append({
+                    'role': role,
+                    'parts': [h['text']]
+                })
+            
             system_prompt = (
-                f"Kamu adalah AI Clinical Supervisor gizi yang mendampingi mahasiswa/dokter dalam praktik konsultasi gizi.\n"
-                f"Tugasmu adalah menganalisis dan mengevaluasi secara kritis serta ramah terhadap jawaban diagnosis gizi dan rekomendasi terapi pangan dari pengguna untuk kasus berikut:\n\n"
+                f"Kamu adalah AI Clinical Supervisor gizi yang mendampingi mahasiswa/dokter dalam praktik konsultasi gizi untuk kasus 3D AR Patient berikut:\n\n"
                 f"=== DATA MEDIS ACUAN (GROUND TRUTH) ===\n"
                 f"Nama Pasien: {case_data['name']}\n"
                 f"Keluhan Utama: {case_data['complaint']}\n"
@@ -274,56 +296,63 @@ def validate_diagnosis():
                 f"Kebiasaan & Recall 24 Jam: {case_data['dietary_recall']}\n"
                 f"Diagnosis Medis Gizi yang Benar: {case_data['correct_diagnosis']}\n"
                 f"Terapi Gizi & Tatalaksana yang Benar: {case_data['correct_therapy']}\n\n"
-                f"=== INSTRUKSI EVALUASI ===\n"
-                f"Jawablah dalam format Markdown yang terstruktur dan indah dengan poin-poin berikut:\n"
-                f"1. Tuliskan header tebal berwarna hijau atau biru: '**ANALISIS MEDIS AI SUPERVISOR (SKOR: X%)**' (di mana X adalah nilai evaluasi yang kamu berikan dari 0 sampai 100 berdasarkan ketepatan medis jawaban pengguna dibandingkan dengan Data Acuan).\n"
-                f"2. **Diagnosis Tepat/Evaluasi**: Berikan ulasan apakah diagnosis pengguna sudah tepat. Jelaskan relevansinya dengan data lab/klinis pasien.\n"
-                f"3. **Evaluasi Terapi**: Berikan ulasan kritis tentang terapi yang mereka usulkan. Apabila mereka melupakan poin kritis (misalnya: pada AP adalah larangan minum teh setelah makan; pada MR adalah membatasi kopi susu manis/gula sederhana; pada NA adalah diet ekstrim vegetarian tanpa protein hewani), ingatkan mereka dengan jelas dan beri edukasi akademis.\n\n"
-                f"Jawab dengan bahasa Indonesia yang santun, profesional, dan bernada mendidik layaknya dosen pembimbing klinik gizi."
+                f"=== INSTRUKSI EVALUASI & DIALOG ===\n"
+                f"1. Bertindaklah sebagai pembimbing klinis/dosen pembimbing gizi yang ramah, berwibawa, profesional, dan mendidik.\n"
+                f"2. Pengguna bisa bertanya, mendiskusikan gejala, meminta petunjuk, atau langsung mengusulkan analisis kasus. Jawablah secara kontekstual.\n"
+                f"3. Jika pengguna bertanya tentang data pasien atau meminta petunjuk, berikan bimbingan secara akademis dan bertahap berdasarkan data medis acuan di atas tanpa langsung membocorkan jawaban lengkap begitu saja.\n"
+                f"4. Jika pengguna memberikan jawaban analisis (diagnosis gizi DAN terapi pangan):\n"
+                f"   - Berikan ulasan mendalam mengenai apa yang benar dan apa yang kurang.\n"
+                f"   - Jika analisis pengguna sudah tepat secara medis mencakup diagnosis dan terapi yang benar (seperti tercantum pada DATA MEDIS ACUAN), kamu harus memuji mereka dan mengakhiri jawabanmu dengan menuliskan tag kelulusan secara presisi: '**[BERHASIL MENDIAGNOSIS]**'. Tag ini sangat penting untuk dibaca sistem agar meluluskan level pengguna!\n"
+                f"   - Jika mereka melupakan poin kritis (misalnya: teh setelah makan pada AP, es kopi susu manis pada MR, diet ekstrem vegetarian tanpa protein hewani pada NA, catch-up growth padat kalori/protein biologis tinggi pada RS, sarapan teratur saat haid pada DS), ingatkan dan jelaskan landasan biologisnya secara mendalam.\n"
+                f"5. Gunakan Bahasa Indonesia yang baik dan format Markdown yang rapi."
             )
             
-            prompt = f"JAWABAN DIAGNOSIS DAN TERAPI PENGGUNA:\n{user_input}"
-            
             try:
-                ai_reply, active_model = generate_with_fallback(f"{system_prompt}\n\n{prompt}")
+                ai_reply, active_model = generate_with_fallback(
+                    prompt=user_input,
+                    system_instruction=system_prompt,
+                    history=chat_history
+                )
+                
+                passed = "[BERHASIL MENDIAGNOSIS]" in ai_reply or base_score >= 100
+                
+                # If keywords matched perfectly but AI forgot the tag, ensure we append it or set success to true
+                if base_score >= 100 and not passed:
+                    ai_reply += "\n\n**[BERHASIL MENDIAGNOSIS]**"
+                    passed = True
+                
+                return jsonify({
+                    "success": passed,
+                    "score": 100 if passed else base_score,
+                    "reply": ai_reply,
+                    "diagnosis_correct": is_diag_correct,
+                    "therapy_correct": is_therapy_correct
+                })
             except Exception as e:
                 if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
                     # Fallback ke evaluasi simulasi jika kuota API habis
+                    passed = base_score >= 100
+                    reply_text = f"**[PERINGATAN: Kuota Google AI Studio Habis - Mode Simulasi Supervisor Aktif]**\n\n{case_data['mock_critique']}"
+                    if not passed:
+                        reply_text += "\n\n*Petunjuk: Pastikan diagnosis Anda mengandung unsur diagnosis utama dan tatalaksana spesifik untuk kasus ini!*"
                     return jsonify({
-                        "success": base_score >= 80,
+                        "success": passed,
                         "score": base_score,
-                        "reply": (
-                            "**[PERINGATAN: Kuota Google AI Studio Anda Habis - Mode Simulasi Supervisor Aktif]**\n\n"
-                            f"{case_data['mock_critique']}"
-                        ),
+                        "reply": reply_text,
                         "diagnosis_correct": is_diag_correct,
                         "therapy_correct": is_therapy_correct
                     })
                 raise e
-            
-            # Extract score from response if written as "SKOR: X%" or similar, otherwise fallback to base_score
-            score_match = re.search(r'SKOR:\s*(\d+)%', ai_reply, re.IGNORECASE)
-            if score_match:
-                extracted_score = int(score_match.group(1))
-            else:
-                extracted_score = base_score
-                
-            # A score >= 80% is considered a passing grade
-            passed = extracted_score >= 80
-            
-            return jsonify({
-                "success": passed,
-                "score": extracted_score,
-                "reply": ai_reply,
-                "diagnosis_correct": is_diag_correct,
-                "therapy_correct": is_therapy_correct
-            })
         else:
             # Backend Fallback (Simulation)
+            passed = base_score >= 100
+            reply_text = f"**[MODE SIMULASI BACKEND]**\n\n{case_data['mock_critique']}"
+            if not passed:
+                reply_text += "\n\n*Petunjuk: Pastikan diagnosis Anda mengandung unsur diagnosis utama dan tatalaksana spesifik untuk kasus ini agar dievaluasi sukses!*"
             return jsonify({
-                "success": base_score >= 80,
+                "success": passed,
                 "score": base_score,
-                "reply": case_data['mock_critique'],
+                "reply": reply_text,
                 "diagnosis_correct": is_diag_correct,
                 "therapy_correct": is_therapy_correct
             })

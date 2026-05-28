@@ -390,8 +390,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let initialRightForeArmRot = new THREE.Euler();
 
   let animationState = "idle"; // "idle" | "speaking" | "focused"
-  let voiceEnabled = true;
+  let voiceEnabled = false;
   let lastSpokenText = "";
+  let clinicalChatHistory = [];
 
   // Target bone angles for smooth trigonometry interpolation (Slerp-like)
   let targetSpineRotX = 0;
@@ -1334,11 +1335,19 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const activeCase = cases[caseId];
     
+    // Reset and seed clinical chat history for Gemini context
+    clinicalChatHistory = [];
+    
     const introText = `Halo Dokter! Selamat datang di **Level ${currentLevelIndex + 1}** dari simulasi gizi klinis. 🩺<br><br>` + 
       `Pasien kita saat ini adalah **${activeCase.name}**.<br>` +
       `Keluhan utama: *"${activeCase.complaint}"*<br><br>` +
       `Silakan periksa detail data di panel kanan (**Profil & Antro**, **Pemeriksaan Klinis**, dan **Dietary Recall**). ` + 
       `Ketikkan **Diagnosis Gizi** serta **Rekomendasi Terapi** Anda di kolom bawah ini, lalu kirimkan untuk dievaluasi oleh AI Supervisor.`;
+      
+    clinicalChatHistory.push({
+      role: "model",
+      text: `Halo Dokter! Selamat datang di Level ${currentLevelIndex + 1} dari simulasi gizi klinis. Pasien kita saat ini adalah ${activeCase.name}. Keluhan utama: "${activeCase.complaint}". Silakan periksa detail data di panel kanan dan berikan analisis diagnosis gizi serta tatalaksana terapi gizi.`
+    });
       
     addChatMessage("ai", introText);
     speakText(`Halo Dokter! Selamat datang di Level ${currentLevelIndex + 1}. Pasien kita saat ini adalah ${activeCase.name}. Silakan periksa detail data pasien di panel kanan dan berikan analisis Anda.`);
@@ -1348,61 +1357,9 @@ document.addEventListener("DOMContentLoaded", () => {
   async function checkBackendStatus() {
     try {
       const response = await window["fetch"](`${BACKEND_URL}/api/health`);
-      if (response.ok) {
-        const data = await response.json();
-        isBackendOnline = true;
-        updateChatbotConnectionBadge(true, data.api_key_configured, data.mode);
-      } else {
-        isBackendOnline = false;
-        updateChatbotConnectionBadge(false);
-      }
+      isBackendOnline = response.ok;
     } catch (e) {
       isBackendOnline = false;
-      updateChatbotConnectionBadge(false);
-    }
-  }
-
-  function updateChatbotConnectionBadge(online, apiKeyConfigured = false, mode = "") {
-    let badge = document.getElementById("chatbot-ai-status");
-    if (!badge) {
-      if (levelBadge) {
-        const container = levelBadge.parentNode;
-        if (container) {
-          badge = document.createElement("span");
-          badge.id = "chatbot-ai-status";
-          badge.style.fontSize = "9.5px";
-          badge.style.fontWeight = "800";
-          badge.style.fontFamily = "monospace";
-          badge.style.padding = "3px 8px";
-          badge.style.borderRadius = "99px";
-          badge.style.marginLeft = "8px";
-          badge.style.display = "inline-block";
-          badge.style.verticalAlign = "middle";
-          badge.style.transition = "all 0.3s ease";
-          container.appendChild(badge);
-        }
-      }
-    }
-    
-    if (badge) {
-      if (online) {
-        if (apiKeyConfigured) {
-          badge.textContent = `🟢 LIVE AI`;
-          badge.style.background = "rgba(16, 185, 129, 0.08)";
-          badge.style.color = "#047857";
-          badge.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-        } else {
-          badge.textContent = `🟡 MOCK SERVER`;
-          badge.style.background = "rgba(245, 158, 11, 0.08)";
-          badge.style.color = "#b45309";
-          badge.style.border = "1px solid rgba(245, 158, 11, 0.2)";
-        }
-      } else {
-        badge.textContent = `🔴 OFFLINE`;
-        badge.style.background = "rgba(226, 87, 79, 0.08)";
-        badge.style.color = "#b91c1c";
-        badge.style.border = "1px solid rgba(226, 87, 79, 0.2)";
-      }
     }
   }
 
@@ -1454,6 +1411,9 @@ document.addEventListener("DOMContentLoaded", () => {
     addChatMessage("user", userText);
     chatbotUserInput.value = "";
     
+    // Add user message to dialogue history
+    clinicalChatHistory.push({ role: "user", text: userText });
+    
     showTypingIndicator();
     
     const caseId = randomizedLevels[currentLevelIndex];
@@ -1466,7 +1426,8 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             caseId: caseId,
-            diagnosis_text: userText
+            diagnosis_text: userText,
+            history: clinicalChatHistory
           })
         });
         
@@ -1476,6 +1437,9 @@ document.addEventListener("DOMContentLoaded", () => {
           
           // Display the AI Supervisor critique in a chat bubble
           addChatMessage("ai", data.reply);
+          
+          // Add model reply to history
+          clinicalChatHistory.push({ role: "model", text: data.reply });
           
           if (data.success) {
             verifiedStreak++;
@@ -1487,7 +1451,7 @@ document.addEventListener("DOMContentLoaded", () => {
               triggerLevelSuccess();
             }, 600);
           } else {
-            // Did not pass
+            // Did not pass yet, let the user continue talking
             verifiedStreak = 0;
             if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
           }
@@ -1526,77 +1490,80 @@ document.addEventListener("DOMContentLoaded", () => {
         isTherapyCorrect = lowerText.includes("zat besi") || lowerText.includes("suplemen") || lowerText.includes("sarapan") || lowerText.includes("makan teratur");
       }
       
+      let replyText = "";
+      
       if (isDiagCorrect && isTherapyCorrect) {
         verifiedStreak++;
         casesDiagnosed++;
         
         if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
         
-        let correctText = "";
         if (caseId === "ap") {
-          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+          replyText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
             `**Diagnosis Tepat:** Anda berhasil mengidentifikasi kasus **Anemia Defisiensi Besi** dan status **Gizi Kurang** pada AP.<br><br>` +
             `**Evaluasi Terapi:** Sangat bagus! Penambahan asupan besi heme (seperti hati, daging), asupan vitamin C untuk memperlancar absorpsi zat besi, serta edukasi untuk **menghindari minum teh setelah makan** (karena senyawa tanin mengikat zat besi) adalah tatalaksana yang sempurna untuk AP.`;
         } else if (caseId === "mr") {
-          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+          replyText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
             `**Diagnosis Tepat:** Diagnosis **Obesitas Sentral** dengan risiko **Prediabetes & Resistensi Insulin** pada MR sangat tepat.<br><br>` +
             `**Evaluasi Terapi:** Luar biasa! Pengurangan asupan gula sederhana, peningkatan serat larut, serta aktivitas fisik teratur minimal 150 menit/minggu adalah pilar tatalaksana terbaik untuk membalikkan prediabetes pada remaja laki-laki ini.`;
         } else if (caseId === "na") {
-          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+          replyText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
             `**Diagnosis Tepat:** Anda mendeteksi **Defisiensi Vitamin B Kompleks (Riboflavin/B2 & B12)** secara klinis dari gejala **Angular Cheilitis** (luka sudut bibir) dan **Glossitis** pada NA.<br><br>` +
             `**Evaluasi Terapi:** Sangat tepat! Menghentikan diet pembatasan ekstrem dan meningkatkan konsumsi protein hewani, telur, susu, dan sayuran hijau akan memperbaiki defisiensi gizi mikro ini dengan sangat cepat.`;
         } else if (caseId === "rs") {
-          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+          replyText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
             `**Diagnosis Tepat:** Anda mengidentifikasi **Gangguan Pertumbuhan / Tinggi Badan Sangat Pendek (Stunting Kronis)** pada RS berdasarkan Z-score TB/U (-2.8 SD).<br><br>` +
             `**Evaluasi Terapi:** Sempurna! RS membutuhkan asupan tinggi energi dan protein bernilai biologis tinggi (telur, susu, ikan) untuk mendukung catch-up growth (kejar tumbuh linear) pada fase remaja ini.`;
         } else if (caseId === "ds") {
-          correctText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+          replyText = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
             `**Diagnosis Tepat:** Anda berhasil mendiagnosis **Anemia Ringan (Hb 11.4)** disertai gejala kram menstruasi berat (**Dismenore**) pada DS.<br><br>` +
             `**Evaluasi Terapi:** Hebat! Rekomendasi Anda mengenai pemantauan asupan zat besi heme, dikombinasikan dengan edukasi makan teratur dan **tidak melewatkan sarapan pagi** adalah langkah tatalaksana gizi yang sangat tepat.`;
         }
         
-        addChatMessage("ai", correctText);
+        addChatMessage("ai", replyText);
+        clinicalChatHistory.push({ role: "model", text: replyText });
         
         // Show next level button
         setTimeout(() => {
           triggerLevelSuccess();
         }, 600);
       } else if (isDiagCorrect && !isTherapyCorrect) {
-        let helpText = "";
         if (caseId === "ap") {
-          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
             `Diagnosis Anda tentang **Anemia** sudah tepat. Namun, tatalaksana gizi Anda belum lengkap. ` +
             `Ingat bahwa AP memiliki kebiasaan minum teh manis hangat langsung setelah makan siang dan malam. Teh mengandung senyawa tanin yang mengikat zat besi non-heme. ` + 
             `Silakan perbaiki terapi gizi Anda (sebutkan tentang vitamin C, asupan zat besi, atau menghindari teh setelah makan).`;
         } else if (caseId === "mr") {
-          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
             `Diagnosis Anda tentang **Obesitas / Prediabetes** sudah tepat. Namun, rekomendasi terapi gizi Anda belum menyentuh akar masalah. ` +
             `MR mengonsumsi karbohidrat olahan dan gula tinggi (3-4 es kopi/soda sehari). ` +
             `Silakan sebutkan rencana olahraga/aktivitas fisik, atau pembatasan asupan manis/gula.`;
         } else if (caseId === "na") {
-          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
             `Diagnosis Anda tentang **Defisiensi Vitamin B / Angular Cheilitis** sudah tepat. Namun, terapi gizi Anda kurang spesifik. ` +
             `NA sedang menjalani diet ekstrem tanpa mengonsumsi protein hewani sama sekali. ` +
             `Ia membutuhkan diet seimbang dengan makanan kaya protein hewani atau susu/telur. Silakan lengkapi jawaban Anda.`;
         } else if (caseId === "rs") {
-          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
             `Diagnosis Anda tentang **Gangguan Pertumbuhan / Stunting** sudah tepat. Namun, terapi gizi Anda belum memadai untuk kejar tumbuh. ` +
             `RS memerlukan asupan protein berkualitas biologis tinggi dan padat kalori (seperti susu, telur, ikan) untuk catch-up growth. Silakan lengkapi jawaban Anda.`;
         } else if (caseId === "ds") {
-          helpText = `**EVALUASI AI SUPERVISOR:**<br>` +
+          replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
             `Diagnosis Anda tentang **Anemia / Dismenore** sudah tepat. Namun, terapi Anda belum menyentuh kebiasaan makannya. ` +
             `DS sering melewatkan sarapan pagi yang memperberat anemia ringannya saat haid. ` +
             `Silakan sebutkan tentang zat besi, sarapan pagi, atau makan teratur.`;
         }
-        addChatMessage("ai", helpText);
+        addChatMessage("ai", replyText);
+        clinicalChatHistory.push({ role: "model", text: replyText });
       } else {
         verifiedStreak = 0;
         if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
         
-        let errorText = `**EVALUASI AI SUPERVISOR:**<br>` +
+        replyText = `**EVALUASI AI SUPERVISOR:**<br>` +
           `Diagnosis Anda belum tepat Dokter. Gejala klinis pasien dan dietary recall 24-jamnya tidak mendukung kesimpulan tersebut.<br><br>` +
           `**Petunjuk Supervisor:** Perhatikan tanda vital dan hasil laboratorium di panel kanan, lalu telaah kebiasaan makannya secara mendalam. Silakan coba analisis kembali!`;
-        addChatMessage("ai", errorText);
+        addChatMessage("ai", replyText);
+        clinicalChatHistory.push({ role: "model", text: replyText });
       }
     }, 1500);
   }
