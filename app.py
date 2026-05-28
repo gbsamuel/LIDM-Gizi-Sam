@@ -16,8 +16,8 @@ CORS(app)
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    # Use gemini-1.5-flash as it is efficient and recommended in the guide
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Gunakan gemini-3.5-flash sebagai model mutakhir utama yang didukung oleh Kunci API
+    model = genai.GenerativeModel('gemini-3.5-flash')
 else:
     model = None
     print("[WARNING] GEMINI_API_KEY tidak ditemukan. Aplikasi berjalan dalam MODE SIMULASI BACKEND.")
@@ -316,12 +316,12 @@ def chat():
             try:
                 # Gunakan model baru dengan system instruction khusus NutriBot
                 chat_model = genai.GenerativeModel(
-                    'gemini-1.5-flash',
+                    'gemini-3.5-flash',
                     system_instruction=system_instruction
                 )
             except Exception:
                 # Fallback jika versi google-generativeai lama tidak mendukung system_instruction
-                chat_model = genai.GenerativeModel('gemini-1.5-flash')
+                chat_model = genai.GenerativeModel('gemini-3.5-flash')
                 user_message = f"[PERAN: Kamu adalah NutriBot, pakar gizi ramah NutriVerse. Jawablah secara ramah, singkat, ber-emoji gizi, dan berbasis pangan lokal].\n\nPertanyaan: {user_message}"
             
             # Memulai chat session dengan history
