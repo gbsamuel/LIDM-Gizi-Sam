@@ -421,7 +421,7 @@ function initClinicalScanner() {
 
       if (resultsContent) {
         const rows = data.findings.map(f => `
-          <div class="field ${f.color}" data-icon="${f.icon}" style="padding: 12px 14px; margin-bottom: 8px;">
+          <div class="field ${f.color}" data-icon="${f.icon}" style="padding-left: 54px;">
             <span>${f.area}</span>
             <strong style="display: block; font-size: 14px; margin-top: 2px;">${f.status}</strong>
             <small style="display: block; font-size: 12px; color: var(--muted); font-weight: normal; margin-top: 4px; line-height: 1.4;">${f.desc}</small>
