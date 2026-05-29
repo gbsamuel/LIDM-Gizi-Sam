@@ -425,10 +425,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const telemetryZscore = document.getElementById("tele-zscore");
   const targetReticle = document.getElementById("ar-reticle");
   const scanStatus = document.getElementById("scan-status-badge");
-  const btnStartAR = document.getElementById("btn-start-ar-cam");
-  const arCameraOverlay = document.getElementById("ar-cam-overlay");
-  const cameraFeed = document.getElementById("camera-feed");
-  const cameraPlaceholder = document.getElementById("camera-placeholder");
   
   // Custom speech synthesis controls
   const btnToggleVoice = document.getElementById("btn-toggle-voice");
@@ -1225,54 +1221,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Simulated Holographic Webcam AR Visor Cam
-  let arCamStream = null;
-  btnStartAR?.addEventListener("click", async () => {
-    const isActive = arCameraOverlay.classList.toggle("active");
-    
-    if (isActive) {
-      btnStartAR.textContent = "Matikan Kamera AR";
-      btnStartAR.className = "button secondary";
-      cameraPlaceholder.style.display = "none";
-      cameraFeed.style.display = "block";
-      
-      try {
-        arCamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
-        cameraFeed.srcObject = arCamStream;
-        
-        if (scanStatus) {
-          scanStatus.textContent = "CAMERA FEED / HOLO RETICLE ACTIVE";
-          scanStatus.className = "ar-status-badge scanning";
-        }
-      } catch (err) {
-        console.error("Camera access failed:", err);
-        cameraFeed.style.display = "none";
-        cameraPlaceholder.style.display = "flex";
-        cameraPlaceholder.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap: 8px; padding: 1.5rem; text-align:center;">
-            <span style="color:#ffb732; font-weight:800; font-size: 13px;">[ HOLOGRAPHIC MESH FALLBACK ]</span>
-            <span style="font-size:11px; color:#64748b;">Kamera tidak diizinkan. Memuat overlay grid pemindai diagnostik bawaan sistem.</span>
-          </div>
-        `;
-      }
-    } else {
-      btnStartAR.textContent = "Aktifkan Kamera AR (Visor HUD)";
-      btnStartAR.className = "button primary";
-      cameraFeed.style.display = "none";
-      cameraPlaceholder.style.display = "flex";
-      cameraPlaceholder.innerHTML = `<span>Kamera Nonaktif</span>`;
-      
-      if (arCamStream) {
-        arCamStream.getTracks().forEach(track => track.stop());
-        arCamStream = null;
-      }
-
-      if (scanStatus) {
-        scanStatus.textContent = "STANDBY / HUD READY";
-        scanStatus.className = "ar-status-badge";
-      }
-    }
-  });
+  // Simulated Holographic Webcam AR Visor Cam (Disabled)
 
   // ================= GAMIFIED LEVEL CHATBOT CONTROLLER =================
   

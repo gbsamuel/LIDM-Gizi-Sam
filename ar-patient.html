@@ -59,9 +59,6 @@
                   </button>
                 </div>
               </div>
-              <button class="button primary" id="btn-start-ar-cam" style="cursor: pointer; font-size: 11px; padding: 6px 14px; min-height: auto;">
-                Aktifkan Kamera AR (Visor HUD)
-              </button>
             </div>
 
             <div class="ar-canvas-area" id="viewport-canvas" style="background: #ffffff; box-shadow: none; border: 1px solid rgba(0,0,0,0.08);">
@@ -83,25 +80,6 @@
 
               <!-- Dashboard Target Reticle (Invisible or clean) -->
               <div class="target-reticle" id="ar-reticle"></div>
-
-              <!-- Webcam AR view overlay -->
-              <div class="ar-camera-overlay" id="ar-cam-overlay">
-                <video id="camera-feed" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; border-radius: 14px;"></video>
-                <div id="camera-placeholder" style="display: none;"></div>
-                
-                <!-- Face Calibration holographic overlays -->
-                <div class="camera-grid-crosshair"></div>
-                <div class="camera-bounding-box" style="top: 25%; left: 35%; width: 30%; height: 35%;">
-                  [ CALIBRATING RETINA EYE_NODE ]
-                </div>
-                <div class="camera-bounding-box" style="top: 55%; left: 40%; width: 20%; height: 12%; border-color:#2ee59d; color:#2ee59d;">
-                  [ CHEILOSIS_SCANNER ACTIVE ]
-                </div>
-                <div style="position: absolute; bottom: 10px; left: 15px; font-family: monospace; font-size: 9px; color: #2ee59d;">
-                  &gt; REALTIME BIOMETRIC READOUT FEED ACTIVE<br>
-                  &gt; RESOLUTION: 1080P // FPS: 60 // ISO: AUTO
-                </div>
-              </div>
 
               <!-- 3D PATIENT THREE.JS CANVAS CONTAINER -->
               <div id="ar-3d-canvas-container" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: auto;"></div>
