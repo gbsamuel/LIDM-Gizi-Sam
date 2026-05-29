@@ -2,6 +2,7 @@ assets/img/orig_*
 remove_background.py
 assets/models/*
 !assets/models/rp_carla_rigged_001_yup_a.fbx
+!assets/models/*.glb
 .env
 __pycache__/
 *.pyc
