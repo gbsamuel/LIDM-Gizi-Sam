@@ -9,7 +9,7 @@ const pages = [
   ["antropometri.html", ["Anthropometry Assessment", "Tabel Interpretasi", "Simulasi DSS"]],
   ["clinical.html", ["Clinical Nutrition Screening", "Scan Visual", "Simulasi Pembelajaran"]],
   ["dietary.html", ["Dietary Pattern Assessment", "Ringkasan Pola Makan", "Simulasi"]],
-  ["nutribase.html", ["TKPI", "DBMP", "AKG", "Rumus Perhitungan Gizi"]],
+  ["nutribase.html", ["TKPI", "DBMP", "AKG", "BPOM", "Foto Buku Makanan", "Rumus Perhitungan Gizi"]],
   ["nutripath.html", ["Modul Siswa SMA", "Modul Mahasiswa Gizi", "10 Tahapan Modul"]],
   ["nutriread.html", ["Jurnal", "E-Book", "AI Summary"]],
   ["ar-patient.html", ["AR Patient Visualization", "Biometrik Telemetri Pasien", "Validasi Konseling AI"]],

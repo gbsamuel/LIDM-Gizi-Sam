@@ -40,22 +40,27 @@
             </div>
             <canvas id="camera-canvas" style="display: none;"></canvas>
           </div>
-          <div class="scan-controls" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="scan-controls" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+            <select id="clinical-scenario-select" style="width: auto; height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--white); font-weight: bold; cursor: pointer; color: var(--ink);">
+              <option value="normal">Simulasi AI: Normal / Sehat</option>
+              <option value="iron">Simulasi AI: Defisiensi Zat Besi (Anemia)</option>
+              <option value="dehydration">Simulasi AI: Dehidrasi & Defisiensi Vitamin C</option>
+            </select>
             <button class="button primary" id="btn-start-camera" style="cursor: pointer;">Aktifkan Kamera</button>
             <button class="button primary" id="btn-take-picture" style="cursor: pointer; display: none;">Ambil Foto</button>
             <button class="button secondary" id="btn-retake-picture" style="cursor: pointer; display: none;">Foto Ulang</button>
           </div>
           <p class="muted" style="margin-top: 1rem;">Izinkan akses kamera untuk memulai proses screening visual.</p>
         </div>
-        <div class="mockup reveal-on-scroll delay-200">
-          <h2>Panel Hasil Contoh</h2>
-          <div class="grid two">
-            <div class="field" data-icon="⌁"><span>Rambut</span><strong>Observasi tekstur</strong></div>
-            <div class="field" data-icon="◉"><span>Mata</span><strong>Observasi konjungtiva</strong></div>
-            <div class="field" data-icon="◌"><span>Kulit</span><strong>Observasi kelembapan</strong></div>
-            <div class="field" data-icon="◇"><span>Mulut</span><strong>Observasi bibir dan lidah</strong></div>
+        <div class="mockup reveal-on-scroll delay-200" id="clinical-results-panel" style="display: flex; flex-direction: column; justify-content: flex-start; min-height: 380px;">
+          <h2>Interpretasi Hasil AI</h2>
+          <div id="clinical-results-content" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+            <div style="text-align: center; color: var(--muted); padding: 2rem 1rem;">
+              <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📷</span>
+              <p style="font-weight: bold; margin-bottom: 0.5rem; color: var(--green-dark);">Menunggu Pengambilan Foto</p>
+              <p style="font-size: 13px; margin: 0;">Silakan aktifkan kamera, arahkan wajah atau area observasi klinis, kemudian ambil foto untuk mendapatkan analisis AI instan.</p>
+            </div>
           </div>
-          <p class="muted">Hasil akhir harus dikonfirmasi oleh tenaga kompeten saat fitur dikembangkan.</p>
         </div>
       </div>
     </section>

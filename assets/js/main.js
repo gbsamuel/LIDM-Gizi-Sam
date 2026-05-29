@@ -155,10 +155,10 @@ function updateTeenAnthro() {
 
 function classifyAdultBmi(bmi) {
   if (!Number.isFinite(bmi)) return { status: "", label: "Belum dihitung", advice: "Isi berat dan tinggi badan." };
-  if (bmi < 18.5) return { status: "bad", label: "Underweight", advice: "Evaluasi asupan energi dan kondisi klinis." };
-  if (bmi <= 25) return { status: "normal", label: "Normal", advice: "Pertahankan pola makan dan aktivitas." };
-  if (bmi <= 27) return { status: "risk", label: "Gemuk", advice: "Pantau lingkar perut dan pola makan." };
-  return { status: "severe", label: "Obesitas", advice: "Perlu rencana intervensi gizi dan aktivitas." };
+  if (bmi < 18.5) return { status: "bad", label: "Underweight", advice: "Tingkatkan frekuensi makan (porsi kecil tapi sering + camilan padat nutrisi seperti kacang/alpukat). Prioritaskan protein berkualitas tinggi untuk membangun jaringan tubuh." };
+  if (bmi <= 25) return { status: "normal", label: "Normal", advice: "Pertahankan pola makan gizi seimbang (Piring Makanku). Batasi konsumsi gula, garam, dan minyak berlebih serta jaga hidrasi harian." };
+  if (bmi <= 27) return { status: "risk", label: "Gemuk (Overweight)", advice: "Lakukan defisit kalori moderat, kurangi makanan manis & gorengan. Tingkatkan konsumsi serat sayur/buah dan pilih protein tanpa lemak." };
+  return { status: "severe", label: "Obesitas", advice: "Intervensi gizi terukur: kurangi porsi karbohidrat sederhana, hindari minuman manis/kemasan, perbanyak aktivitas fisik, dan prioritaskan protein tanpa lemak & serat tinggi." };
 }
 
 function classifyBodyFat(sex, bf) {
@@ -291,10 +291,14 @@ function initClinicalScanner() {
   const canvas = document.getElementById('camera-canvas');
   const resultImg = document.getElementById('capture-result');
   const placeholder = document.getElementById('camera-placeholder');
+  const scanContainer = document.querySelector('.scan-container');
   
   const btnStart = document.getElementById('btn-start-camera');
   const btnTake = document.getElementById('btn-take-picture');
   const btnRetake = document.getElementById('btn-retake-picture');
+  const scenarioSelect = document.getElementById('clinical-scenario-select');
+  
+  const resultsContent = document.getElementById('clinical-results-content');
   
   let stream = null;
 
@@ -322,6 +326,43 @@ function initClinicalScanner() {
     }
   }
 
+  // Skenario Klinis AI
+  const scenarios = {
+    normal: {
+      title: "Observasi Normal / Sehat",
+      summary: "Kondisi klinis luar secara umum tampak normal dan sehat. Asupan makro & mikronutrien terpelihara dengan baik.",
+      findings: [
+        { area: "Rambut", status: "Normal", desc: "Tekstur kuat, hitam berkilau, tidak kusam, dan tidak mudah rontok.", icon: "⌁", color: "normal" },
+        { area: "Mata", status: "Sehat", desc: "Konjungtiva merah muda cerah, sklera putih bersih tanpa ikterik.", icon: "◉", color: "normal" },
+        { area: "Kulit", status: "Lembap", desc: "Turgor kulit sangat elastis (kembali seketika), tidak bersisik/kering.", icon: "◌", color: "normal" },
+        { area: "Mulut", status: "Normal", desc: "Bibir lembap kemerahan, lidah bersih, gusi kokoh dan sehat.", icon: "◇", color: "normal" }
+      ],
+      advice: "Pertahankan pola makan gizi seimbang yang kaya antioksidan dan pertahankan gaya hidup aktif harian."
+    },
+    iron: {
+      title: "Indikasi Defisiensi Zat Besi (Anemia)",
+      summary: "Ditemukan beberapa indikasi klinis visual yang mengarah pada defisit zat besi berat dan potensi anemia mikrositik.",
+      findings: [
+        { area: "Rambut", status: "Kering & Kusam", desc: "Terasa tipis, agak kasar, dan sedikit rontok saat disentuh.", icon: "⌁", color: "bad" },
+        { area: "Mata", status: "Pucat (Anemis)", desc: "Konjungtiva palpebra tampak sangat pucat (putih kekuningan).", icon: "◉", color: "severe" },
+        { area: "Kulit", status: "Pucat", desc: "Kulit wajah dan telapak tangan tampak pucat pasi dan dingin.", icon: "◌", color: "bad" },
+        { area: "Mulut", status: "Cheilosis", desc: "Bibir tampak pucat dengan sudut bibir pecah-pecah kemerahan.", icon: "◇", color: "bad" }
+      ],
+      advice: "Tingkatkan intake zat besi hem (daging merah, hati sapi, kerang) dan zat besi non-hem (bayam, daun kelor) dikombinasikan dengan Vitamin C untuk mempercepat absorpsi."
+    },
+    dehydration: {
+      title: "Indikasi Dehidrasi & Defisiensi Vit C",
+      summary: "Ditemukan tanda-tanda dehidrasi sedang/akut serta gejala awal skorbut akibat asupan Vitamin C yang tidak adekuat.",
+      findings: [
+        { area: "Rambut", status: "Normal", desc: "Tekstur normal, tidak ada tanda-tanda kerontokan abnormal.", icon: "⌁", color: "normal" },
+        { area: "Mata", status: "Kering", desc: "Sklera tampak sedikit kering dengan mata sayu / cekung.", icon: "◉", color: "risk" },
+        { area: "Kulit", status: "Turgor Buruk", desc: "Kulit sangat kering, turgor lambat kembali setelah dicubit.", icon: "◌", color: "severe" },
+        { area: "Mulut", status: "Gusi Berdarah", desc: "Bibir pecah-pecah parah, gusi tampak bengkak merah dan mudah berdarah.", icon: "◇", color: "severe" }
+      ],
+      advice: "Segera lakukan rehidrasi aktif (>2.5 Liter air putih per hari). Konsumsi buah kaya Vitamin C (jeruk, kiwi, jambu biji, stroberi) secara rutin setiap hari."
+    }
+  };
+
   function takePicture() {
     if (!stream) return;
     
@@ -340,9 +381,88 @@ function initClinicalScanner() {
     
     btnTake.style.display = 'none';
     btnRetake.style.display = 'inline-block';
+
+    // Jalankan Simulasi Analisis AI
+    simulateAIAnalysis();
+  }
+
+  function simulateAIAnalysis() {
+    // 1. Tampilkan Scanner Laser Animasi di kontainer kamera
+    let laser = document.querySelector('.scanner-laser');
+    if (!laser) {
+      laser = document.createElement('div');
+      laser.className = 'scanner-laser';
+      scanContainer.appendChild(laser);
+    }
+    laser.style.display = 'block';
+
+    // 2. Tampilkan Loader di Panel Kanan
+    if (resultsContent) {
+      resultsContent.innerHTML = `
+        <div style="padding: 2rem; text-align: center;">
+          <div class="nutribot-typing" style="margin: 0 auto 1.5rem; justify-content: center;">
+            <div class="nutribot-dot" style="width: 14px; height: 14px; background: var(--green); opacity: 0.6; animation: pulse 1s infinite alternate;"></div>
+            <div class="nutribot-dot" style="width: 14px; height: 14px; background: var(--indigo); margin: 0 8px; opacity: 0.6; animation: pulse 1s infinite alternate 0.2s;"></div>
+            <div class="nutribot-dot" style="width: 14px; height: 14px; background: var(--green); opacity: 0.6; animation: pulse 1s infinite alternate 0.4s;"></div>
+          </div>
+          <p style="font-weight: bold; color: var(--green-dark); font-size: 16px; margin-bottom: 0.5rem;">Menganalisis visual tubuh...</p>
+          <p style="font-size: 13px; color: var(--muted); margin: 0;">NutriAI sedang memindai tekstur kulit, konjungtiva mata, struktur mulut, dan rambut secara real-time.</p>
+        </div>
+      `;
+    }
+
+    // 3. Setelah 1.8 detik, render hasil skenario terpilih
+    setTimeout(() => {
+      // Hilangkan laser
+      if (laser) laser.style.display = 'none';
+
+      const selectedVal = scenarioSelect ? scenarioSelect.value : 'normal';
+      const data = scenarios[selectedVal] || scenarios.normal;
+
+      if (resultsContent) {
+        const rows = data.findings.map(f => `
+          <div class="field ${f.color}" data-icon="${f.icon}" style="padding: 12px 14px; margin-bottom: 8px;">
+            <span>${f.area}</span>
+            <strong style="display: block; font-size: 14px; margin-top: 2px;">${f.status}</strong>
+            <small style="display: block; font-size: 12px; color: var(--muted); font-weight: normal; margin-top: 4px; line-height: 1.4;">${f.desc}</small>
+          </div>
+        `).join('');
+
+        resultsContent.innerHTML = `
+          <div style="animation: fadeIn 0.4s ease-out;">
+            <div style="background: linear-gradient(135deg, var(--mint), rgba(255,255,255,0.9)); border: 1px solid rgba(18, 164, 111, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 1.2rem;">
+              <h3 style="margin: 0 0 6px 0; font-size: 15px; color: var(--green-dark); display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">✦</span> ${data.title}
+              </h3>
+              <p style="font-size: 13px; margin: 0; color: var(--muted); line-height: 1.5;">${data.summary}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.2rem;">
+              ${rows}
+            </div>
+
+            <div style="background: var(--paper); border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 12px 14px;">
+              <strong style="display: block; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--green-dark); margin-bottom: 4px;">Rekomendasi AI Gizi:</strong>
+              <p style="font-size: 13px; margin: 0; line-height: 1.5; color: var(--ink);">${data.advice}</p>
+            </div>
+          </div>
+        `;
+      }
+    }, 1800);
   }
 
   function retakePicture() {
+    // Reset Panel Kanan
+    if (resultsContent) {
+      resultsContent.innerHTML = `
+        <div style="text-align: center; color: var(--muted); padding: 2rem 1rem;">
+          <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📷</span>
+          <p style="font-weight: bold; margin-bottom: 0.5rem; color: var(--green-dark);">Menunggu Pengambilan Foto</p>
+          <p style="font-size: 13px; margin: 0;">Silakan aktifkan kamera, arahkan wajah atau area observasi klinis, kemudian ambil foto untuk mendapatkan analisis AI instan.</p>
+        </div>
+      `;
+    }
+
     if (!stream || !stream.active) {
        startCamera();
     } else {
@@ -361,6 +481,28 @@ function initClinicalScanner() {
 }
 
 initClinicalScanner();
+
+/* Collapsible Navigation Accordion */
+function initCollapsibleNavigation() {
+  document.querySelectorAll(".nav-group").forEach((group) => {
+    if (!group.classList.contains("active")) {
+      group.classList.add("collapsed");
+    }
+  });
+
+  document.querySelectorAll(".nav-chevron").forEach((chevron) => {
+    chevron.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const group = chevron.closest(".nav-group");
+      if (group) {
+        group.classList.toggle("collapsed");
+      }
+    });
+  });
+}
+
+initCollapsibleNavigation();
 
 // Scroll Reveal Animation
 function initScrollReveal() {
