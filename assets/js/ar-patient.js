@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ap: {
       id: "ap",
       name: "Siswa AP (Remaja Perempuan - 16 Tahun)",
+      modelPath: "assets/models/valerie_harmon_school_girl_character.glb",
       complaint: "Saya akhir-akhir ini sering pusing dan cepat capek kalau di sekolah. Kalau naik tangga rasanya gampang lelah, dan kadang saya juga susah konsentrasi saat pelajaran.",
       spokenIntro: "Saya akhir-akhir ini sering pusing dan cepat capek kalau di sekolah. Kalau naik tangga rasanya gampang lelah, dan kadang saya juga susah konsentrasi saat pelajaran.",
       hotspotVoices: {
@@ -81,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mr: {
       id: "mr",
       name: "Siswa MR (Remaja Laki-Laki - 17 Tahun)",
+      modelPath: "assets/models/casual_stride.glb",
       complaint: "Saya sering lapar terus walaupun baru saja makan kenyang. Kalau di kelas saya sering sekali mengantuk, gampang haus, dan sesekali perut saya rasanya tidak nyaman.",
       spokenIntro: "Saya sering lapar terus walaupun baru saja makan kenyang. Kalau di kelas saya sering sekali mengantuk, gampang haus, dan sesekali perut saya rasanya tidak nyaman.",
       hotspotVoices: {
@@ -149,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     na: {
       id: "na",
       name: "Siswa NA (Remaja Perempuan - 15 Tahun)",
+      modelPath: "assets/models/casual_confidence.glb",
       complaint: "Mulut saya sering sekali terasa perih, sudut bibir pecah-pecah meradang, dan saya akhir-akhir ini malas makan karena mengunyah rasanya sakit.",
       spokenIntro: "Mulut saya sering sekali terasa perih, sudut bibir pecah-pecah meradang, dan saya akhir-akhir ini malas makan karena mengunyah rasanya sakit.",
       hotspotVoices: {
@@ -217,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rs: {
       id: "rs",
       name: "Siswa RS (Remaja Laki-Laki - 16 Tahun)",
+      modelPath: "assets/models/casual_stride.glb",
       complaint: "Saya merasa badan saya lebih pendek dan kecil sekali dibandingkan dengan teman-teman sekelas. Kalau pas pelajaran olahraga, fisik saya cepat capek sekali.",
       spokenIntro: "Saya merasa badan saya lebih pendek dan kecil sekali dibandingkan dengan teman-teman sekelas. Kalau pas pelajaran olahraga, fisik saya cepat capek sekali.",
       hotspotVoices: {
@@ -285,6 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ds: {
       id: "ds",
       name: "Siswa DS (Remaja Perempuan - 17 Tahun)",
+      modelPath: "assets/models/casual_confidence_in_denim.glb",
       complaint: "Saya sering merasakan nyeri hebat di perut bawah saat menstruasi bulanan (dismenore). Nafsu makan saya kadang turun drastis, lesu, dan rasanya lemas.",
       spokenIntro: "Saya sering merasakan nyeri hebat di perut bawah saat menstruasi bulanan. Nafsu makan saya kadang turun drastis, lesu, dan rasanya lemas.",
       hotspotVoices: {
@@ -644,28 +649,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Hide target reticle
     if (targetReticle) targetReticle.style.display = "none";
 
-    // Set visual state values on the 3D model (Skeletal transformations & height transformations)
-    if (model) {
-      // 1. Dynamic bone scaling for abdomen
-      if (spineBone) {
-        if (caseId === "mr") {
-          // Obesity bulge
-          spineBone.scale.set(1.15, 1.15, 1.35);
-        } else if (caseId === "na" || caseId === "ap") {
-          // Thin structure
-          spineBone.scale.set(0.9, 0.9, 0.9);
-        } else {
-          // Standard
-          spineBone.scale.set(1.0, 1.0, 1.0);
-        }
-      }
-      
-      // 2. Taller or shorter overall model scale
-      if (model.baseScale) {
-        const mult = activeCase.visualState.modelScaleMultiplier || 1.0;
-        model.scale.setScalar(model.baseScale * mult);
-      }
-    }
+    // Load the custom 3D GLB model for this specific case study!
+    loadGLBModel(caseId);
 
     // Update the 3D model lighting colors for the medical case study
     updateCaseLights(caseId);
@@ -675,6 +660,146 @@ document.addEventListener("DOMContentLoaded", () => {
       scanStatus.textContent = "STANDBY / HUD READY";
       scanStatus.className = "ar-status-badge";
     }
+  }
+
+  // Load the specific 3D GLB model dynamically
+  function loadGLBModel(caseId) {
+    const activeCase = cases[caseId];
+    if (!activeCase) return;
+
+    // 1. Remove the existing 3D model if it exists
+    if (model) {
+      scene.remove(model);
+      model = null;
+    }
+
+    // 2. Reset bone references to null
+    headBone = null;
+    neckBone = null;
+    spineBone = null;
+    leftShoulderBone = null;
+    rightShoulderBone = null;
+    leftArmBone = null;
+    rightArmBone = null;
+    leftForeArmBone = null;
+    rightForeArmBone = null;
+
+    // 3. Load the GLB file corresponding to the active case
+    const loader = new THREE.GLTFLoader();
+    scanStatus.textContent = `MEMUAT MODEL 3D ${activeCase.name} (0%)...`;
+    scanStatus.className = "ar-status-badge scanning";
+
+    loader.load(
+      activeCase.modelPath,
+      function (gltf) {
+        model = gltf.scene;
+
+        // Auto-scale and center object using bounding box
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2.7 / maxDim;
+        model.scale.setScalar(scale);
+        model.baseScale = scale; // Save the base scale!
+
+        model.position.x = -center.x * scale;
+        model.position.y = -box.min.y * scale - 1.4;
+        model.position.z = -center.z * scale;
+
+        model.basePositionY = model.position.y; // Baseline coordinates
+
+        // Resolve bones for skeletal rigging control
+        model.traverse((child) => {
+          const rawName = child.name;
+          const cleanName = rawName.substring(rawName.lastIndexOf(':') + 1).toLowerCase();
+
+          if (cleanName.includes("head") && !headBone) {
+            headBone = child;
+            initialHeadRot.copy(child.rotation);
+          } else if (cleanName.includes("neck") && !neckBone) {
+            neckBone = child;
+            initialNeckRot.copy(child.rotation);
+          } else if ((cleanName.includes("spine") || cleanName === "body") && !spineBone) {
+            spineBone = child;
+            initialSpineRot.copy(child.rotation);
+          } else if ((cleanName.includes("upperarm_l") || cleanName.includes("shoulder_l")) && !leftArmBone) {
+            leftArmBone = child;
+            initialLeftArmRot.copy(child.rotation);
+          } else if ((cleanName.includes("upperarm_r") || cleanName.includes("shoulder_r")) && !rightArmBone) {
+            rightArmBone = child;
+            initialRightArmRot.copy(child.rotation);
+          }
+
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            
+            // Set up emissive color
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach(m => {
+                  if (m.emissive === undefined) m.emissive = new THREE.Color(0x000000);
+                });
+              } else {
+                if (child.material.emissive === undefined) child.material.emissive = new THREE.Color(0x000000);
+              }
+            }
+          }
+        });
+
+        scene.add(model);
+
+        scanStatus.textContent = "HOLOGRAPHIC MESH READY";
+        scanStatus.className = "ar-status-badge";
+
+        updateCaseLights(caseId);
+        resetBoneTargets();
+
+        // 1. Dynamic bone scaling for abdomen
+        if (spineBone) {
+          if (caseId === "mr") {
+            // Obesity bulge
+            spineBone.scale.set(1.15, 1.15, 1.35);
+          } else if (caseId === "na" || caseId === "ap") {
+            // Thin structure
+            spineBone.scale.set(0.9, 0.9, 0.9);
+          } else {
+            // Standard
+            spineBone.scale.set(1.0, 1.0, 1.0);
+          }
+        }
+        
+        // 2. Taller or shorter overall model scale
+        if (model.baseScale) {
+          const mult = activeCase.visualState.modelScaleMultiplier || 1.0;
+          model.scale.setScalar(model.baseScale * mult);
+        }
+      },
+      function (xhr) {
+        if (xhr.total > 0) {
+          const percentComplete = Math.round((xhr.loaded / xhr.total) * 100);
+          scanStatus.textContent = `LOADING 3D PATIENT MODEL (${percentComplete}%)...`;
+        } else {
+          scanStatus.textContent = "LOADING 3D PATIENT MODEL...";
+        }
+      },
+      function (error) {
+        console.error("Error loading GLTF model:", error);
+        scanStatus.textContent = "3D MESH ERROR / FALLBACK LOADED";
+        scanStatus.className = "ar-status-badge error";
+
+        // Fallback volumetric cylinder
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2.5, 16);
+        const material = new THREE.MeshPhongMaterial({ color: 0x12a46f, wireframe: true });
+        const fallbackMesh = new THREE.Mesh(geometry, material);
+        fallbackMesh.position.y = -0.15;
+        fallbackMesh.isCylinderFallback = true;
+        scene.add(fallbackMesh);
+        model = fallbackMesh;
+      }
+    );
   }
 
   // Update Three.js holographic colors dynamically based on case study
@@ -787,123 +912,6 @@ document.addEventListener("DOMContentLoaded", () => {
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.5;
     scene.add(spotLight);
-    
-    // Grid floor removed for static clinical view
-    
-    // Load the Rigged FBX model from RenderPeople
-    const loader = new THREE.FBXLoader();
-    scanStatus.textContent = "LOADING 3D PATIENT MODEL (0%)...";
-    scanStatus.className = "ar-status-badge scanning";
-    
-    loader.load(
-      "assets/models/rp_carla_rigged_001_yup_a.fbx",
-      function (object) {
-        model = object;
-        
-        // Auto-scale and center object using box dimensions
-        const box = new THREE.Box3().setFromObject(object);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.7 / maxDim;
-        object.scale.setScalar(scale);
-        object.baseScale = scale; // Save the base scale!
-        
-        object.position.x = -center.x * scale;
-        object.position.y = -box.min.y * scale - 1.4;
-        object.position.z = -center.z * scale;
-        
-        object.basePositionY = object.position.y; // Keep track of baseline Y coordinates
-        
-        // Resolve bones for skeletal rigging control using highly inclusive criteria
-        window.allFBXNodes = [];
-        object.traverse((child) => {
-          window.allFBXNodes.push(`${child.name} (${child.type || 'Object3D'})`);
-          
-          // Use exact matching based on the last part of the node name (stripping colons/namespaces)
-          const rawName = child.name;
-          const cleanName = rawName.substring(rawName.lastIndexOf(':') + 1).toLowerCase();
-          
-          if (cleanName === "head" && !headBone) {
-            headBone = child;
-            initialHeadRot.copy(child.rotation);
-          } else if (cleanName === "neck" && !neckBone) {
-            neckBone = child;
-            initialNeckRot.copy(child.rotation);
-          } else if ((cleanName === "spine_01" || cleanName === "spine") && !spineBone) {
-            spineBone = child;
-            initialSpineRot.copy(child.rotation);
-          } else if (cleanName === "shoulder_l" && !leftShoulderBone) {
-            leftShoulderBone = child;
-          } else if (cleanName === "shoulder_r" && !rightShoulderBone) {
-            rightShoulderBone = child;
-          } else if (cleanName === "upperarm_l" && !leftArmBone) {
-            leftArmBone = child;
-            initialLeftArmRot.copy(child.rotation);
-          } else if (cleanName === "upperarm_r" && !rightArmBone) {
-            rightArmBone = child;
-            initialRightArmRot.copy(child.rotation);
-          } else if (cleanName === "lowerarm_l" && !leftForeArmBone) {
-            leftForeArmBone = child;
-            initialLeftForeArmRot.copy(child.rotation);
-          } else if (cleanName === "lowerarm_r" && !rightForeArmBone) {
-            rightForeArmBone = child;
-            initialRightForeArmRot.copy(child.rotation);
-          }
-
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-        
-        scene.add(object);
-        
-        scanStatus.textContent = "HOLOGRAPHIC MESH READY";
-        scanStatus.className = "ar-status-badge";
-        
-        // VISUAL ON-SCREEN DEBUG LOGGER FOR USER DIAGNOSTICS - DISABLED
-        window.updateDebugOverlay = () => {};
-
-        console.log("NutriVerse AR - Resolved Bones:", {
-          headBone: headBone ? headBone.name : "NOT FOUND",
-          neckBone: neckBone ? neckBone.name : "NOT FOUND",
-          spineBone: spineBone ? spineBone.name : "NOT FOUND",
-          leftShoulderBone: leftShoulderBone ? leftShoulderBone.name : "NOT FOUND",
-          rightShoulderBone: rightShoulderBone ? rightShoulderBone.name : "NOT FOUND",
-          leftArmBone: leftArmBone ? leftArmBone.name : "NOT FOUND",
-          rightArmBone: rightArmBone ? rightArmBone.name : "NOT FOUND",
-          leftForeArmBone: leftForeArmBone ? leftForeArmBone.name : "NOT FOUND",
-          rightForeArmBone: rightForeArmBone ? rightForeArmBone.name : "NOT FOUND",
-        });
-        
-        updateCaseLights(currentCaseId);
-        resetBoneTargets();
-      },
-      function (xhr) {
-        if (xhr.total > 0) {
-          const percentComplete = Math.round((xhr.loaded / xhr.total) * 100);
-          scanStatus.textContent = `LOADING 3D PATIENT MODEL (${percentComplete}%)...`;
-        } else {
-          scanStatus.textContent = "LOADING 3D PATIENT MODEL...";
-        }
-      },
-      function (error) {
-        console.error("Error loading FBX model:", error);
-        scanStatus.textContent = "3D MESH ERROR / FALLBACK LOADED";
-        scanStatus.className = "ar-status-badge error";
-        
-        // Fallback volumetric grid shape
-        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 2.5, 16);
-        const material = new THREE.MeshPhongMaterial({ color: 0x12a46f, wireframe: true });
-        const fallbackMesh = new THREE.Mesh(geometry, material);
-        fallbackMesh.position.y = -0.15;
-        fallbackMesh.isCylinderFallback = true; // Mark as fallback cylinder
-        scene.add(fallbackMesh);
-        model = fallbackMesh;
-      }
-    );
     
     // Renderer Render Tick loop
     const clock = new THREE.Clock();
