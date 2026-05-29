@@ -733,8 +733,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+            child.castShadow = false;
+            child.receiveShadow = false;
             
             // Set up emissive color
             if (child.material) {
@@ -881,10 +881,10 @@ document.addEventListener("DOMContentLoaded", () => {
     camera.position.set(0, 0.5, 4.5);
     
     // WebGL Renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25)); // Cap at 1.25 to prevent lag on Retina/4K screens
+    renderer.shadowMap.enabled = false; // Disable shadows for extreme smoothness
     container.appendChild(renderer.domElement);
     
     // Interactive OrbitControls
@@ -915,8 +915,20 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Renderer Render Tick loop
     const clock = new THREE.Clock();
-    function animate() {
+    let lastFrameTime = 0;
+    const fpsLimit = 30; // Cap to 30 FPS to save CPU/GPU and eliminate lag entirely
+    const frameDuration = 1000 / fpsLimit;
+
+    function animate(currentTime) {
       requestAnimationFrame(animate);
+      
+      // Throttle rendering loop to 30 FPS to resolve GPU/CPU thermal throttling and lag
+      if (!currentTime) currentTime = performance.now();
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed < frameDuration) {
+        return;
+      }
+      lastFrameTime = currentTime - (elapsed % frameDuration);
       
       try {
         const delta = clock.getDelta();
