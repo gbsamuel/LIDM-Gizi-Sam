@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Dosen | NutriVerse</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="dashboard-page">
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <a href="pretest.html">Pretest</a>
+        <a href="posttest.html">Posttest</a>
+        <a class="active" href="dashboard-dosen.html">Dashboard Dosen</a>
+      </div>
+    </nav>
+  </header>
+
+  <main data-teacher-only>
+    <section class="page-hero reveal-on-scroll">
+      <span class="eyebrow">Admin Dosen</span>
+      <h1>Dashboard Dosen</h1>
+      <p class="lead">Rekap Nilai pretest dan posttest mahasiswa untuk melihat progres pembelajaran.</p>
+      <div class="inline-actions">
+        <button class="button secondary" type="button" data-signout>Keluar</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-inner dashboard-panel">
+        <div class="section-head">
+          <span class="eyebrow">Analisis Test</span>
+          <h2>Rekap Nilai Mahasiswa</h2>
+          <p class="dashboard-status" data-dashboard-status aria-live="polite">Memuat data...</p>
+        </div>
+        <div class="dashboard-table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>NIM</th>
+                <th>Email</th>
+                <th>Pretest</th>
+                <th>Waktu Pretest</th>
+                <th>Posttest</th>
+                <th>Waktu Posttest</th>
+                <th>Peningkatan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody data-dashboard-table>
+              <tr><td colspan="9">Memuat rekap...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>Dashboard Dosen</strong><p class="muted">Akses terbatas untuk role teacher.</p></div>
+      <div class="footer-links"><a href="index.html">Beranda</a><a href="nutrisolve.html">NutriSolve</a></div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/pretest-gate.js"></script>
+  <script src="assets/js/dashboard-dosen.js"></script>
+</body>
+</html>

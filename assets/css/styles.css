@@ -2997,5 +2997,323 @@ tr:last-child td {
   transform: rotate(-90deg);
 }
 
+.pretest-page main {
+  min-height: calc(100vh - 120px);
+}
 
+.pretest-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 48px;
+}
+
+.pretest-card {
+  width: min(860px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(91, 134, 229, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  padding: 30px;
+}
+
+.pretest-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pretest-card h1 {
+  margin: 4px 0 10px;
+  font-size: clamp(30px, 4vw, 48px);
+}
+
+.pretest-progress {
+  flex: 0 0 auto;
+  min-width: 88px;
+  text-align: center;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: rgba(91, 134, 229, 0.1);
+  color: var(--indigo);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.pretest-question-panel {
+  padding: 26px 0 20px;
+}
+
+.pretest-question-panel h2 {
+  margin: 16px 0 20px;
+  font-size: clamp(22px, 3vw, 32px);
+  line-height: 1.25;
+}
+
+.pretest-options {
+  display: grid;
+  gap: 12px;
+}
+
+.pretest-option {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.pretest-option:hover,
+.pretest-option:focus-within {
+  border-color: rgba(91, 134, 229, 0.45);
+  box-shadow: 0 10px 30px rgba(91, 134, 229, 0.1);
+  transform: translateY(-1px);
+}
+
+.pretest-option input {
+  margin-top: 2px;
+  accent-color: var(--indigo);
+}
+
+.pretest-warning {
+  display: none;
+  margin: 16px 0 0;
+  color: var(--rose);
+  font-weight: 800;
+}
+
+.pretest-warning.active {
+  display: block;
+}
+
+.test-status,
+.auth-status,
+.dashboard-status {
+  display: none;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(91, 134, 229, 0.16);
+  background: rgba(91, 134, 229, 0.08);
+  color: var(--indigo);
+  font-weight: 800;
+}
+
+.test-status.active,
+.auth-status.active,
+.dashboard-status.active {
+  display: block;
+}
+
+.test-status[data-status="error"],
+.auth-status[data-status="error"],
+.dashboard-status[data-status="error"] {
+  border-color: rgba(226, 87, 79, 0.2);
+  background: rgba(226, 87, 79, 0.08);
+  color: var(--rose);
+}
+
+.test-status[data-status="success"],
+.auth-status[data-status="success"],
+.dashboard-status[data-status="success"] {
+  border-color: rgba(18, 164, 111, 0.2);
+  background: rgba(18, 164, 111, 0.08);
+  color: var(--green-dark);
+}
+
+.pretest-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.pretest-actions .button {
+  min-width: 140px;
+}
+
+.pretest-actions .button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+body.pretest-locked > header,
+body.pretest-locked > main,
+body.pretest-locked > footer,
+body.pretest-locked > .nutribot-widget {
+  filter: blur(7px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.pretest-gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(248, 250, 252, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.pretest-gate-box {
+  width: min(460px, 100%);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(91, 134, 229, 0.18);
+  border-radius: 24px;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.2);
+  padding: 30px;
+}
+
+.pretest-gate-kicker {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(226, 87, 79, 0.1);
+  color: var(--rose);
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pretest-gate-box h2 {
+  margin: 16px 0 10px;
+  font-size: clamp(26px, 4vw, 38px);
+}
+
+.pretest-gate-box p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.auth-shell {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+}
+
+.auth-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.auth-copy h1 {
+  font-size: clamp(34px, 5vw, 58px);
+  margin: 8px 0 12px;
+}
+
+.auth-note {
+  color: var(--muted);
+  margin-top: 16px;
+}
+
+.auth-panels {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-card {
+  display: grid;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(91, 134, 229, 0.14);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.1);
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.auth-card .field {
+  display: grid;
+  gap: 7px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.auth-card input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0 12px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--white);
+}
+
+.dashboard-panel {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(91, 134, 229, 0.14);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.08);
+}
+
+.dashboard-table-wrap {
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+  font-size: 14px;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.dashboard-table th {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 640px) {
+  .pretest-card {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .pretest-card-head,
+  .pretest-actions {
+    flex-direction: column;
+  }
+
+  .pretest-progress,
+  .pretest-actions .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+}
 

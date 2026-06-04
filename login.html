@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login NutriVerse</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="auth-page">
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <a href="pretest.html">Pretest</a>
+        <a href="dashboard-dosen.html">Dashboard Dosen</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section auth-shell">
+      <div class="section-inner auth-grid">
+        <div class="auth-copy reveal-on-scroll">
+          <span class="eyebrow">Akun Pembelajaran</span>
+          <h1>Login NutriVerse</h1>
+          <p class="lead">Masuk untuk menyimpan nilai pretest dan posttest sebagai data resmi analisis dosen.</p>
+          <p class="auth-note">Akun dosen dibuat manual lewat Supabase dengan role <strong>teacher</strong>.</p>
+        </div>
+
+        <div class="auth-panels reveal-on-scroll delay-100">
+          <form class="auth-card" data-login-form>
+            <h2>Masuk</h2>
+            <label class="field">Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label class="field">Password
+              <input name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button class="button primary" type="submit">Masuk</button>
+          </form>
+
+          <form class="auth-card" data-register-form>
+            <h2>Daftar Mahasiswa</h2>
+            <label class="field">Nama Lengkap
+              <input name="full_name" type="text" autocomplete="name" required>
+            </label>
+            <label class="field">NIM
+              <input name="nim" type="text" required>
+            </label>
+            <label class="field">Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label class="field">Password
+              <input name="password" type="password" autocomplete="new-password" minlength="6" required>
+            </label>
+            <button class="button secondary" type="submit">Buat Akun</button>
+          </form>
+
+          <p class="auth-status" data-auth-status aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>Login NutriVerse</strong><p class="muted">Supabase Auth email/password untuk mahasiswa dan dosen.</p></div>
+      <div class="footer-links"><a href="index.html">Beranda</a><a href="pretest.html">Pretest</a></div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/pretest-gate.js"></script>
+  <script src="assets/js/login.js"></script>
+</body>
+</html>

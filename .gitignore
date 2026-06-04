@@ -6,3 +6,4 @@ assets/models/*
 .env
 __pycache__/
 *.pyc
+.superpowers/
