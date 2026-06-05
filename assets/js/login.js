@@ -46,14 +46,19 @@
     const form = new FormData(registerForm);
     try {
       setStatus("Mendaftarkan akun mahasiswa...", "info");
-      await auth.signUpStudent({
+      const data = await auth.signUpStudent({
         fullName: form.get("full_name").trim(),
         nim: form.get("nim").trim(),
         email: form.get("email").trim(),
         password: form.get("password")
       });
-      setStatus("Akun berhasil dibuat. Jika email confirmation aktif, cek email sebelum login.", "success");
       registerForm.reset();
+      if (data?.session) {
+        setStatus("Akun berhasil dibuat. Mengarahkan ke halaman berikutnya...", "success");
+        window.location.href = nextUrl();
+        return;
+      }
+      setStatus("Akun berhasil dibuat. Jika email confirmation aktif, cek email sebelum login.", "success");
     } catch (error) {
       setStatus(error.message, "error");
     }

@@ -31,6 +31,32 @@ as $$
   select role from public.profiles where id = auth.uid()
 $$;
 
+create or replace function public.handle_new_user_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name, nim, email, role)
+  values (
+    new.id,
+    coalesce(nullif(new.raw_user_meta_data->>'full_name', ''), split_part(new.email, '@', 1), 'Mahasiswa'),
+    nullif(new.raw_user_meta_data->>'nim', ''),
+    new.email,
+    'student'
+  )
+  on conflict (id) do nothing;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created_profile on auth.users;
+create trigger on_auth_user_created_profile
+after insert on auth.users
+for each row execute function public.handle_new_user_profile();
+
 drop policy if exists "students can read own profile" on public.profiles;
 create policy "students can read own profile"
 on public.profiles for select

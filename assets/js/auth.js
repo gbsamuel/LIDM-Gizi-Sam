@@ -49,6 +49,39 @@
     if (!client()) throw authError();
     const { data, error } = await client().auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data?.user) {
+      await ensureStudentProfile(data.user);
+    }
+    return data;
+  }
+
+  function studentProfilePayload(user, fallback = {}) {
+    const metadata = user?.user_metadata || {};
+    return {
+      id: user.id,
+      full_name: fallback.fullName || metadata.full_name || user.email?.split("@")[0] || "Mahasiswa",
+      nim: fallback.nim || metadata.nim || null,
+      email: fallback.email || user.email || null,
+      role: "student"
+    };
+  }
+
+  async function ensureStudentProfile(user, fallback = {}) {
+    if (!client() || !user?.id) return null;
+    const { data: existing, error: existingError } = await client()
+      .from(PROFILE_TABLE)
+      .select("id, full_name, nim, email, role, created_at")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (existingError) throw existingError;
+    if (existing) return existing;
+
+    const { data, error } = await client()
+      .from(PROFILE_TABLE)
+      .insert(studentProfilePayload(user, fallback))
+      .select("id, full_name, nim, email, role, created_at")
+      .single();
+    if (error) throw error;
     return data;
   }
 
@@ -65,16 +98,8 @@
       }
     });
     if (error) throw error;
-    const userId = data?.user?.id;
-    if (userId) {
-      const { error: profileError } = await client().from(PROFILE_TABLE).upsert({
-        id: userId,
-        full_name: fullName,
-        nim,
-        email,
-        role: "student"
-      });
-      if (profileError) throw profileError;
+    if (data?.session && data?.user) {
+      await ensureStudentProfile(data.user, { fullName, nim, email });
     }
     return data;
   }
@@ -179,6 +204,7 @@
     getProfile,
     signIn,
     signUpStudent,
+    ensureStudentProfile,
     signOut,
     hasCompletedAttempt,
     getAttempt,

@@ -86,6 +86,8 @@ test("supabase auth and score storage assets are wired without service keys", ()
   for (const marker of [
     "create table if not exists public.profiles",
     "create table if not exists public.test_attempts",
+    "handle_new_user_profile",
+    "on_auth_user_created_profile",
     "unique (user_id, test_type)",
     "enable row level security",
     "teacher",
@@ -131,10 +133,14 @@ test("login and teacher dashboard implement the role-based v1 flow", () => {
   assert.match(dashboard, /assets\/js\/dashboard-dosen\.js/);
 
   const dashboardJs = readFileSync("assets/js/dashboard-dosen.js", "utf8");
+  const authJs = readFileSync("assets/js/auth.js", "utf8");
   assert.match(dashboardJs, /requireTeacher/);
   assert.match(dashboardJs, /profiles/);
   assert.match(dashboardJs, /test_attempts/);
   assert.match(dashboardJs, /posttest.*pretest|pretest.*posttest/s);
+  assert.match(authJs, /ensureStudentProfile/);
+  assert.match(authJs, /data\?\.session/);
+  assert.doesNotMatch(authJs, /\.upsert\(studentProfilePayload/);
 });
 
 test("auth gate protects feature pages while leaving landing and auth pages open", () => {
