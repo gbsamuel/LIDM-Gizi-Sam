@@ -52,6 +52,58 @@ begin
 end;
 $$;
 
+create or replace function public.admin_dashboard_rows(admin_password text)
+returns table (
+  profile_id uuid,
+  full_name text,
+  nim text,
+  email text,
+  pretest_score int,
+  pretest_total int,
+  pretest_percentage numeric,
+  pretest_submitted_at timestamptz,
+  posttest_score int,
+  posttest_total int,
+  posttest_percentage numeric,
+  posttest_submitted_at timestamptz,
+  improvement numeric
+)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select
+    p.id as profile_id,
+    p.full_name,
+    p.nim,
+    p.email,
+    pre.score as pretest_score,
+    pre.total as pretest_total,
+    pre.percentage as pretest_percentage,
+    pre.submitted_at as pretest_submitted_at,
+    post.score as posttest_score,
+    post.total as posttest_total,
+    post.percentage as posttest_percentage,
+    post.submitted_at as posttest_submitted_at,
+    case
+      when pre.percentage is null or post.percentage is null then null
+      else round(post.percentage - pre.percentage, 2)
+    end as improvement
+  from public.profiles p
+  left join public.test_attempts pre
+    on pre.user_id = p.id
+    and pre.test_type = 'pretest'
+  left join public.test_attempts post
+    on post.user_id = p.id
+    and post.test_type = 'posttest'
+  where admin_password = 'nutriverse123'
+    and p.role = 'student'
+  order by p.full_name asc;
+$$;
+
+grant execute on function public.admin_dashboard_rows(text) to anon, authenticated;
+
 drop trigger if exists on_auth_user_created_profile on auth.users;
 create trigger on_auth_user_created_profile
 after insert on auth.users

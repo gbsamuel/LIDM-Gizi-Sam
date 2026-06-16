@@ -3227,6 +3227,33 @@ body.pretest-locked > .nutribot-widget {
   gap: 16px;
 }
 
+.auth-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid rgba(91, 134, 229, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.auth-mode-tabs button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.auth-mode-tabs button.active {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--green), var(--indigo));
+  box-shadow: 0 10px 24px rgba(18, 164, 111, 0.18);
+}
+
 .auth-card {
   display: grid;
   gap: 14px;
@@ -3316,4 +3343,3 @@ body.pretest-locked > .nutribot-widget {
     grid-template-columns: 1fr;
   }
 }
-

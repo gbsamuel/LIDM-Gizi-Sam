@@ -169,6 +169,14 @@
     }
 
     try {
+      if (testType === "posttest") {
+        const pretestDone = await auth.hasCompletedAttempt(user.id, "pretest");
+        if (!pretestDone) {
+          disableRunner("Selesaikan pretest dulu sebelum posttest.");
+          return;
+        }
+      }
+
       const done = await auth.hasCompletedAttempt(user.id, testType);
       if (done) {
         disableRunner("Test ini sudah pernah diselesaikan.");

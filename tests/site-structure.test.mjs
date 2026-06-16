@@ -119,10 +119,14 @@ test("pretest and posttest share question data and save official attempts to Sup
   assert.doesNotMatch(runner, /localStorage\.setItem\("nutriverse_pretest_v1_result"/);
 });
 
-test("login and teacher dashboard implement the role-based v1 flow", () => {
+test("login and dashboard implement static admin unlock flow", () => {
   const login = readFileSync("login.html", "utf8");
   assert.match(login, /data-login-form/);
   assert.match(login, /data-register-form/);
+  assert.match(login, /data-admin-login-form/);
+  assert.match(login, /data-auth-mode="student"/);
+  assert.match(login, /data-auth-mode="admin"/);
+  assert.match(login, /name="admin_password"/);
   assert.match(login, /name="full_name"/);
   assert.match(login, /name="nim"/);
   assert.match(login, /assets\/js\/auth\.js/);
@@ -133,14 +137,38 @@ test("login and teacher dashboard implement the role-based v1 flow", () => {
   assert.match(dashboard, /assets\/js\/dashboard-dosen\.js/);
 
   const dashboardJs = readFileSync("assets/js/dashboard-dosen.js", "utf8");
+  const loginJs = readFileSync("assets/js/login.js", "utf8");
   const authJs = readFileSync("assets/js/auth.js", "utf8");
-  assert.match(dashboardJs, /requireTeacher/);
-  assert.match(dashboardJs, /profiles/);
-  assert.match(dashboardJs, /test_attempts/);
+  assert.match(loginJs, /nutriverse123/);
+  assert.match(loginJs, /nutriverse_admin_unlocked/);
+  assert.match(loginJs, /dashboard-dosen\.html/);
+  assert.match(dashboardJs, /nutriverse_admin_unlocked/);
+  assert.match(dashboardJs, /admin_dashboard_rows/);
+  assert.match(dashboardJs, /function escapeHtml/);
+  assert.doesNotMatch(dashboardJs, /requireTeacher/);
   assert.match(dashboardJs, /posttest.*pretest|pretest.*posttest/s);
   assert.match(authJs, /ensureStudentProfile/);
   assert.match(authJs, /data\?\.session/);
   assert.doesNotMatch(authJs, /\.upsert\(studentProfilePayload/);
+});
+
+test("static admin RPC and optional posttest contract are documented in code", () => {
+  const schema = readFileSync("supabase/schema.sql", "utf8");
+  assert.match(schema, /create or replace function public\.admin_dashboard_rows/);
+  assert.match(schema, /admin_password text/);
+  assert.match(schema, /nutriverse123/);
+  assert.match(schema, /security definer/i);
+  assert.match(schema, /pretest_score/);
+  assert.match(schema, /posttest_score/);
+
+  const runner = readFileSync("assets/js/test-runner.js", "utf8");
+  assert.match(runner, /testType === "posttest"/);
+  assert.match(runner, /hasCompletedAttempt\(user\.id, "pretest"\)/);
+  assert.match(runner, /Selesaikan pretest dulu sebelum posttest/);
+
+  const gate = readFileSync("assets/js/pretest-gate.js", "utf8");
+  assert.doesNotMatch(gate, /hasCompletedAttempt\(user\.id,\s*"posttest"\)/, "posttest should not be a global feature gate");
+  assert.doesNotMatch(gate, /nutriverse_posttest/i, "posttest should not have a global gate cache key");
 });
 
 test("auth gate protects feature pages while leaving landing and auth pages open", () => {

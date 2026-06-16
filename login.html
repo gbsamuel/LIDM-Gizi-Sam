@@ -26,10 +26,15 @@
           <span class="eyebrow">Akun Pembelajaran</span>
           <h1>Login NutriVerse</h1>
           <p class="lead">Masuk untuk menyimpan nilai pretest dan posttest sebagai data resmi analisis dosen.</p>
-          <p class="auth-note">Akun dosen dibuat manual lewat Supabase dengan role <strong>teacher</strong>.</p>
+          <p class="auth-note">Admin sementara memakai password statis untuk membuka dashboard demo.</p>
         </div>
 
         <div class="auth-panels reveal-on-scroll delay-100">
+          <div class="auth-mode-tabs" role="tablist" aria-label="Pilih mode login">
+            <button class="active" type="button" data-auth-mode="student" aria-selected="true">Mahasiswa</button>
+            <button type="button" data-auth-mode="admin" aria-selected="false">Login as Admin</button>
+          </div>
+
           <form class="auth-card" data-login-form>
             <h2>Masuk</h2>
             <label class="field">Email
@@ -39,6 +44,14 @@
               <input name="password" type="password" autocomplete="current-password" required>
             </label>
             <button class="button primary" type="submit">Masuk</button>
+          </form>
+
+          <form class="auth-card" data-admin-login-form hidden>
+            <h2>Admin Dashboard</h2>
+            <label class="field">Password Admin
+              <input name="admin_password" type="password" autocomplete="current-password" required>
+            </label>
+            <button class="button primary" type="submit">Buka Dashboard Admin</button>
           </form>
 
           <form class="auth-card" data-register-form>
