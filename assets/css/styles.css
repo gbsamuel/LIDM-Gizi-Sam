@@ -716,6 +716,43 @@ h3 {
   background: var(--rose-soft);
 }
 
+.tag.active {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--green), var(--indigo));
+}
+
+button.tag {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.database-toolbar {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid rgba(91, 134, 229, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, 0.07);
+}
+
+.database-search {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(6, 63, 52, 0.14);
+  border-radius: 14px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 16px;
+}
+
+.database-grid .card {
+  min-height: 210px;
+}
+
 .feature-band {
   background: linear-gradient(135deg, rgba(18, 164, 111, 0.10), rgba(79, 70, 229, 0.08));
   border-top: 1px solid rgba(6, 63, 52, 0.08);

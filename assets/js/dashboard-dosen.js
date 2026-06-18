@@ -39,7 +39,8 @@
   }
 
   function statusLabel(row) {
-    if (row.pretest && row.posttest) return "Selesai";
+    if (row.pretest && row.posttest && row.casesCompleted > 0) return "Kompetensi berjalan";
+    if (row.pretest && row.posttest) return "Test selesai";
     if (row.pretest) return "Belum posttest";
     return "Belum pretest";
   }
@@ -47,7 +48,7 @@
   function renderRows(rows) {
     if (!tableBody) return;
     if (!rows.length) {
-      tableBody.innerHTML = `<tr><td colspan="9">Belum ada data mahasiswa.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="12">Belum ada data mahasiswa.</td></tr>`;
       return;
     }
 
@@ -61,6 +62,9 @@
         <td>${formatScore(row.posttest)}</td>
         <td>${formatDate(row.posttest?.submitted_at)}</td>
         <td>${row.improvement === null ? "-" : `${row.improvement.toFixed(1)} poin`}</td>
+        <td>${row.casesCompleted}</td>
+        <td>${row.modulesCompleted}</td>
+        <td>${row.featureEventsCount}</td>
         <td>${statusLabel(row)}</td>
       </tr>
     `).join("");
@@ -96,7 +100,10 @@
       },
       pretest,
       posttest,
-      improvement: record.improvement === null ? null : Number(record.improvement)
+      improvement: record.improvement === null ? null : Number(record.improvement),
+      casesCompleted: Number(record.cases_completed || 0),
+      modulesCompleted: Number(record.modules_completed || 0),
+      featureEventsCount: Number(record.feature_events_count || 0)
     };
   }
 

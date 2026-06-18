@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NutriQuest | Evaluasi Kompetensi</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Navigasi utama">
+      <a class="brand" href="index.html"><span class="brand-mark">NV</span><span>NUTRIVERSE</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Buka navigasi">=</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Beranda</a>
+        <div class="nav-group">
+          <a class="nav-parent" href="nutrisolve.html"><span>NutriSolve</span><span class="nav-chevron">v</span></a>
+          <div class="nav-sub-links">
+            <a href="antropometri.html">Anthro</a>
+            <a href="clinical.html">Clinical</a>
+            <a href="dietary.html">Dietary</a>
+            <a href="ar-patient.html">AR Patient</a>
+          </div>
+        </div>
+        <a href="nutribase.html">NutriBase</a>
+        <a href="nutripath.html">NutriPath</a>
+        <a href="nutriread.html">NutriRead</a>
+        <a class="active" href="nutriquest.html">NutriQuest</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero reveal-on-scroll">
+      <span class="eyebrow">NutriQuest</span>
+      <h1>Pusat evaluasi dan data tracking kompetensi NutriVerse.</h1>
+      <p class="lead">NutriQuest menghubungkan baseline, evaluasi akhir, asesmen kasus, dan dashboard dosen agar progres belajar terbaca utuh.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-inner grid two">
+        <a href="pretest.html" class="card card-link reveal-on-scroll delay-100" data-icon="Q1" data-track-feature="nutriquest" data-track-event="open" data-track-resource="pretest">
+          <h3>Pretest</h3>
+          <p>Baseline awal sebelum mahasiswa membuka fitur utama NUTRIVERSE.</p>
+          <span class="tag">Baseline</span>
+        </a>
+        <a href="posttest.html" class="card card-link reveal-on-scroll delay-200" data-icon="Q2" data-track-feature="nutriquest" data-track-event="open" data-track-resource="posttest">
+          <h3>Posttest</h3>
+          <p>Evaluasi akhir untuk membandingkan peningkatan terhadap nilai pretest.</p>
+          <span class="tag blue">Evaluasi Akhir</span>
+        </a>
+        <a href="ar-patient.html" class="card card-link reveal-on-scroll delay-300" data-icon="AR" data-track-feature="nutriquest" data-track-event="open" data-track-resource="case-assessment">
+          <h3>Asesmen Kasus</h3>
+          <p>Latihan clinical reasoning melalui kasus AR Patient dan feedback AI Supervisor.</p>
+          <span class="tag gold">Case Attempt</span>
+        </a>
+        <a href="dashboard-dosen.html" class="card card-link reveal-on-scroll delay-400" data-icon="DB" data-track-feature="nutriquest" data-track-event="open" data-track-resource="teacher-dashboard">
+          <h3>Dashboard Dosen</h3>
+          <p>Rekap Kompetensi: nilai test, kasus selesai, modul selesai, dan aktivitas fitur.</p>
+          <span class="tag coral">Monitoring</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section feature-band">
+      <div class="section-inner">
+        <div class="section-head reveal-on-scroll">
+          <span class="eyebrow">Progress Kompetensi</span>
+          <h2>Data yang dilacak untuk evaluasi pembelajaran.</h2>
+          <p class="lead">Tracking disiapkan untuk pre/post-test, jawaban per soal, penyelesaian kasus, progress modul, dan penggunaan fitur.</p>
+        </div>
+        <div class="stats">
+          <div class="stat reveal-on-scroll delay-100"><strong>25</strong><span>Soal baseline</span></div>
+          <div class="stat reveal-on-scroll delay-200"><strong>5</strong><span>Kasus AR awal</span></div>
+          <div class="stat reveal-on-scroll delay-300"><strong>3</strong><span>Jenis progres</span></div>
+          <div class="stat reveal-on-scroll delay-400"><strong>1</strong><span>Dashboard dosen</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>NutriQuest</strong><p class="muted">Hub evaluasi dan tracking kompetensi.</p></div>
+      <div class="footer-links"><a href="pretest.html">Pretest</a><a href="posttest.html">Posttest</a><a href="dashboard-dosen.html">Dashboard</a></div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/tracking.js"></script>
+  <script src="assets/js/pretest-gate.js"></script>
+</body>
+</html>

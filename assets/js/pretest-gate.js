@@ -1,6 +1,6 @@
 (function () {
   const COMPLETED_KEY = "nutriverse_pretest_v1_completed";
-  const OPEN_PAGES = new Set(["", "index.html", "login.html", "pretest.html", "dashboard-dosen.html"]);
+  const OPEN_PAGES = new Set(["", "index.html", "login.html", "pretest.html", "nutriquest.html", "dashboard-dosen.html"]);
 
   function currentPage() {
     return (window.location.pathname.split("/").pop() || "").toLowerCase();

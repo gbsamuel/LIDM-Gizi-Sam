@@ -88,6 +88,16 @@
     }, 0);
   }
 
+  function answerRows() {
+    return questions.map((question) => ({
+      question_id: question.id,
+      category: question.category,
+      selected_answer: answers[question.id],
+      correct_answer: question.answer,
+      is_correct: answers[question.id] === question.answer
+    }));
+  }
+
   async function saveResult() {
     const auth = window.NutriVerseAuth;
     if (!auth?.isConfigured()) {
@@ -100,7 +110,7 @@
       return null;
     }
 
-    return auth.insertTestAttempt({
+    const savedAttempt = await auth.insertTestAttempt({
       userId: user.id,
       testType,
       score: calculateScore(),
@@ -110,6 +120,12 @@
       percentageField: SCORE_PERCENTAGE_FIELD,
       submittedAtField: SUBMITTED_AT_FIELD
     });
+    await auth.insertTestAttemptAnswers({
+      attemptId: savedAttempt.id,
+      userId: user.id,
+      answers: answerRows()
+    });
+    return savedAttempt;
   }
 
   async function handleNext() {

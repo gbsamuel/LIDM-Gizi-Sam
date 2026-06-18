@@ -4,21 +4,22 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 const pages = [
-  ["index.html", ["NUTRIVERSE", "NutriSolve", "NutriBase", "NutriPath", "NutriRead"]],
+  ["index.html", ["NUTRIVERSE", "NutriSolve", "NutriBase", "NutriPath", "NutriRead", "NutriQuest"]],
   ["login.html", ["Login NutriVerse", "Daftar Mahasiswa", "Email", "NIM"]],
   ["pretest.html", ["Pretest NutriVerse", "Baseline Awal", "data-test-type=\"pretest\""]],
   ["posttest.html", ["Posttest NutriVerse", "Evaluasi Akhir", "data-test-type=\"posttest\""]],
-  ["dashboard-dosen.html", ["Dashboard Dosen", "Rekap Nilai", "Peningkatan"]],
+  ["dashboard-dosen.html", ["Dashboard Dosen", "Rekap Kompetensi", "Kasus Selesai"]],
+  ["nutriquest.html", ["NutriQuest", "Pretest", "Posttest", "Asesmen Kasus", "Progress Kompetensi", "Dashboard Dosen"]],
   ["nutrisolve.html", ["Decision Support System", "Anthropometry", "Clinical", "Dietary"]],
   ["antropometri.html", ["Anthropometry Assessment", "Tabel Interpretasi", "Simulasi DSS"]],
   ["clinical.html", ["Clinical Nutrition Screening", "Scan Visual", "Simulasi AI"]],
   ["dietary.html", ["Dietary Pattern Assessment", "Ringkasan Pola Makan", "Simulasi"]],
-  ["nutribase.html", ["TKPI", "DBMP", "AKG", "BPOM", "Foto Buku Makanan", "Rumus Perhitungan Gizi"]],
-  ["nutripath.html", ["Modul Siswa SMA", "Modul Mahasiswa Gizi", "10 Tahapan Modul"]],
+  ["nutribase.html", ["TKPI", "DBMP", "AKG", "BPOM", "Foto Buku Makanan", "SSGI", "SKI", "Rumus Perhitungan Gizi", "Cari database"]],
+  ["nutripath.html", ["Modul Mahasiswa Gizi", "PPT", "Link Video", "Case Gizi", "15 tahun terakhir"]],
   ["nutriread.html", ["Jurnal", "E-Book", "AI Summary"]],
   ["ar-patient.html", ["AR Patient Visualization", "Detail Data Pasien", "AI CLINICAL SUPERVISOR"]],
   ["ai_summary.html", ["AI Summary", "Masukkan Teks Jurnal", "Summarize Jurnal"]],
-  ["journal_ebook.html", ["Jurnal", "E-Book", "Kumpulan referensi"]],
+  ["journal_ebook.html", ["Jurnal", "E-Book", "Metadata Referensi", "Topik", "Tahun"]],
 ];
 
 test("planned static pages exist with NutriVerse content markers", () => {
@@ -98,6 +99,92 @@ test("supabase auth and score storage assets are wired without service keys", ()
   assert.doesNotMatch(schema, /service_role/i);
 });
 
+test("nutriquest and tracking schema implement competency data contracts", () => {
+  const quest = readFileSync("nutriquest.html", "utf8");
+  for (const marker of [
+    'href="pretest.html"',
+    'href="posttest.html"',
+    'href="ar-patient.html"',
+    'href="dashboard-dosen.html"',
+    "Progress Kompetensi",
+  ]) {
+    assert.match(quest, new RegExp(marker.replace(/[()]/g, "\\$&")), `nutriquest should include ${marker}`);
+  }
+
+  const schema = readFileSync("supabase/schema.sql", "utf8");
+  for (const marker of [
+    "create table if not exists public.test_attempt_answers",
+    "create table if not exists public.case_attempts",
+    "create table if not exists public.learning_progress",
+    "create table if not exists public.feature_events",
+    "attempt_id",
+    "question_id",
+    "case_id",
+    "module_id",
+    "event_type",
+    "metadata jsonb",
+    "cases_completed",
+    "modules_completed",
+    "feature_events_count",
+  ]) {
+    assert.match(schema, new RegExp(marker.replace(/[()]/g, "\\$&"), "i"), `schema should include ${marker}`);
+  }
+  assert.match(schema, /enable row level security/i);
+  assert.match(schema, /students can insert own case attempts/i);
+  assert.match(schema, /students can insert own feature events/i);
+});
+
+test("frontend helpers persist detailed answers, case progress, and feature events", () => {
+  assert.equal(existsSync("assets/js/tracking.js"), true, "tracking helper should exist");
+  const authJs = readFileSync("assets/js/auth.js", "utf8");
+  for (const helper of [
+    "insertTestAttemptAnswers",
+    "insertCaseAttempt",
+    "upsertLearningProgress",
+    "trackFeatureEvent",
+  ]) {
+    assert.match(authJs, new RegExp(helper), `auth helper should expose ${helper}`);
+  }
+
+  const runner = readFileSync("assets/js/test-runner.js", "utf8");
+  assert.match(runner, /insertTestAttemptAnswers/);
+  assert.match(runner, /question_id/);
+  assert.match(runner, /selected_answer/);
+
+  const arPatient = readFileSync("assets/js/ar-patient.js", "utf8");
+  assert.match(arPatient, /insertCaseAttempt/);
+  assert.match(arPatient, /case_attempt/);
+
+  const aiSummary = readFileSync("assets/js/ai-summary.js", "utf8");
+  assert.match(aiSummary, /trackFeatureEvent/);
+  assert.match(aiSummary, /ai_summary/);
+});
+
+test("all main pages expose NutriQuest navigation and refreshed feature positioning", () => {
+  for (const [file] of pages) {
+    const html = readFileSync(file, "utf8");
+    assert.match(html, /href="nutriquest\.html"/, `${file} should link NutriQuest`);
+  }
+
+  const index = readFileSync("index.html", "utf8");
+  for (const marker of ["NutriSolve", "NutriBase", "NutriPath", "NutriRead", "NutriQuest"]) {
+    assert.match(index, new RegExp(`<h3>${marker}</h3>`), `landing should show ${marker}`);
+  }
+  for (const stat of ["Database terkurasi", "Modul pembelajaran", "Kasus latihan", "Evaluasi kompetensi"]) {
+    assert.match(index, new RegExp(stat), `landing should use realistic stat ${stat}`);
+  }
+
+  const nutripath = readFileSync("nutripath.html", "utf8");
+  assert.doesNotMatch(nutripath, /Pre Test dan Post Test|Pretest, Materi, dan Posttest/i);
+  assert.match(nutripath, /tidak melanggar kode etik/i);
+
+  const nutribase = readFileSync("nutribase.html", "utf8");
+  for (const category of ["TKPI", "DBMP", "AKG", "BPOM", "Foto Buku Makanan", "SSGI", "SKI", "Rumus Perhitungan Gizi"]) {
+    assert.match(nutribase, new RegExp(category), `nutribase should include ${category}`);
+  }
+  assert.match(nutribase, /1M-YaaE_AXJlRoCriubhfrZG85Zu8Beji/);
+});
+
 test("pretest and posttest share question data and save official attempts to Supabase", () => {
   const pretest = readFileSync("pretest.html", "utf8");
   const posttest = readFileSync("posttest.html", "utf8");
@@ -150,6 +237,16 @@ test("login and dashboard implement static admin unlock flow", () => {
   assert.match(authJs, /ensureStudentProfile/);
   assert.match(authJs, /data\?\.session/);
   assert.doesNotMatch(authJs, /\.upsert\(studentProfilePayload/);
+});
+
+test("student signup is optimized for no email confirmation flow", () => {
+  const loginJs = readFileSync("assets/js/login.js", "utf8");
+  const authJs = readFileSync("assets/js/auth.js", "utf8");
+
+  assert.match(authJs, /autoSignInAfterSignup/);
+  assert.match(authJs, /signInWithPassword\(\{\s*email,\s*password\s*\}\)/);
+  assert.match(loginJs, /Akun berhasil dibuat dan langsung masuk/);
+  assert.doesNotMatch(loginJs, /cek email sebelum login/i);
 });
 
 test("static admin RPC and optional posttest contract are documented in code", () => {

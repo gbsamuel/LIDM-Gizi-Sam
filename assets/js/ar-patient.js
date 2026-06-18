@@ -364,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLevelIndex = 0;
   let currentCaseId = "ap";
   let verifiedStreak = 0;
+  const completedCaseAttempts = new Set();
 
   let activeHotspotId = null;
   let rotationAngle = 0;
@@ -1224,6 +1225,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // Simulated Holographic Webcam AR Visor Cam (Disabled)
 
   // ================= GAMIFIED LEVEL CHATBOT CONTROLLER =================
+
+  async function recordCaseAttempt(caseId, score, success, feedback) {
+    if (!success || completedCaseAttempts.has(caseId)) return;
+    const auth = window.NutriVerseAuth;
+    if (!auth?.insertCaseAttempt) return;
+    try {
+      const user = await auth.getCurrentUser();
+      if (!user) return;
+      completedCaseAttempts.add(caseId);
+      await auth.insertCaseAttempt({
+        userId: user.id,
+        caseId,
+        caseName: cases[caseId]?.name || caseId,
+        score,
+        success,
+        feedback
+      });
+      await window.NutriVerseTracking?.trackFeatureEvent("nutrisolve", "case_attempt", caseId, {
+        case_name: cases[caseId]?.name || caseId,
+        score,
+        success
+      });
+    } catch (error) {
+      console.warn("case_attempt tracking skipped:", error.message || error);
+    }
+  }
   
   // Shuffle cases helper
   function shuffleCases() {
@@ -1414,6 +1441,7 @@ document.addEventListener("DOMContentLoaded", () => {
             verifiedStreak++;
             casesDiagnosed++;
             if (streakHud) streakHud.textContent = `STREAK: ${verifiedStreak}`;
+            recordCaseAttempt(caseId, data.score || 100, true, data.reply || "Berhasil menyelesaikan kasus.");
             
             // Show next level button or win game
             setTimeout(() => {
@@ -1491,6 +1519,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         addChatMessage("ai", replyText);
         clinicalChatHistory.push({ role: "model", text: replyText });
+        recordCaseAttempt(caseId, 100, true, replyText);
         
         // Show next level button
         setTimeout(() => {

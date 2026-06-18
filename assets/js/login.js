@@ -92,11 +92,11 @@
       });
       registerForm.reset();
       if (data?.session) {
-        setStatus("Akun berhasil dibuat. Mengarahkan ke halaman berikutnya...", "success");
+        setStatus("Akun berhasil dibuat dan langsung masuk. Mengarahkan ke halaman berikutnya...", "success");
         window.location.href = nextUrl();
         return;
       }
-      setStatus("Akun berhasil dibuat. Jika email confirmation aktif, cek email sebelum login.", "success");
+      setStatus("Akun dibuat, tetapi Supabase masih meminta konfirmasi email. Nonaktifkan Confirm email di Supabase Auth settings agar signup langsung masuk.", "error");
     } catch (error) {
       setStatus(error.message, "error");
     }

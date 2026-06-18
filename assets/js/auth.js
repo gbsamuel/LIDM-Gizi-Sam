@@ -1,6 +1,10 @@
 (function () {
   const PROFILE_TABLE = "profiles";
   const ATTEMPT_TABLE = "test_attempts";
+  const ATTEMPT_ANSWER_TABLE = "test_attempt_answers";
+  const CASE_ATTEMPT_TABLE = "case_attempts";
+  const LEARNING_PROGRESS_TABLE = "learning_progress";
+  const FEATURE_EVENT_TABLE = "feature_events";
 
   function client() {
     return window.NUTRIVERSE_SUPABASE || null;
@@ -55,6 +59,22 @@
     return data;
   }
 
+  async function autoSignInAfterSignup({ email, password, fullName, nim }) {
+    const { data, error } = await client().auth.signInWithPassword({ email, password });
+    if (error) {
+      return {
+        session: null,
+        user: null,
+        emailConfirmationRequired: /confirm|verified|not confirmed/i.test(error.message || ""),
+        signInError: error
+      };
+    }
+    if (data?.user) {
+      await ensureStudentProfile(data.user, { fullName, nim, email });
+    }
+    return data;
+  }
+
   function studentProfilePayload(user, fallback = {}) {
     const metadata = user?.user_metadata || {};
     return {
@@ -100,8 +120,18 @@
     if (error) throw error;
     if (data?.session && data?.user) {
       await ensureStudentProfile(data.user, { fullName, nim, email });
+      return data;
     }
-    return data;
+
+    const signedIn = await autoSignInAfterSignup({ email, password, fullName, nim });
+    if (signedIn?.session) {
+      return signedIn;
+    }
+    return {
+      ...data,
+      emailConfirmationRequired: signedIn?.emailConfirmationRequired || true,
+      signInError: signedIn?.signInError || null
+    };
   }
 
   async function signOut() {
@@ -146,6 +176,78 @@
         percentage
       })
       .select("id, user_id, test_type, score, total, percentage, submitted_at")
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function insertTestAttemptAnswers({ attemptId, userId, answers }) {
+    if (!client()) throw authError();
+    if (!attemptId || !userId || !Array.isArray(answers) || !answers.length) return [];
+    const payload = answers.map((answer) => ({
+      attempt_id: attemptId,
+      user_id: userId,
+      question_id: answer.question_id,
+      category: answer.category,
+      selected_answer: answer.selected_answer,
+      correct_answer: answer.correct_answer,
+      is_correct: answer.is_correct
+    }));
+    const { data, error } = await client()
+      .from(ATTEMPT_ANSWER_TABLE)
+      .insert(payload)
+      .select("id, attempt_id, question_id, category, selected_answer, correct_answer, is_correct");
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function insertCaseAttempt({ userId, caseId, caseName, score = 0, success = false, feedback = "" }) {
+    if (!client()) throw authError();
+    const { data, error } = await client()
+      .from(CASE_ATTEMPT_TABLE)
+      .insert({
+        user_id: userId,
+        case_id: caseId,
+        case_name: caseName,
+        score,
+        success,
+        feedback
+      })
+      .select("id, user_id, case_id, case_name, score, success, feedback, submitted_at")
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function upsertLearningProgress({ userId, moduleId, status = "viewed", progressPercentage = 0 }) {
+    if (!client()) throw authError();
+    const { data, error } = await client()
+      .from(LEARNING_PROGRESS_TABLE)
+      .upsert({
+        user_id: userId,
+        module_id: moduleId,
+        status,
+        progress_percentage: progressPercentage,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id,module_id" })
+      .select("id, user_id, module_id, status, progress_percentage, updated_at")
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function trackFeatureEvent({ userId = null, feature, eventType, resourceId = null, metadata = {} }) {
+    if (!client()) return null;
+    const { data, error } = await client()
+      .from(FEATURE_EVENT_TABLE)
+      .insert({
+        user_id: userId,
+        feature,
+        event_type: eventType,
+        resource_id: resourceId,
+        metadata
+      })
+      .select("id, user_id, feature, event_type, resource_id, metadata, created_at")
       .single();
     if (error) throw error;
     return data;
@@ -209,6 +311,10 @@
     hasCompletedAttempt,
     getAttempt,
     insertTestAttempt,
+    insertTestAttemptAnswers,
+    insertCaseAttempt,
+    upsertLearningProgress,
+    trackFeatureEvent,
     requireTeacher,
     fetchTeacherDashboardRows
   };

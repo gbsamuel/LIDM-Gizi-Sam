@@ -21,31 +21,112 @@
         <a class="active" href="nutribase.html">NutriBase</a>
         <a href="nutripath.html">NutriPath</a>
         <a href="nutriread.html">NutriRead</a>
+        <a href="nutriquest.html">NutriQuest</a>
       </div></nav></header>
+
   <main>
     <section class="page-hero reveal-on-scroll">
       <span class="eyebrow">NutriBase</span>
-      <h1>Database kebutuhan pembelajaran gizi yang terarah dan mudah dipindai.</h1>
-      <p class="lead">NutriBase menyatukan sumber penting seperti TKPI, DBMP, AKG, BPOM, Foto Buku Makanan, SSGI, SKI, dan Rumus Perhitungan Gizi dalam bentuk direktori visual.</p>
+      <h1>Database kebutuhan gizi dalam satu katalog belajar.</h1>
+      <p class="lead">Cari database TKPI, DBMP, AKG, BPOM, Foto Buku Makanan, SSGI, SKI, dan Rumus Perhitungan Gizi.</p>
+      <div class="hero-actions">
+        <a class="button secondary" href="https://drive.google.com/drive/folders/1M-YaaE_AXJlRoCriubhfrZG85Zu8Beji?usp=sharing" target="_blank" data-track-feature="nutribase" data-track-event="open_drive" data-track-resource="drive-folder">Buka Resource Drive</a>
+      </div>
     </section>
+
     <section class="section">
-      <div class="section-inner grid">
-        <a href="assets/pdf/TKPI 2020.pdf" target="_blank" class="card card-link reveal-on-scroll delay-100" data-icon="▥"><h3>TKPI</h3><p>Tabel Komposisi Pangan Indonesia.</p><span class="tag">Buka PDF</span></a>
-        <a href="assets/pdf/Daftar Konversi Penyerapan Minyak.pdf" target="_blank" class="card card-link reveal-on-scroll delay-200" data-icon="◫"><h3>DBMP</h3><p>Daftar Bahan Makanan Penukar.</p><span class="tag">Buka PDF</span></a>
-        <a href="assets/pdf/PMK_No__28_Th_2019_ttg_Angka_Kecukupan_Gizi_Yang_D_250421_155247.pdf" target="_blank" class="card card-link reveal-on-scroll delay-300" data-icon="◇"><h3>AKG</h3><p>Angka Kecukupan Gizi.</p><span class="tag blue">Buka PDF</span></a>
-        <a href="assets/pdf/Peraturan Badan Pengawas Obat dan Makanan Nomor 1 Tahun 2022 tentang Pengawasan Klaim pada Label dan Iklan Pangan Olahan.pdf" target="_blank" class="card card-link reveal-on-scroll delay-400" data-icon="⌕"><h3>BPOM</h3><p>Data pangan kemasan dan regulasi.</p><span class="tag blue">Buka PDF</span></a>
-        <a href="assets/pdf/BUKU_FOTO_Makanan_Searchable.pdf" target="_blank" class="card card-link reveal-on-scroll delay-100" data-icon="▧"><h3>Foto Buku Makanan</h3><p>Visual porsi dan bahan makanan.</p><span class="tag gold">Buka PDF</span></a>
-        <div class="card reveal-on-scroll delay-200" data-icon="▤"><h3>SSGI</h3><p>Survei Status Gizi Indonesia.</p><span class="tag">Data nasional</span></div>
-        <div class="card reveal-on-scroll delay-300" data-icon="▩"><h3>SKI</h3><p>Survei Kesehatan Indonesia.</p><span class="tag">Data nasional</span></div>
-        <a href="assets/pdf/10 Pedoman Asuhan Gizi Terstandar.pdf" target="_blank" class="card card-link reveal-on-scroll delay-400" data-icon="∑"><h3>Rumus Perhitungan Gizi</h3><p>Kumpulan rumus asesmen dan edukasi.</p><span class="tag coral">Buka PDF</span></a>
+      <div class="section-inner">
+        <div class="section-head reveal-on-scroll">
+          <span class="eyebrow">Cari database</span>
+          <h2>Filter sumber gizi nasional.</h2>
+          <p class="lead">Data yang belum tersedia tetap ditampilkan sebagai slot placeholder agar struktur web siap diisi.</p>
+        </div>
+        <div class="database-toolbar reveal-on-scroll delay-100">
+          <input type="search" class="database-search" placeholder="Cari TKPI, AKG, BPOM, SSGI..." data-database-search>
+          <div class="tag-row" data-database-filters>
+            <button class="tag active" type="button" data-filter="all">Semua</button>
+            <button class="tag blue" type="button" data-filter="pdf">PDF Lokal</button>
+            <button class="tag gold" type="button" data-filter="placeholder">Placeholder</button>
+            <button class="tag coral" type="button" data-filter="drive">Drive</button>
+          </div>
+        </div>
+        <div class="grid two database-grid" data-database-grid>
+          <a href="assets/pdf/TKPI 2020.pdf" target="_blank" class="card card-link reveal-on-scroll delay-100" data-icon="TK" data-type="pdf" data-title="TKPI Tabel Komposisi Pangan Indonesia" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="tkpi">
+            <h3>TKPI</h3>
+            <p>Tabel Komposisi Pangan Indonesia untuk cek bahan pangan dan nilai gizi.</p>
+            <span class="tag">PDF Lokal</span>
+          </a>
+          <a href="assets/pdf/Daftar Konversi Penyerapan Minyak.pdf" target="_blank" class="card card-link reveal-on-scroll delay-200" data-icon="DB" data-type="pdf" data-title="DBMP Daftar Bahan Makanan Penukar" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="dbmp">
+            <h3>DBMP</h3>
+            <p>Daftar Bahan Makanan Penukar untuk edukasi porsi dan substitusi.</p>
+            <span class="tag">PDF Lokal</span>
+          </a>
+          <a href="assets/pdf/PMK_No__28_Th_2019_ttg_Angka_Kecukupan_Gizi_Yang_D_250421_155247.pdf" target="_blank" class="card card-link reveal-on-scroll delay-300" data-icon="AK" data-type="pdf" data-title="AKG Angka Kecukupan Gizi" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="akg">
+            <h3>AKG</h3>
+            <p>Angka Kecukupan Gizi sebagai standar kebutuhan menurut kelompok umur.</p>
+            <span class="tag blue">PDF Lokal</span>
+          </a>
+          <a href="assets/pdf/Peraturan Badan Pengawas Obat dan Makanan Nomor 1 Tahun 2022 tentang Pengawasan Klaim pada Label dan Iklan Pangan Olahan.pdf" target="_blank" class="card card-link reveal-on-scroll delay-400" data-icon="BP" data-type="pdf" data-title="BPOM Klaim Label Pangan Olahan" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="bpom">
+            <h3>BPOM</h3>
+            <p>Regulasi klaim label dan iklan pangan olahan untuk rujukan edukasi.</p>
+            <span class="tag blue">PDF Lokal</span>
+          </a>
+          <a href="assets/pdf/BUKU_FOTO_Makanan_Searchable.pdf" target="_blank" class="card card-link reveal-on-scroll delay-100" data-icon="FM" data-type="pdf" data-title="Foto Buku Makanan porsi bahan makanan" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="foto-buku-makanan">
+            <h3>Foto Buku Makanan</h3>
+            <p>Visual porsi makanan untuk membantu estimasi dietary recall.</p>
+            <span class="tag gold">PDF Lokal</span>
+          </a>
+          <a href="assets/pdf/10 Pedoman Asuhan Gizi Terstandar.pdf" target="_blank" class="card card-link reveal-on-scroll delay-200" data-icon="RG" data-type="pdf" data-title="Rumus Perhitungan Gizi PAGT" data-track-feature="nutribase" data-track-event="open_resource" data-track-resource="rumus-gizi">
+            <h3>Rumus Perhitungan Gizi</h3>
+            <p>Kumpulan rumus dan pedoman asuhan gizi untuk asesmen praktik.</p>
+            <span class="tag coral">PDF Lokal</span>
+          </a>
+          <a href="https://drive.google.com/drive/folders/1M-YaaE_AXJlRoCriubhfrZG85Zu8Beji?usp=sharing" target="_blank" class="card card-link reveal-on-scroll delay-300" data-icon="SS" data-type="drive placeholder" data-title="SSGI Survei Status Gizi Indonesia" data-track-feature="nutribase" data-track-event="open_placeholder" data-track-resource="ssgi">
+            <h3>SSGI</h3>
+            <p>Survei Status Gizi Indonesia. Slot siap diisi dari Drive saat resource final tersedia.</p>
+            <span class="tag gold">Segera dilengkapi</span>
+          </a>
+          <a href="https://drive.google.com/drive/folders/1M-YaaE_AXJlRoCriubhfrZG85Zu8Beji?usp=sharing" target="_blank" class="card card-link reveal-on-scroll delay-400" data-icon="SK" data-type="drive placeholder" data-title="SKI Survei Kesehatan Indonesia" data-track-feature="nutribase" data-track-event="open_placeholder" data-track-resource="ski">
+            <h3>SKI</h3>
+            <p>Survei Kesehatan Indonesia. Placeholder terstruktur untuk data nasional berikutnya.</p>
+            <span class="tag gold">Segera dilengkapi</span>
+          </a>
+        </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="footer-inner"><div><strong>NutriBase</strong><p class="muted">Direktori database gizi untuk rancangan frontend.</p></div><div class="footer-links"><a href="index.html">Beranda</a><a href="nutrisolve.html">NutriSolve</a><a href="nutripath.html">NutriPath</a></div></div></footer>
+
+  <footer class="site-footer"><div class="footer-inner"><div><strong>NutriBase</strong><p class="muted">Katalog database gizi dan resource Drive.</p></div><div class="footer-links"><a href="index.html">Beranda</a><a href="nutripath.html">NutriPath</a><a href="nutriquest.html">NutriQuest</a></div></div></footer>
   <script src="assets/js/main.js"></script>
+  <script>
+    const search = document.querySelector("[data-database-search]");
+    const cards = [...document.querySelectorAll("[data-database-grid] .card")];
+    const filters = document.querySelector("[data-database-filters]");
+    let activeFilter = "all";
+
+    function applyDatabaseFilter() {
+      const query = (search?.value || "").toLowerCase();
+      cards.forEach((card) => {
+        const title = (card.dataset.title || card.textContent).toLowerCase();
+        const type = card.dataset.type || "";
+        const filterMatch = activeFilter === "all" || type.includes(activeFilter);
+        card.style.display = title.includes(query) && filterMatch ? "" : "none";
+      });
+    }
+
+    search?.addEventListener("input", applyDatabaseFilter);
+    filters?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-filter]");
+      if (!button) return;
+      activeFilter = button.dataset.filter;
+      filters.querySelectorAll("[data-filter]").forEach((item) => item.classList.toggle("active", item === button));
+      applyDatabaseFilter();
+    });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase-config.js"></script>
   <script src="assets/js/auth.js"></script>
+  <script src="assets/js/tracking.js"></script>
   <script src="assets/js/pretest-gate.js"></script>
 </body>
 </html>
