@@ -1,8 +1,12 @@
 assets/img/orig_*
 remove_background.py
 assets/models/*
+!assets/models/Balita/
+!assets/models/Remaja/
+!assets/models/Dewasa/
+!assets/models/Lansia/
 !assets/models/rp_carla_rigged_001_yup_a.fbx
-!assets/models/*.glb
+!assets/models/**/*.glb
 .env
 __pycache__/
 *.pyc

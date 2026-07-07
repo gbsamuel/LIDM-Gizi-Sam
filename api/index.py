@@ -56,7 +56,67 @@ def generate_with_fallback(prompt, system_instruction=None, history=None):
 
 # Grounding Database untuk Kasus Gizi (Reference Ground Truth)
 CASES = {
-    "ap": {
+    "balita_easy": {
+        "name": "An. Bilal (Balita - 2 Tahun)",
+        "complaint": "Ibunya mengeluh Bilal sangat kurus, rewel, nafsu makan menurun drastis sejak disapih, dan sering diare.",
+        "status_gizi": "Gizi Buruk (Wasting) [Z-score BB/PB: -3.2 SD]",
+        "lab": "Hemoglobin: 10.5 g/dL, Albumin: 2.8 g/dL (Rendah)",
+        "physical_findings": "Wajah keriput seperti orang tua (old man face), iga gambang (ribs visible), pantat keriput (baggy pants appearance), lemak subkutan sangat tipis.",
+        "dietary_recall": "Sarapan hanya air tajin dan teh manis. Makan siang nasi bubur polos dengan kuah kecap. Tidak mengonsumsi susu formula/ASI setelah disapih, lauk hewani hampir tidak pernah.",
+        "correct_diagnosis": "Gizi Buruk tipe Marasmus",
+        "correct_therapy": "Pemberian Formula F-75 untuk fase stabilisasi (mencegah refeeding syndrome), dilanjutkan secara bertahap ke F-100/RUTF (Ready-to-Use Therapeutic Food) untuk rehabilitasi, serta pemantauan ketat hidrasi dan pencegahan hipotermia/hipoglikemia.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda berhasil mengidentifikasi kasus **Gizi Buruk Marasmus** pada An. Bilal.\n\n"
+            "**Evaluasi Terapi:** Bagus sekali! Penanganan awal dengan Formula F-75 untuk stabilisasi dan mencegah refeeding syndrome, bertahap naik ke F-100/RUTF adalah terapi gizi standar medis yang sangat tepat."
+        )
+    },
+    "balita_medium": {
+        "name": "An. Kia (Balita - 3 Tahun)",
+        "complaint": "Kia sering menabrak barang saat berjalan sore/malam hari, matanya sering berair dan tampak ada bercak keputihan.",
+        "status_gizi": "Gizi Kurang [Z-score IMT/U: -2.2 SD]",
+        "lab": "Serum Retinol: 0.15 µmol/L (Sangat Rendah)",
+        "physical_findings": "Kulit kering bersisik (xerosis kutis), mata tampak kering, terdapat bercak busa abu-abu keputihan pada konjungtiva (Bercak Bitot / Bitot's Spots).",
+        "dietary_recall": "Makanan utama hanya nasi dengan mi instan. Jarang mengonsumsi sayur hijau, wortel, telur, atau hati ayam.",
+        "correct_diagnosis": "Defisiensi Vitamin A (Xerophthalmia) dan Gizi Kurang",
+        "correct_therapy": "Suplementasi Vitamin A kapsul dosis tinggi segera (Hari ke-1, 2, dan 15), pemberian makanan kaya Vitamin A dan beta-karoten (wortel, bayam, kuning telur, hati) yang dimasak dengan sedikit minyak/lemak untuk mempercepat absorpsi.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mengidentifikasi kasus **Defisiensi Vitamin A (Xerophthalmia)** secara klinis dari Bercak Bitot pada mata An. Kia.\n\n"
+            "**Evaluasi Terapi:** Hebat! Pemberian kapsul vitamin A dosis tinggi secara terjadwal dan saran memasak makanan kaya vitamin A/beta-karoten dengan minyak untuk penyerapan adalah tatalaksana gizi terbaik."
+        )
+    },
+    "balita_hard": {
+        "name": "An. Dodi (Balita - 2.5 Tahun)",
+        "complaint": "Kaki Dodi tampak melengkung aneh seperti huruf 'O' saat berjalan, rewel, lambat berjalan dibanding anak seusianya.",
+        "status_gizi": "Gizi Kurang-Normal [Z-score PB/U: -2.3 SD]",
+        "lab": "Serum Kalsium: 7.8 mg/dL (Rendah), 25-hydroxyvitamin D: 12 ng/mL (Defisiensi)",
+        "physical_findings": "Kaki berbentuk busur melengkung keluar (Genu Varum / Bowlegs), penebalan pada pergelangan tangan dan kaki, dada menonjol (pigeon chest).",
+        "dietary_recall": "Sangat jarang diajak bermain di luar ruangan pagi hari (kurang paparan sinar matahari). Jarang minum susu, alergi ikan laut, asupan harian rendah kalsium.",
+        "correct_diagnosis": "Rickets (Defisiensi Vitamin D dan Kalsium)",
+        "correct_therapy": "Suplementasi Vitamin D3 dan Kalsium dosis klinis, edukasi berjemur sinar matahari pagi (10-15 menit), tingkatkan konsumsi susu formula fortifikasi, keju, kuning telur, dan teri nasi.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mengidentifikasi **Rickets / Rakitis** akibat defisiensi vitamin D/kalsium berdasarkan gejala kaki O (genu varum).\n\n"
+            "**Evaluasi Terapi:** Sempurna! Suplementasi kalsium dan vitamin D, dikombinasikan dengan anjuran berjemur sinar matahari pagi serta asupan teri/susu adalah tatalaksana pemulihan tulang anak yang tepat."
+        )
+    },
+    "balita_extreme": {
+        "name": "An. Caca (Balita - 1.5 Tahun)",
+        "complaint": "Caca badannya bengkak-bengkak terutama pada kaki, wajah membulat, rewel, rambut kemerahan gampang dicabut, tidak mau makan.",
+        "status_gizi": "Gizi Buruk (Edema bilateral) [Z-score BB/PB: -2.9 SD]",
+        "lab": "Albumin Serum: 1.9 g/dL (Sangat Rendah), Hemoglobin: 9.0 g/dL",
+        "physical_findings": "Edema pitting bilateral pada kedua kaki, wajah membulat sembab (moon face), rambut pirang kemerahan kering mudah dicabut (flag sign), ruam kulit bercak kehitaman terkelupas (crazy pavement dermatosis).",
+        "dietary_recall": "Hanya diberi makan bubur nasi encer dengan kuah sayur tanpa protein hewani/nabati sejak ibunya hamil lagi dan berhenti menyusui.",
+        "correct_diagnosis": "Gizi Buruk tipe Kwashiorkor (Defisiensi Protein Akut)",
+        "correct_therapy": "Rawat inap klinis, stabilisasi dengan Formula F-75 (rendah protein pada awal stabilisasi untuk cegah beban hati/ginjal dan refeeding syndrome), dilanjutkan F-100 setelah edema mereda, monitoring edema dan cairan, edukasi pentingnya protein hewani tinggi.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Gizi Buruk Kwashiorkor** dengan gejala pitting edema bilateral pada kaki dan hipoalbuminemia ekstrem sangat tepat.\n\n"
+            "**Evaluasi Terapi:** Tepat sekali! Formula stabilisasi F-75 rendah protein harus diberikan dulu untuk menghindari refeeding syndrome, baru dilanjutkan protein tinggi F-100 untuk pemulihan."
+        )
+    },
+    "remaja_easy": {
         "name": "Siswa AP (Remaja Perempuan - 16 Tahun)",
         "complaint": "Saya akhir-akhir ini sering pusing dan cepat capek kalau di sekolah. Kalau naik tangga rasanya gampang lelah, dan kadang saya juga susah konsentrasi saat pelajaran.",
         "status_gizi": "Gizi Kurang (Underweight) [Z-score IMT/U: -1.8 SD]",
@@ -71,7 +131,7 @@ CASES = {
             "**Evaluasi Terapi:** Sangat bagus! Penambahan asupan besi heme (seperti hati, daging), asupan vitamin C untuk memperlancar absorpsi zat besi, serta edukasi untuk **menghindari minum teh setelah makan** (karena senyawa tanin mengikat zat besi) adalah tatalaksana yang sempurna untuk AP."
         )
     },
-    "mr": {
+    "remaja_medium": {
         "name": "Siswa MR (Remaja Laki-Laki - 17 Tahun)",
         "complaint": "Saya sering lapar terus walaupun baru saja makan kenyang. Kalau di kelas saya sering sekali mengantuk, gampang haus, dan sesekali perut saya rasanya tidak nyaman.",
         "status_gizi": "Obesitas [Z-score IMT/U: +2.6 SD]",
@@ -86,7 +146,7 @@ CASES = {
             "**Evaluasi Terapi:** Luar biasa! Pengurangan asupan gula sederhana, peningkatan serat larut, serta aktivitas fisik teratur minimal 150 menit/minggu adalah pilar tatalaksana terbaik untuk membalikkan prediabetes pada remaja laki-laki ini."
         )
     },
-    "na": {
+    "remaja_hard": {
         "name": "Siswa NA (Remaja Perempuan - 15 Tahun)",
         "complaint": "Mulut saya sering sekali terasa perih, sudut bibir pecah-pecah meradang, dan saya akhir-akhir ini malas makan karena mengunyah rasanya sakit.",
         "status_gizi": "Gizi Kurang (Underweight) [Z-score IMT/U: -2.1 SD]",
@@ -101,7 +161,7 @@ CASES = {
             "**Evaluasi Terapi:** Sangat tepat! Menghentikan diet pembatasan ekstrem dan meningkatkan konsumsi protein hewani, telur, susu, dan sayuran hijau akan memperbaiki defisiensi gizi mikro ini dengan sangat cepat."
         )
     },
-    "rs": {
+    "remaja_extreme": {
         "name": "Siswa RS (Remaja Laki-Laki - 16 Tahun)",
         "complaint": "Saya merasa badan saya lebih pendek dan kecil sekali dibandingkan dengan teman-teman sekelas. Kalau pas pelajaran olahraga, fisik saya cepat capek sekali.",
         "status_gizi": "Tinggi Badan Sangat Pendek (Stunted) [Z-score TB/U: -2.8 SD], IMT/U Normal.",
@@ -116,19 +176,184 @@ CASES = {
             "**Evaluasi Terapi:** Sempurna! RS membutuhkan asupan tinggi energi dan protein bernilai biologis tinggi (telur, susu, ikan) untuk mendukung catch-up growth (kejar tumbuh linear) pada fase remaja ini."
         )
     },
-    "ds": {
-        "name": "Siswa DS (Remaja Perempuan - 17 Tahun)",
-        "complaint": "Saya sering merasakan nyeri hebat di perut bawah saat menstruasi bulanan (dismenore). Nafsu makan saya kadang turun drastis, lesu, dan rasanya lemas.",
-        "status_gizi": "Gizi Normal-Rendah [Z-score IMT/U: -0.9 SD]",
-        "lab": "Hemoglobin (Hb): 11.4 g/dL (Anemia Ringan)",
-        "physical_findings": "Konjungtiva sedikit pucat, turgor kulit baik, kulit wajah tampak agak pucat (mild pallor), perut bawah terasa tegang/kram (nyeri menstruasi).",
-        "dietary_recall": "Sering melewatkan sarapan pagi karena mual. Makan siang nasi + kerupuk + tempe goreng. Makan malam nasi + telur ceplok + kuah sup bayam sedikit. Camilan cilok bumbu kacang dan permen manis.",
-        "correct_diagnosis": "Anemia Gizi Besi Ringan yang diperberat oleh kehilangan zat besi periodik selama menstruasi disertai nyeri kram abdomen bawah (Dismenore Primer).",
-        "correct_therapy": "Suplementasi zat besi berkala (tablet tambah darah) khususnya selama masa menstruasi, meningkatkan asupan zat besi heme dari daging merah/hati, membiasakan sarapan pagi yang teratur guna mencegah lemas dan hipoglikemia, serta memberikan edukasi manajemen nyeri dismenore ringan.",
+    "dewasa_easy": {
+        "name": "Bp. Hendra (Dewasa - 42 Tahun)",
+        "complaint": "Sering sakit kepala bagian belakang terutama setelah makan makanan bersantan/berdaging, tengkuk terasa kaku.",
+        "status_gizi": "Gizi Lebih (Overweight) [IMT: 26.5 kg/m²]",
+        "lab": "Kolesterol Total: 260 mg/dL (Tinggi), LDL: 175 mg/dL (Tinggi), HDL: 38 mg/dL (Rendah)",
+        "physical_findings": "Tengkuk kaku, obesitas ringan abdominal, arcus senilis samar di kornea.",
+        "dietary_recall": "Gemar mengonsumsi makanan bersantan (gulai, rendang), gorengan sore hari (3-4 potong), minum kopi manis kental, jarang makan buah dan sayur.",
+        "correct_diagnosis": "Hiperkolesterolemia (Dislipidemia) dan Overweight",
+        "correct_therapy": "Diet rendah lemak jenuh dan kolesterol, batasi gulai bersantan, gorengan, dan daging merah berlemak. Tingkatkan asupan serat larut (oatmeal, buah, sayur) serta olahraga kardio untuk meningkatkan HDL.",
         "mock_critique": (
             "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
-            "**Diagnosis Tepat:** Anda berhasil mendiagnosis **Anemia Ringan (Hb 11.4)** disertai gejala kram menstruasi berat (**Dismenore**) pada DS.\n\n"
-            "**Evaluasi Terapi:** Hebat! Rekomendasi Anda mengenai pemantauan asupan zat besi heme, dikombinasikan dengan edukasi makan teratur dan **tidak melewatkan sarapan pagi** adalah langkah tatalaksana gizi yang sangat tepat."
+            "**Diagnosis Tepat:** Diagnosis **Hiperkolesterolemia** (Dislipidemia) dan Overweight sangat tepat berdasarkan data lab kolesterol tinggi.\n\n"
+            "**Evaluasi Terapi:** Tepat sekali! Mengurangi lemak jenuh (santan/gorengan) dan meningkatkan asupan serat larut serta olahraga untuk meningkatkan HDL adalah pilar utama terapi gizi dislipidemia."
+        )
+    },
+    "dewasa_medium": {
+        "name": "Ibu Susi (Dewasa - 38 Tahun)",
+        "complaint": "Sering buang air kecil di malam hari (poliuria), cepat haus (polidipsia), cepat lapar (polifagia), dan berat badan menurun drastis secara misterius dalam 1 bulan terakhir.",
+        "status_gizi": "Gizi Lebih pada awal, turun menjadi Normal-Rendah [IMT: 19.8 kg/m²]",
+        "lab": "Gula Darah Sewaktu (GDS): 280 mg/dL (Sangat Tinggi), HbA1c: 8.5%",
+        "physical_findings": "Kulit terasa agak kering, penurunan turgor kulit, napas berbau buah manis samar.",
+        "dietary_recall": "Senang mengonsumsi teh manis (5-6 gelas sehari), nasi porsi besar dengan lauk manis (seperti semur/bacem), ngemil kue basah tradisional manis siang hari.",
+        "correct_diagnosis": "Diabetes Melitus Tipe 2",
+        "correct_therapy": "Diet DM dengan prinsip 3J (Jumlah kalori sesuai kebutuhan, Jadwal makan teratur 3 kali utama 2 kali selingan, Jenis makanan indeks glikemik rendah), membatasi gula sederhana (teh manis/kue manis), ganti nasi putih dengan nasi merah/oat.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mengidentifikasi kasus **Diabetes Melitus Tipe 2** secara akurat berdasarkan keluhan klasik polifagia, polidipsia, poliuria, serta kadar GDS & HbA1c tinggi.\n\n"
+            "**Evaluasi Terapi:** Luar biasa! Penerapan konsep diet 3J (Jumlah, Jadwal, Jenis) dan penggantian gula sederhana dengan karbohidrat kompleks indeks glikemik rendah adalah terapi gizi standar emas DMG/DM."
+        )
+    },
+    "dewasa_hard": {
+        "name": "Bp. Rian (Dewasa - 45 Tahun)",
+        "complaint": "Nyeri jempol kaki kanan yang sangat hebat mendadak di malam hari, bengkak kemerahan, sampai tidak bisa berjalan atau memakai sepatu.",
+        "status_gizi": "Obesitas Ringan [IMT: 28.2 kg/m²]",
+        "lab": "Asam Urat Serum: 9.2 mg/dL (Sangat Tinggi)",
+        "physical_findings": "Sendi jempol kaki (metatarsophalangeal-1) tampak bengkak, kemerahan, teraba panas, nyeri tekan ekstrem (artritis gout).",
+        "dietary_recall": "Gemar mengonsumsi jeroan (babat, paru, usus), emping melinjo sebagai camilan harian, seafood (udang/kerang), dan minum bir/alkohol/minuman tinggi fruktosa manis.",
+        "correct_diagnosis": "Artritis Gout Akut (Hiperurisemia)",
+        "correct_therapy": "Diet rendah purin (hindari jeroan, seafood, emping, kaldu daging pekat), batasi minuman manis tinggi fruktosa (soda/jus kemasan) dan alkohol yang menghambat ekskresi asam urat, tingkatkan hidrasi (minum air putih minimal 2.5-3 liter/hari) untuk membilas asam urat lewat ginjal.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Artritis Gout Akut** (Hiperurisemia) sangat tepat berdasarkan data lab asam urat tinggi dan nyeri sendi khas gout.\n\n"
+            "**Evaluasi Terapi:** Sempurna! Diet rendah purin (menghindari jeroan, emping, melinjo) dan meningkatkan asupan air putih untuk membantu pembuangan asam urat melalui urin adalah tatalaksana gizi terbaik."
+        )
+    },
+    "dewasa_extreme": {
+        "name": "Ibu Lilis (Dewasa - 50 Tahun)",
+        "complaint": "Badan terasa lemas sekali, mual, muntah, sesak napas ringan, kencing terasa sedikit, kaki membengkak bengkak sembab.",
+        "status_gizi": "Overweight dengan edema [IMT: 25.8 kg/m²]",
+        "lab": "GFR: 14 mL/min/1.73m² (Stadium 5 / Gagal Ginjal), Ureum: 150 mg/dL (Tinggi), Kreatinin: 6.8 mg/dL (Tinggi), Kalium: 5.8 mEq/L (Hiperkalemia)",
+        "physical_findings": "Edema pitting pada pergelangan kaki bilateral, kulit wajah pucat kekuningan (uremic frost samar), napas berbau uremik.",
+        "dietary_recall": "Pola makan tidak teratur, sering mengonsumsi daging merah porsi besar, konsumsi garam tinggi dari ikan asin/asinan, suka minum minuman bersoda.",
+        "correct_diagnosis": "Gagal Ginjal Kronis Stadium V (End-Stage Renal Disease) dengan Hiperkalemia",
+        "correct_therapy": "Diet Rendah Protein (0.6-0.8 g/kgBB/hari jika belum hemodialisis, atau disesuaikan), Diet Rendah Kalium (batasi pisang, jeruk, kentang, air kelapa), Diet Rendah Natrium (batasi garam dan bahan pengawet), batasi asupan cairan untuk cegah edema paru/asites.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mengidentifikasi kasus **Gagal Ginjal Kronis Stadium 5** dengan komplikasi hiperkalemia secara tepat.\n\n"
+            "**Evaluasi Terapi:** Tepat sekali! Restriksi protein untuk membatasi akumulasi ureum, pembatasan ketat natrium dan cairan untuk mengendalikan edema/cairan berlebih, serta pembatasan kalium adalah kunci terapi nutrisi renal."
+        )
+    },
+    "lansia_easy": {
+        "name": "Ibu Hartini (Lansia - 68 Tahun)",
+        "complaint": "Punggung sering nyeri ngilu, badan terasa membungkuk, tinggi badan menyusut dibanding waktu muda, takut jatuh karena sendi terasa rapuh.",
+        "status_gizi": "Kurang-Normal [IMT: 18.5 kg/m²]",
+        "lab": "Kepadatan tulang (BMD) T-score: -2.8 (Osteoporosis)",
+        "physical_findings": "Postur tubuh agak bungkuk (kifosis senilis / dowager's hump), nyeri tekan pada tulang belakang, langkah jalan lambat.",
+        "dietary_recall": "Sangat jarang minum susu sejak usia 50 tahun karena diare (lactose intolerance). Jarang makan tahu/tempe/teri, jarang terpapar matahari karena hanya diam di kamar.",
+        "correct_diagnosis": "Osteoporosis Senilis",
+        "correct_therapy": "Suplementasi Kalsium dan Vitamin D3 tinggi, konsumsi makanan kaya kalsium non-susu (teri nasi, brokoli, susu bebas laktosa/susu kedelai fortifikasi), latihan beban ringan (seperti jalan santai) untuk merangsang remodeling tulang, paparan sinar matahari teratur.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Osteoporosis Senilis** dengan indikasi penurunan kepadatan tulang (T-score -2.8) sangat tepat.\n\n"
+            "**Evaluasi Terapi:** Sangat bagus! Suplementasi kalsium, Vitamin D, konsumsi produk teri nasi, serta anjuran berjemur matahari dan latihan kekuatan sendi ringan (jalan kaki) adalah pilar tatalaksana gizi terbaik."
+        )
+    },
+    "lansia_medium": {
+        "name": "Bp. Djoko (Lansia - 72 Tahun)",
+        "complaint": "Sering pusing berputar, tengkuk berat, kaki terasa lemah saat berjalan, otot paha dan lengan tampak sangat mengecil kendur.",
+        "status_gizi": "Obesitas Sarkopenik [IMT: 27.2 kg/m², Lingkar Lengan Atas rendah]",
+        "lab": "Tekanan Darah: 165/95 mmHg (Hipertensi Stadium 2)",
+        "physical_findings": "Otot ekstremitas wasting (mengecil/sarkopenia) sementara lemak perut menumpuk tebal, kekuatan genggaman tangan lemah.",
+        "dietary_recall": "Pola makan rendah protein (hanya makan bubur/nasi dengan kuah sayur bersantan tanpa lauk daging karena gigi ompong), suka camilan asin/keripik.",
+        "correct_diagnosis": "Hipertensi Stadium 2 dan Obesitas Sarkopenik",
+        "correct_therapy": "Diet DASH (Dietary Approaches to Stop Hypertension) rendah natrium (batasi garam/camilan asin), tingkatkan asupan protein berkualitas tinggi yang mudah dikunyah (telur rebus, ikan tim lunak, tahu sutra) untuk mengatasi kehilangan masa otot, batasi lemak jenuh/santan.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mendiagnosis **Hipertensi dan Obesitas Sarkopenik** secara klinis dari data penyusutan otot lengan disertai tekanan darah tinggi.\n\n"
+            "**Evaluasi Terapi:** Sempurna! Diet rendah natrium (DASH) untuk hipertensi serta asupan protein tinggi yang mudah dikunyah (telur/ikan tim) untuk mempertahankan kekuatan otot adalah terapi yang ideal."
+        )
+    },
+    "lansia_hard": {
+        "name": "Ibu Maimunah (Lansia - 75 Tahun)",
+        "complaint": "Badan lemas lunglai, sering lupa makan, napas terengah-engah jika berjalan dekat, gusi sering berdarah, gigi sudah habis (ompong total).",
+        "status_gizi": "Malnutrisi Energi Protein (MEP) Kronis [IMT: 16.0 kg/m² (Sangat Kurus)]",
+        "lab": "Hemoglobin: 8.8 g/dL (Anemia Sedang), Albumin: 2.5 g/dL",
+        "physical_findings": "Kulit sangat keriput kering, muscle wasting hebat pada temporal (wajah cekung), konjungtiva pucat, atrofi gusi karena kehilangan gigi.",
+        "dietary_recall": "Makan hanya 1-2 kali sehari bubur nasi saring dengan kuah sop bening encer. Tidak makan lauk hewani atau buah karena kesulitan mengunyah.",
+        "correct_diagnosis": "Malnutrisi Energi Protein Kronis (Senile Marasmus) dan Anemia Senilis",
+        "correct_therapy": "Terapi diet makanan lunak/saring Tinggi Energi Tinggi Protein (TETP) bertahap, suplementasi zat besi cair/tetes, modifikasi tekstur makanan agar mudah ditelan (puree/tim blender), tingkatkan frekuensi makan porsi kecil tapi sering (5-6 kali sehari).",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Malnutrisi Energi Protein (MEP) Kronis** dan Anemia Sedang pada lansia ini sangat tepat.\n\n"
+            "**Evaluasi Terapi:** Bagus sekali! Pemberian diet Tinggi Energi Tinggi Protein (TETP) dengan penyesuaian tekstur makanan lunak/tim blender serta porsi kecil sering sangat krusial untuk mengatasi kaheksia/wasting lansia."
+        )
+    },
+    "lansia_extreme": {
+        "name": "Bp. Suwito (Lansia - 80 Tahun)",
+        "complaint": "Sering tersedak saat makan atau minum air (disfagia), lupa arah jalan, tidak mau makan karena merasa makanan beracun, berat badan merosot tajam.",
+        "status_gizi": "Gizi Buruk Lansia [IMT: 15.5 kg/m²]",
+        "lab": "Albumin: 2.2 g/dL, Hb: 9.5 g/dL",
+        "physical_findings": "Kehilangan memori berat (Demensia Alzheimer), refleks menelan lambat, batuk setelah minum cairan (tanda aspirasi), tubuh kurus kering.",
+        "dietary_recall": "Menolak makan nasi, sering menyemburkan makanan, asupan cairan harian di bawah 800 ml karena takut tersedak.",
+        "correct_diagnosis": "Gizi Buruk sekunder akibat Demensia Alzheimer Berat dan Disfagia (Gangguan Menelan)",
+        "correct_therapy": "Modifikasi tekstur makanan menjadi saring kental (thickened fluids) untuk cegah pneumonia aspirasi (gunakan thickener pada air), diet padat gizi porsi kecil sering dengan sabar, atau pertimbangkan nutrisi enteral via pipa nasogastrik (NGT) jika asupan oral tidak aman.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda berhasil mengidentifikasi **Gizi Buruk sekunder akibat Demensia dan Disfagia** (kesulitan menelan) pada lansia.\n\n"
+            "**Evaluasi Terapi:** Sangat tepat! Modifikasi kekentalan cairan (thickened liquid) untuk mencegah aspirasi paru-paru dan pendekatan nutrisi secara perlahan/NGT adalah kunci utama penanganan kasus disfagia parah."
+        )
+    },
+    "bumil_easy": {
+        "name": "Ny. Fitri (Ibu Hamil - 26 Tahun)",
+        "complaint": "Hamil 20 minggu (Trimester 2), sering mengeluh pusing kliyengan, lesu, cepat capek, dan kadang jantung berdebar-debar saat aktivitas ringan.",
+        "status_gizi": "Normal sebelum hamil, kenaikan berat badan lambat [IMT: 20.2 kg/m²]",
+        "lab": "Hemoglobin: 9.8 g/dL (Anemia pada Ibu Hamil)",
+        "physical_findings": "Konjungtiva pucat, sklera putih, perut tampak membesar sesuai usia kehamilan trimester 2.",
+        "dietary_recall": "Mengalami mual (morning sickness) berkepanjangan pada trimester 1, jarang sarapan, hanya makan nasi dengan sayur bening bayam dan tempe. Jarang makan daging karena mual bau amis.",
+        "correct_diagnosis": "Anemia Defisiensi Besi dalam Kehamilan Trimester 2",
+        "correct_therapy": "Suplementasi Tablet Tambah Darah (Fe minimal 60 mg/hari + asam folat) rutin diminum malam hari bersama Vitamin C (jeruk) untuk kurangi mual, edukasi asupan protein hewani bebas amis (seperti telur rebus matang, ayam tanpa kulit), hindari teh/kopi setelah makan.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Anemia Defisiensi Besi pada Ibu Hamil Trimester 2** sangat tepat sesuai batas Hb ibu hamil (<11 g/dL).\n\n"
+            "**Evaluasi Terapi:** Hebat! Rekomendasi suplementasi tablet tambah darah (TTD) bersama vitamin C pada malam hari untuk meminimalkan mual, serta edukasi protein hewani tanpa amis adalah langkah tatalaksana gizi bumil yang sangat tepat."
+        )
+    },
+    "bumil_medium": {
+        "name": "Ny. Rina (Ibu Hamil - 32 Tahun)",
+        "complaint": "Hamil 26 minggu (Trimester 2 akhir), sering merasa haus berlebih, sering buang air kecil, kaki bengkak ringan, dan berat badan naik sangat pesat di trimester ini.",
+        "status_gizi": "Gizi Lebih (Overweight) [IMT: 26.8 kg/m²]",
+        "lab": "Tes Toleransi Glukosa Oral (TTGO) jam ke-2: 155 mg/dL (Diabetes Gestasional)",
+        "physical_findings": "Edema pergelangan kaki ringan (fisiologis/patologis awal), tinggi fundus uteri lebih besar dari usia kehamilan.",
+        "dietary_recall": "Ngidam minuman boba manis hampir setiap hari (2 gelas), suka makan roti manis, porsi nasi putih sangat besar ditambah lauk berlemak.",
+        "correct_diagnosis": "Diabetes Melitus Gestasional (DMG) pada Kehamilan Trimester 2",
+        "correct_therapy": "Diet DMG dengan pembatasan asupan gula sederhana (minuman manis/boba) secara ketat, kontrol porsi karbohidrat kompleks indeks glikemik rendah (nasi merah/oat), tingkatkan serat, bagi porsi makan menjadi 3 porsi besar dan 3 selingan kecil untuk menjaga kestabilan glukosa darah ibu dan janin.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Diabetes Melitus Gestasional** (DMG) pada ibu hamil sangat tepat berdasarkan tes beban glukosa TTGO yang tinggi.\n\n"
+            "**Evaluasi Terapi:** Sangat bagus! Pembatasan ketat gula sederhana (menghindari minuman boba manis) dan pengaturan jadwal makan 3 porsi utama & 3 selingan adalah strategi diet terbaik untuk mencegah makrosomia pada janin."
+        )
+    },
+    "busui_hard": {
+        "name": "Ny. Wulan (Ibu Menyusui - 22 Tahun)",
+        "complaint": "Menyusui bayi usia 3 bulan secara eksklusif. Ibu mengeluh lemas, ASI keluar sangat sedikit encer, pusing, dan bayi sering menangis rewel karena kurang kenyang.",
+        "status_gizi": "Kurang Energi Kronis (KEK) [IMT: 17.2 kg/m², Lingkar Lengan Atas (LILA): 21.5 cm]",
+        "lab": "Albumin: 3.0 g/dL, Hb: 10.5 g/dL",
+        "physical_findings": "Ibu tampak sangat kurus, LILA < 23.5 cm (batas KEK), konjungtiva sedikit pucat, payudara tampak kurang terisi.",
+        "dietary_recall": "Pola makan tidak teratur, makan hanya 2 kali sehari nasi dengan tempe/tahu bakar, menghindari konsumsi ikan/telur karena mitos lokal bahwa ASI akan bau amis.",
+        "correct_diagnosis": "Kurang Energi Kronis (KEK) pada Ibu Menyusui",
+        "correct_therapy": "Terapi diet gizi seimbang dengan penambahan kalori +500 kkal/hari (sesuai AKG ibu menyusui), PMT (Pemberian Makanan Tambahan) ibu hamil/menyusui, edukasi membantah mitos pantang makan ikan/telur, tingkatkan asupan cairan (minum air putih minimal 3 liter/hari) untuk produksi ASI.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Anda mengidentifikasi kasus **Kurang Energi Kronis (KEK) pada Ibu Menyusui** secara akurat berdasarkan LILA < 23.5 cm.\n\n"
+            "**Evaluasi Terapi:** Luar biasa! Tambahan energi +500 kkal/hari, anjuran hidrasi 3 liter air/hari untuk menunjang laktasi, serta edukasi menghilangkan mitos pantang lauk amis (ikan/telur) adalah tatalaksana gizi laktasi yang sangat tepat."
+        )
+    },
+    "busui_extreme": {
+        "name": "Ny. Devi (Ibu Menyusui - 28 Tahun)",
+        "complaint": "Menyusui bayi usia 1 bulan. Payudara kanan terasa sangat nyeri melilit, bengkak mengeras, kulit memerah, badan demam menggigil, lesu, dan tidak bisa tidur.",
+        "status_gizi": "Normal [IMT: 21.5 kg/m²]",
+        "lab": "Tekanan Darah: 120/80 mmHg, Suhu Tubuh: 38.8 °C (Demam Tinggi), Leukosit Darah: 13.500/mm³ (Tinggi)",
+        "physical_findings": "Payudara kanan membengkak mengeras (engorgement), kulit kemerahan hangat saat diraba, nyeri tekan ekstrem, puting lecet (fissure).",
+        "dietary_recall": "Ibu takut menyusui bayi pada payudara kanan karena sangat sakit, sehingga ASI ditahan/tidak dikeluarkan. Makan porsi biasa namun kurang nafsu makan karena demam.",
+        "correct_diagnosis": "Mastitis Akut (Infeksi Payudara) dan Bendungan ASI (Breast Engorgement) pada Ibu Menyusui",
+        "correct_therapy": "Terapi klinis rujuk dokter untuk antibiotik, manajemen gizi/pangan tinggi protein dan antiinflamasi, edukasi pengeluaran ASI yang tersumbat (dengan kompres hangat sebelum memompa/menyusui, pijat laktasi lembut, pastikan payudara dikosongkan), tingkatkan asupan air dan vitamin C untuk pemulihan jaringan puting lecet.",
+        "mock_critique": (
+            "**ANALISIS MEDIS AI SUPERVISOR (MODE SIMULASI BACKEND - 100%):**\n\n"
+            "**Diagnosis Tepat:** Diagnosis **Mastitis Akut dan Bendungan ASI** sangat tepat berdasarkan demam tinggi, leukositosis, dan payudara kanan membengkak merah meradang.\n\n"
+            "**Evaluasi Terapi:** Tepat sekali! Selain rujukan medis untuk antibiotik, pengosongan payudara secara berkala (kompres/pompa ASI) serta asupan tinggi vitamin C dan protein hewani untuk menyembuhkan infeksi jaringan adalah langkah terbaik."
         )
     }
 }
@@ -138,7 +363,7 @@ def health():
     return jsonify({
         "status": "healthy",
         "api_key_configured": api_key is not None,
-        "mode": "Gemini-3.5-Flash" if api_key else "Local-Simulation-Mock"
+        "mode": "Gemini-1.5-Flash" if api_key else "Local-Simulation-Mock"
     })
 
 @app.route('/api/summarize', methods=['POST'])
@@ -239,34 +464,66 @@ def validate_diagnosis():
         is_diag_correct = False
         is_therapy_correct = False
         
-        if case_id == "ap":
+        if case_id == "balita_easy":
+            is_diag_correct = "marasmus" in lower_input or "gizi buruk" in lower_input or "wasting" in lower_input
+            is_therapy_correct = "f-75" in lower_input or "f75" in lower_input or "stabilisasi" in lower_input or "rutf" in lower_input
+        elif case_id == "balita_medium":
+            is_diag_correct = "vitamin a" in lower_input or "vit a" in lower_input or "xerophthalmia" in lower_input or "bitot" in lower_input
+            is_therapy_correct = "kapsul" in lower_input or "dosis tinggi" in lower_input or "minyak" in lower_input or "lemak" in lower_input or "absorpsi" in lower_input or "absorb" in lower_input
+        elif case_id == "balita_hard":
+            is_diag_correct = "rakitis" in lower_input or "rickets" in lower_input or "tulang" in lower_input or "kaki o" in lower_input or "genu varum" in lower_input
+            is_therapy_correct = "vitamin d" in lower_input or "vit d" in lower_input or "kalsium" in lower_input or "berjemur" in lower_input or "sinar matahari" in lower_input
+        elif case_id == "balita_extreme":
+            is_diag_correct = "kwashiorkor" in lower_input or "gizi buruk" in lower_input or "edema" in lower_input or "bengkak" in lower_input
+            is_therapy_correct = "f-75" in lower_input or "f75" in lower_input or "protein hewani" in lower_input or "stabilisasi" in lower_input
+        elif case_id in ("remaja_easy", "ap"):
             is_diag_correct = "anemia" in lower_input or "zat besi" in lower_input or "hb" in lower_input
             is_therapy_correct = "suplemen" in lower_input or "tambah darah" in lower_input or "vitamin c" in lower_input or "vit c" in lower_input or "teh" in lower_input
-        elif case_id == "mr":
+        elif case_id in ("remaja_medium", "mr"):
             is_diag_correct = "obesitas" in lower_input or "prediabetes" in lower_input or "insulin" in lower_input or "kegemukan" in lower_input or "acanthosis" in lower_input
             is_therapy_correct = "gula" in lower_input or "manis" in lower_input or "olahraga" in lower_input or "aktivitas" in lower_input or "serat" in lower_input
-        elif case_id == "na":
+        elif case_id in ("remaja_hard", "na"):
             is_diag_correct = "b kompleks" in lower_input or "vitamin b" in lower_input or "cheilitis" in lower_input or "bibir pecah" in lower_input or "glossitis" in lower_input
             is_therapy_correct = "protein" in lower_input or "hewani" in lower_input or "susu" in lower_input or "telur" in lower_input or "diet seimbang" in lower_input
-        elif case_id == "rs":
+        elif case_id in ("remaja_extreme", "rs"):
             is_diag_correct = "stunting" in lower_input or "pendek" in lower_input or "stunted" in lower_input or "tumbuh" in lower_input
             is_therapy_correct = "energi" in lower_input or "protein" in lower_input or "tinggi" in lower_input or "telur" in lower_input or "susu" in lower_input or "ikan" in lower_input
-        elif case_id == "ds":
-            is_diag_correct = "anemia" in lower_input or "dismenore" in lower_input or "haid" in lower_input or "menstruasi" in lower_input or "nyeri" in lower_input
-            is_therapy_correct = "zat besi" in lower_input or "suplemen" in period_lower if 'period_lower' in locals() else lower_input or "sarapan" in lower_input or "makan teratur" in lower_input
-
-        # Fix specific typo or logic error in period check for ds if period_lower doesn't exist
-        is_therapy_correct = False
-        if case_id == "ap":
-            is_therapy_correct = "suplemen" in lower_input or "tambah darah" in lower_input or "vitamin c" in lower_input or "vit c" in lower_input or "teh" in lower_input
-        elif case_id == "mr":
-            is_therapy_correct = "gula" in lower_input or "manis" in lower_input or "olahraga" in lower_input or "aktivitas" in lower_input or "serat" in lower_input
-        elif case_id == "na":
-            is_therapy_correct = "protein" in lower_input or "hewani" in lower_input or "susu" in lower_input or "telur" in lower_input or "diet seimbang" in lower_input
-        elif case_id == "rs":
-            is_therapy_correct = "energi" in lower_input or "protein" in lower_input or "tinggi" in lower_input or "telur" in lower_input or "susu" in lower_input or "ikan" in lower_input
-        elif case_id == "ds":
-            is_therapy_correct = "zat besi" in lower_input or "suplemen" in lower_input or "sarapan" in lower_input or "makan teratur" in lower_input
+        elif case_id == "dewasa_easy":
+            is_diag_correct = "hiperkolesterol" in lower_input or "dislipidemia" in lower_input or "kolesterol" in lower_input or "lemak darah" in lower_input
+            is_therapy_correct = "lemak jenuh" in lower_input or "santan" in lower_input or "gorengan" in lower_input or "serat larut" in lower_input or "oat" in lower_input or "kardio" in lower_input or "olahraga" in lower_input
+        elif case_id == "dewasa_medium":
+            is_diag_correct = "diabetes" in lower_input or "dm" in lower_input or "kencing manis" in lower_input
+            is_therapy_correct = "3j" in lower_input or "indeks glikemik" in lower_input or "batasi gula" in lower_input or "nasi merah" in lower_input or "serat" in lower_input
+        elif case_id == "dewasa_hard":
+            is_diag_correct = "asam urat" in lower_input or "gout" in lower_input or "hiperurisemia" in lower_input
+            is_therapy_correct = "purin" in lower_input or "jeroan" in lower_input or "seafood" in lower_input or "emping" in lower_input or "minum air" in lower_input or "hidrasi" in lower_input
+        elif case_id == "dewasa_extreme":
+            is_diag_correct = "gagal ginjal" in lower_input or "ginjal kronis" in lower_input or "ckd" in lower_input or "esrd" in lower_input
+            is_therapy_correct = "rendah protein" in lower_input or "kalium" in lower_input or "natrium" in lower_input or "garam" in lower_input or "cairan" in lower_input or "hemodialisis" in lower_input
+        elif case_id == "lansia_easy":
+            is_diag_correct = "osteoporosis" in lower_input or "tulang keropos" in lower_input or "kepadatan tulang" in lower_input
+            is_therapy_correct = "kalsium" in lower_input or "vitamin d" in lower_input or "vit d" in lower_input or "teri" in lower_input or "berjemur" in lower_input or "jalan santai" in lower_input
+        elif case_id == "lansia_medium":
+            is_diag_correct = "hipertensi" in lower_input or "darah tinggi" in lower_input or "sarkopenik" in lower_input or "sarkopenia" in lower_input
+            is_therapy_correct = "dash" in lower_input or "rendah garam" in lower_input or "natrium" in lower_input or "protein" in lower_input or "lunak" in lower_input or "tim" in lower_input
+        elif case_id == "lansia_hard":
+            is_diag_correct = "malnutrisi" in lower_input or "mep" in lower_input or "anemia senilis" in lower_input or "kurus" in lower_input or "senile" in lower_input
+            is_therapy_correct = "tetp" in lower_input or "lunak" in lower_input or "saring" in lower_input or "porsi kecil" in lower_input or "zat besi" in lower_input or "suplemen" in lower_input
+        elif case_id == "lansia_extreme":
+            is_diag_correct = "demensia" in lower_input or "alzheimer" in lower_input or "disfagia" in lower_input or "menelan" in lower_input
+            is_therapy_correct = "kental" in lower_input or "thickener" in lower_input or "saring" in lower_input or "ngt" in lower_input or "aspirasi" in lower_input
+        elif case_id == "bumil_easy":
+            is_diag_correct = "anemia" in lower_input or "zat besi" in lower_input or "kehamilan" in lower_input or "ibu hamil" in lower_input or "bumil" in lower_input
+            is_therapy_correct = "suplemen" in lower_input or "tambah darah" in lower_input or "ttd" in lower_input or "vitamin c" in lower_input or "zat besi" in lower_input or "malam hari" in lower_input
+        elif case_id == "bumil_medium":
+            is_diag_correct = "diabetes gestasional" in lower_input or "dmg" in lower_input or "diabetes kehamilan" in lower_input
+            is_therapy_correct = "batasi manis" in lower_input or "boba" in lower_input or "gula" in lower_input or "serat" in lower_input or "porsi utama" in lower_input or "selingan" in lower_input
+        elif case_id == "busui_hard":
+            is_diag_correct = "kek" in lower_input or "energi kronis" in lower_input or "lila" in lower_input or "menyusui" in lower_input
+            is_therapy_correct = "tambahan kalori" in lower_input or "pmt" in lower_input or "mitos" in lower_input or "pantang" in lower_input or "cairan" in lower_input or "air putih" in lower_input or "ikan" in lower_input
+        elif case_id == "busui_extreme":
+            is_diag_correct = "mastitis" in lower_input or "bendungan asi" in lower_input or "payudara bengkak" in lower_input or "infeksi" in lower_input
+            is_therapy_correct = "antibiotik" in lower_input or "rujuk" in lower_input or "kompres hangat" in lower_input or "pijat" in lower_input or "kosongkan" in lower_input or "pompa" in lower_input or "vitamin c" in lower_input
 
         # Calculate base score based on keyword success
         base_score = 0
@@ -278,7 +535,7 @@ def validate_diagnosis():
         # If Gemini model is available, let the real AI generate a professional clinical supervisor review!
         if model and not is_mock_key:
             chat_history = []
-            for h in history:
+            for h in history[:-1]:
                 role = 'user' if h['role'] == 'user' else 'model'
                 chat_history.append({
                     'role': role,
@@ -286,7 +543,7 @@ def validate_diagnosis():
                 })
             
             system_prompt = (
-                f"Kamu adalah AI Clinical Supervisor gizi yang mendampingi mahasiswa/dokter dalam praktik konsultasi gizi untuk kasus 3D AR Patient berikut:\n\n"
+                f"Kamu adalah AI Clinical Supervisor gizi yang mendampingi Nutri Student (mahasiswa gizi) dalam praktik konsultasi gizi untuk kasus 3D AR Patient berikut:\n\n"
                 f"=== DATA MEDIS ACUAN (GROUND TRUTH) ===\n"
                 f"Nama Pasien: {case_data['name']}\n"
                 f"Keluhan Utama: {case_data['complaint']}\n"
@@ -298,13 +555,14 @@ def validate_diagnosis():
                 f"Terapi Gizi & Tatalaksana yang Benar: {case_data['correct_therapy']}\n\n"
                 f"=== INSTRUKSI EVALUASI & DIALOG ===\n"
                 f"1. Bertindaklah sebagai pembimbing klinis/dosen pembimbing gizi yang ramah, berwibawa, profesional, dan mendidik.\n"
-                f"2. Pengguna bisa bertanya, mendiskusikan gejala, meminta petunjuk, atau langsung mengusulkan analisis kasus. Jawablah secara kontekstual.\n"
-                f"3. Jika pengguna bertanya tentang data pasien atau meminta petunjuk, berikan bimbingan secara akademis dan bertahap berdasarkan data medis acuan di atas tanpa langsung membocorkan jawaban lengkap begitu saja.\n"
-                f"4. Jika pengguna memberikan jawaban analisis (diagnosis gizi DAN terapi pangan):\n"
-                f"   - Berikan ulasan mendalam mengenai apa yang benar dan apa yang kurang.\n"
-                f"   - Jika analisis pengguna sudah tepat secara medis mencakup diagnosis dan terapi yang benar (seperti tercantum pada DATA MEDIS ACUAN), kamu harus memuji mereka dan mengakhiri jawabanmu dengan menuliskan tag kelulusan secara presisi: '**[BERHASIL MENDIAGNOSIS]**'. Tag ini sangat penting untuk dibaca sistem agar meluluskan level pengguna!\n"
-                f"   - Jika mereka melupakan poin kritis (misalnya: teh setelah makan pada AP, es kopi susu manis pada MR, diet ekstrem vegetarian tanpa protein hewani pada NA, catch-up growth padat kalori/protein biologis tinggi pada RS, sarapan teratur saat haid pada DS), ingatkan dan jelaskan landasan biologisnya secara mendalam.\n"
-                f"5. Gunakan Bahasa Indonesia yang baik dan format Markdown yang rapi."
+                f"2. Panggil pengguna dengan sebutan 'Nutri Student'.\n"
+                f"3. Jika pengguna bertanya tentang data pasien atau meminta petunjuk, berikan bimbingan secara akademis dan bertahap berdasarkan data medis acuan di atas tanpa langsung membocorkan jawaban lengkap.\n"
+                f"4. Pengguna diminta mencari dan menjawab 3 hal utama:\n"
+                f"   a. Menganalisis nilai IMT pasien.\n"
+                f"   b. Menentukan diagnosis gizi berdasarkan antropometri & hasil klinis.\n"
+                f"   c. Menyusun rekomendasi terapi gizi/pangan yang tepat.\n"
+                f"5. Jika pengguna memberikan jawaban analisis (meliputi diagnosis gizi DAN terapi pangan yang benar sesuai data acuan), kamu harus memuji mereka dan mengakhiri jawabanmu dengan menuliskan tag kelulusan secara presisi: '**[BERHASIL MENDIAGNOSIS]**'. Tag ini sangat penting untuk dibaca sistem agar meluluskan level pengguna!\n"
+                f"6. Gunakan Bahasa Indonesia yang baik dan format Markdown yang rapi."
             )
             
             try:
@@ -436,7 +694,7 @@ def chat():
             elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):
                 reply = "**Anemia Defisiensi Besi** sering terjadi pada remaja putri (seperti AP dan DS). Gejalanya meliputi sering pusing, pucat, dan cepat lelah. \n\nTatalaksana yang tepat:\n1. Suplementasi **Tablet Tambah Darah** (zat besi & asam folat) 💊.\n2. Tingkatkan konsumsi **besi heme** (hati ayam 🥩, telur 🥚, daging).\n3. Kombinasikan dengan **Vitamin C** (jeruk 🍊, pepaya) agar zat besi diserap 3x lipat lebih baik.\n4. 🚫 **HINDARI minum teh atau kopi** setelah makan karena kandungan tanin dapat mengikat zat besi sehingga gagal diserap tubuh."
             elif any(w in msg_lower for w in ["obesitas", "gemuk", "insulin", "gula", "manis", "leher hitam"]):
-                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam and menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
+                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam dan menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
             elif any(w in msg_lower for w in ["angular", "cheilitis", "sariawan", "bibir pecah", "vitamin b"]):
                 reply = "Luka robek di sudut bibir (**Angular Cheilitis**) dan lidah meradang (**Glossitis**) seperti kasus NA adalah tanda klinis klasik dari **Defisiensi Vitamin B Kompleks** (terutama B2/Riboflavin dan B12). Ini sering dipicu oleh diet ketat ekstrim yang tidak seimbang.\n\nSumber makanan kaya Vitamin B Kompleks:\n- Protein hewani (daging, ayam, ikan) 🐟🍗\n- Telur dan produk susu 🥚🥛\n- Sayuran berdaun hijau 🥬\n- Hindari diet ekstrem tanpa bimbingan klinis!"
             elif any(w in msg_lower for w in ["nutrisolve", "dss", "fitur"]):

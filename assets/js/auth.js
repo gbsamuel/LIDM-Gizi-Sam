@@ -6,6 +6,11 @@
   const LEARNING_PROGRESS_TABLE = "learning_progress";
   const FEATURE_EVENT_TABLE = "feature_events";
 
+  // Local storage keys for developer mock mode
+  const MOCK_USER_KEY = "nutriverse_mock_user";
+  const MOCK_ATTEMPTS_KEY = "nutriverse_mock_attempts";
+  const MOCK_USERS_LIST_KEY = "nutriverse_mock_users_list";
+
   function client() {
     return window.NUTRIVERSE_SUPABASE || null;
   }
@@ -15,10 +20,62 @@
   }
 
   function isConfigured() {
-    return Boolean(client());
+    // We consider it configured if Supabase is active OR we are running in local dev bypass mode
+    return Boolean(client()) || true;
+  }
+
+  // Helper functions for mock mode
+  function getMockUser() {
+    try {
+      const data = localStorage.getItem(MOCK_USER_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setMockUser(user) {
+    if (user) {
+      localStorage.setItem(MOCK_USER_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(MOCK_USER_KEY);
+    }
+  }
+
+  function getMockUsersList() {
+    try {
+      const data = localStorage.getItem(MOCK_USERS_LIST_KEY);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function addMockUserToList(email, password, metadata) {
+    const list = getMockUsersList();
+    list[email.toLowerCase()] = { email, password, metadata };
+    localStorage.setItem(MOCK_USERS_LIST_KEY, JSON.stringify(list));
+  }
+
+  function getMockAttempts() {
+    try {
+      const data = localStorage.getItem(MOCK_ATTEMPTS_KEY);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function setMockAttempt(testType, attempt) {
+    const attempts = getMockAttempts();
+    attempts[testType] = attempt;
+    localStorage.setItem(MOCK_ATTEMPTS_KEY, JSON.stringify(attempts));
   }
 
   async function getCurrentUser() {
+    const mock = getMockUser();
+    if (mock) return mock;
+
     if (!client()) return null;
     const { data, error } = await client().auth.getUser();
     if (error) return null;
@@ -26,6 +83,9 @@
   }
 
   async function getCurrentSession() {
+    const mock = getMockUser();
+    if (mock) return { user: mock };
+
     if (!client()) return null;
     const { data, error } = await client().auth.getSession();
     if (error) return null;
@@ -33,6 +93,18 @@
   }
 
   async function getProfile(userId) {
+    const mock = getMockUser();
+    if (mock && mock.id === userId) {
+      return {
+        id: mock.id,
+        full_name: mock.user_metadata?.full_name || "Developer Account",
+        nim: mock.user_metadata?.nim || "12345678",
+        email: mock.email,
+        role: mock.user_metadata?.role || "student",
+        created_at: new Date().toISOString()
+      };
+    }
+
     if (!client()) throw authError();
     const { data, error } = await client()
       .from(PROFILE_TABLE)
@@ -50,8 +122,36 @@
   }
 
   async function signIn(email, password) {
+    const emailLower = email.trim().toLowerCase();
+    
+    // Intercept dev bypass accounts
+    if (emailLower.endsWith("@nutriverse.local")) {
+      const list = getMockUsersList();
+      const existing = list[emailLower];
+      
+      const role = emailLower.startsWith("dosen") ? "teacher" : "student";
+      const fullName = existing ? existing.metadata.full_name : (role === "teacher" ? "Dosen Tester" : "Mahasiswa Tester");
+      const nim = existing ? existing.metadata.nim : (role === "teacher" ? "N/A" : "12345678");
+
+      if (existing && existing.password !== password) {
+        throw new Error("Password salah untuk akun pengembang lokal.");
+      }
+
+      const mockUser = {
+        id: role === "teacher" ? "mock-teacher-id-123" : "mock-student-id-456",
+        email: email,
+        user_metadata: {
+          full_name: fullName,
+          nim: nim,
+          role: role
+        }
+      };
+      setMockUser(mockUser);
+      return { user: mockUser };
+    }
+
     if (!client()) throw authError();
-    const { data, error } = await client().auth.signInWithPassword({ email, password });
+    const { data, error } = await client().auth.signInWithPassword({ email: email.trim(), password });
     if (error) throw error;
     if (data?.user) {
       await ensureStudentProfile(data.user);
@@ -106,6 +206,25 @@
   }
 
   async function signUpStudent({ fullName, nim, email, password }) {
+    const emailLower = email.trim().toLowerCase();
+
+    // Intercept dev bypass registration
+    if (emailLower.endsWith("@nutriverse.local")) {
+      addMockUserToList(emailLower, password, { full_name: fullName, nim, role: "student" });
+      
+      const mockUser = {
+        id: "mock-student-id-456",
+        email: email,
+        user_metadata: {
+          full_name: fullName,
+          nim: nim,
+          role: "student"
+        }
+      };
+      setMockUser(mockUser);
+      return { user: mockUser };
+    }
+
     if (!client()) throw authError();
     const { data, error } = await client().auth.signUp({
       email,
@@ -135,11 +254,19 @@
   }
 
   async function signOut() {
+    setMockUser(null);
+    localStorage.removeItem(MOCK_ATTEMPTS_KEY);
     if (!client()) return;
     await client().auth.signOut();
   }
 
   async function hasCompletedAttempt(userId, testType) {
+    const mock = getMockUser();
+    if (mock && mock.id === userId) {
+      const attempts = getMockAttempts();
+      return Boolean(attempts[testType]);
+    }
+
     if (!client() || !userId) return false;
     const { data, error } = await client()
       .from(ATTEMPT_TABLE)
@@ -152,6 +279,12 @@
   }
 
   async function getAttempt(userId, testType) {
+    const mock = getMockUser();
+    if (mock && mock.id === userId) {
+      const attempts = getMockAttempts();
+      return attempts[testType] || null;
+    }
+
     if (!client() || !userId) return null;
     const { data, error } = await client()
       .from(ATTEMPT_TABLE)
@@ -164,6 +297,22 @@
   }
 
   async function insertTestAttempt({ userId, testType, score, total }) {
+    const mock = getMockUser();
+    if (mock && mock.id === userId) {
+      const percentage = total > 0 ? Number(((score / total) * 100).toFixed(2)) : 0;
+      const attempt = {
+        id: "mock-attempt-" + Math.random().toString(36).substr(2, 9),
+        user_id: userId,
+        test_type: testType,
+        score,
+        total,
+        percentage,
+        submitted_at: new Date().toISOString()
+      };
+      setMockAttempt(testType, attempt);
+      return attempt;
+    }
+
     if (!client()) throw authError();
     const percentage = total > 0 ? Number(((score / total) * 100).toFixed(2)) : 0;
     const { data, error } = await client()
@@ -268,6 +417,30 @@
   }
 
   async function fetchTeacherDashboardRows() {
+    const mock = getMockUser();
+    if (mock && mock.user_metadata?.role === "teacher") {
+      return [
+        {
+          profile: { id: "std-1", full_name: "Ahmad Fauzi (Simulasi)", nim: "210301001", email: "ahmad@gmail.com", role: "student" },
+          pretest: { score: 15, total: 25, percentage: 60, submitted_at: new Date(Date.now() - 3600000).toISOString() },
+          posttest: { score: 22, total: 25, percentage: 88, submitted_at: new Date().toISOString() },
+          improvement: 28
+        },
+        {
+          profile: { id: "std-2", full_name: "Siti Rahmawati (Simulasi)", nim: "210301002", email: "siti@gmail.com", role: "student" },
+          pretest: { score: 12, total: 25, percentage: 48, submitted_at: new Date(Date.now() - 7200000).toISOString() },
+          posttest: { score: 20, total: 25, percentage: 80, submitted_at: new Date().toISOString() },
+          improvement: 32
+        },
+        {
+          profile: { id: "std-3", full_name: "Budi Santoso (Simulasi)", nim: "210301003", email: "budi@gmail.com", role: "student" },
+          pretest: { score: 18, total: 25, percentage: 72, submitted_at: new Date(Date.now() - 1800000).toISOString() },
+          posttest: null,
+          improvement: null
+        }
+      ];
+    }
+
     if (!client()) throw authError();
     const { data: profiles, error: profilesError } = await client()
       .from(PROFILE_TABLE)

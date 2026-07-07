@@ -30,7 +30,26 @@
     </nav>
   </header>
 
-  <main>
+  <main style="position: relative;">
+    <!-- Floating Parallax Backdrop -->
+    <div class="micro-nutrients-parallax" id="parallax-container">
+      <div class="parallax-layer layer-1" data-depth="0.05">
+        <span class="float-item vit-a">A</span>
+        <span class="float-item zinc">Zn</span>
+        <span class="float-item circle-blur blur-pink"></span>
+      </div>
+      <div class="parallax-layer layer-2" data-depth="0.12">
+        <span class="float-item vit-c">C</span>
+        <span class="float-item iron">Fe</span>
+        <span class="float-item circle-blur blur-cyan"></span>
+      </div>
+      <div class="parallax-layer layer-3" data-depth="0.22">
+        <span class="float-item vit-d">D</span>
+        <span class="float-item calcium">Ca</span>
+        <span class="float-item circle-blur blur-yellow"></span>
+      </div>
+    </div>
+
     <section class="section hero">
       <div class="reveal-on-scroll">
         <span class="eyebrow">Immersive Smart Nutrition Learning Ecosystem</span>
@@ -50,6 +69,83 @@
           <li><span class="step-number">3</span><div><strong>Lihat progres</strong><br><span class="muted">NutriQuest mencatat test, kasus, modul, dan aktivitas.</span></div></li>
         </ol>
       </aside>
+    </section>
+
+    <!-- INTERACTIVE MACRO NUTRIENT CALCULATOR SECTION -->
+    <section class="section macro-calculator-section reveal-on-scroll" style="margin-bottom: 30px;">
+      <div class="section-inner grid two" style="align-items: center; gap: 40px;">
+        <div class="calculator-desc">
+          <span class="eyebrow" style="color: var(--blue);">Kalkulator Edukatif</span>
+          <h2>Rancang Kebutuhan Makronutrisi Anda</h2>
+          <p class="lead">Gunakan slider interaktif di samping untuk mensimulasikan pembagian kalori harian Anda ke dalam Karbohidrat, Protein, dan Lemak sesuai kebutuhan klinis.</p>
+          <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="dot-carb" style="width: 12px; height: 12px; border-radius: 50%; background: var(--blue); display: inline-block;"></span>
+              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Karbohidrat (4 kkal/g) - Sumber energi utama</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="dot-prot" style="width: 12px; height: 12px; border-radius: 50%; background: var(--green); display: inline-block;"></span>
+              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Protein (4 kkal/g) - Pembangunan sel & otot</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="dot-fat" style="width: 12px; height: 12px; border-radius: 50%; background: var(--amber); display: inline-block;"></span>
+              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Lemak (9 kkal/g) - Penyerapan vitamin & hormon</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="calculator-card panel" style="padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.85); box-shadow: var(--soft-shadow);">
+          <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; font-weight: 900; color: var(--muted); font-family: monospace;">MACRO PLANNER v1.0</span>
+            <span class="tag gold" id="macro-total-pct">Total: 100%</span>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Calorie Slider -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="macro-calories" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Kebutuhan Energi</label>
+                <strong id="val-calories" style="font-family: monospace; font-size: 16px; color: var(--green);">2000 kkal</strong>
+              </div>
+              <input type="range" id="macro-calories" min="1200" max="4000" step="50" value="2000" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
+            </div>
+            
+            <!-- Carbs Slider -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="macro-carbs" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Karbohidrat (%)</label>
+                <strong id="val-carbs" style="font-family: monospace; font-size: 15px; color: var(--blue);">50% (250g)</strong>
+              </div>
+              <input type="range" id="macro-carbs" min="10" max="80" step="5" value="50" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
+            </div>
+            
+            <!-- Protein Slider -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="macro-protein" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Protein (%)</label>
+                <strong id="val-protein" style="font-family: monospace; font-size: 15px; color: var(--green);">20% (100g)</strong>
+              </div>
+              <input type="range" id="macro-protein" min="10" max="50" step="5" value="20" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
+            </div>
+            
+            <!-- Fat Slider -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="macro-fat" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Lemak (%)</label>
+                <strong id="val-fat" style="font-family: monospace; font-size: 15px; color: var(--amber);">30% (67g)</strong>
+              </div>
+              <input type="range" id="macro-fat" min="10" max="60" step="5" value="30" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
+            </div>
+          </div>
+          
+          <!-- Visual feedback bars -->
+          <div style="margin-top: 24px; height: 16px; border-radius: 8px; overflow: hidden; display: flex; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);">
+            <div id="bar-carbs" style="width: 50%; background: var(--blue); transition: width 0.2s ease;"></div>
+            <div id="bar-protein" style="width: 20%; background: var(--green); transition: width 0.2s ease;"></div>
+            <div id="bar-fat" style="width: 30%; background: var(--amber); transition: width 0.2s ease;"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="pillar-slider-section" id="pilar">
@@ -148,5 +244,105 @@
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/tracking.js"></script>
   <script src="assets/js/pretest-gate.js"></script>
+
+  <script>
+    // ===== MICRO-NUTRIENTS PARALLAX LOGIC =====
+    const parallaxContainer = document.getElementById("parallax-container");
+    if (parallaxContainer) {
+      const layers = parallaxContainer.querySelectorAll(".parallax-layer");
+      window.addEventListener("mousemove", (e) => {
+        const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+        const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+        
+        layers.forEach(layer => {
+          const depth = parseFloat(layer.getAttribute("data-depth") || "0.1");
+          const moveX = x * depth * 80;
+          const moveY = y * depth * 80;
+          layer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+      });
+    }
+
+    // ===== INTERACTIVE MACRO NUTRIENT CALCULATOR =====
+    const sliderCalories = document.getElementById("macro-calories");
+    const sliderCarbs = document.getElementById("macro-carbs");
+    const sliderProtein = document.getElementById("macro-protein");
+    const sliderFat = document.getElementById("macro-fat");
+
+    const valCalories = document.getElementById("val-calories");
+    const valCarbs = document.getElementById("val-carbs");
+    const valProtein = document.getElementById("val-protein");
+    const valFat = document.getElementById("val-fat");
+
+    const barCarbs = document.getElementById("bar-carbs");
+    const barProtein = document.getElementById("bar-protein");
+    const barFat = document.getElementById("bar-fat");
+    const totalPctText = document.getElementById("macro-total-pct");
+
+    function updateMacros() {
+      if (!sliderCalories || !sliderCarbs || !sliderProtein || !sliderFat) return;
+      
+      const calories = parseInt(sliderCalories.value);
+      let carbsPct = parseInt(sliderCarbs.value);
+      let proteinPct = parseInt(sliderProtein.value);
+      let fatPct = parseInt(sliderFat.value);
+
+      const sum = carbsPct + proteinPct + fatPct;
+      if (sum !== 100) {
+        totalPctText.textContent = `Total: ${sum}%`;
+        totalPctText.className = sum === 100 ? "tag gold" : "tag coral";
+      } else {
+        totalPctText.textContent = "Total: 100%";
+        totalPctText.className = "tag gold";
+      }
+
+      valCalories.textContent = `${calories} kkal`;
+
+      const carbsGrams = Math.round((calories * (carbsPct / 100)) / 4);
+      const proteinGrams = Math.round((calories * (proteinPct / 100)) / 4);
+      const fatGrams = Math.round((calories * (fatPct / 100)) / 9);
+
+      valCarbs.textContent = `${carbsPct}% (${carbsGrams}g)`;
+      valProtein.textContent = `${proteinPct}% (${proteinGrams}g)`;
+      valFat.textContent = `${fatPct}% (${fatGrams}g)`;
+
+      const total = sum || 1;
+      barCarbs.style.width = `${(carbsPct / total) * 100}%`;
+      barProtein.style.width = `${(proteinPct / total) * 100}%`;
+      barFat.style.width = `${(fatPct / total) * 100}%`;
+    }
+
+    [sliderCalories, sliderCarbs, sliderProtein, sliderFat].forEach(slider => {
+      if (slider) {
+        slider.addEventListener("input", updateMacros);
+      }
+    });
+
+    if (sliderCarbs && sliderProtein && sliderFat) {
+      sliderCarbs.addEventListener("input", () => {
+        let diff = 100 - parseInt(sliderCarbs.value);
+        let pVal = Math.round(diff * 0.4);
+        sliderProtein.value = Math.max(10, Math.min(50, pVal));
+        sliderFat.value = 100 - parseInt(sliderCarbs.value) - parseInt(sliderProtein.value);
+        updateMacros();
+      });
+      sliderProtein.addEventListener("input", () => {
+        let diff = 100 - parseInt(sliderProtein.value);
+        let cVal = Math.round(diff * 0.6);
+        sliderCarbs.value = Math.max(10, Math.min(80, cVal));
+        sliderFat.value = 100 - parseInt(sliderCarbs.value) - parseInt(sliderProtein.value);
+        updateMacros();
+      });
+      sliderFat.addEventListener("input", () => {
+        let diff = 100 - parseInt(sliderFat.value);
+        let cVal = Math.round(diff * 0.7);
+        sliderCarbs.value = Math.max(10, Math.min(80, cVal));
+        sliderProtein.value = 100 - parseInt(sliderCarbs.value) - parseInt(sliderFat.value);
+        updateMacros();
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", updateMacros);
+  </script>
 </body>
 </html>
