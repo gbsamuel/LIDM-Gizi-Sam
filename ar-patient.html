@@ -113,9 +113,6 @@
                 <span style="font-size: 11px; font-weight: 800; color: #94a3b8; font-family: monospace;">AR SCREENER HUD v3.0</span>
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <span id="scan-status-badge" class="ar-status-badge">STANDBY / HUD READY</span>
-                  <button id="btn-toggle-voice" class="ar-status-badge" style="cursor: pointer; background: rgba(100, 116, 139, 0.15); color: #64748b; border: 1px solid rgba(100, 116, 139, 0.3); outline: none;">
-                    🔇 SUARA: SENYAP
-                  </button>
                 </div>
               </div>
             </div>
@@ -127,15 +124,7 @@
               <!-- Scanning sweep beam (Invisible or clean) -->
               <div class="scanning-sweep" style="display: none;"></div>
 
-              <!-- Voice Active Waveform HUD -->
-              <div class="voice-waveform-hud" id="voice-waveform" style="display: none;">
-                <div class="waveform-bar"></div>
-                <div class="waveform-bar"></div>
-                <div class="waveform-bar"></div>
-                <div class="waveform-bar"></div>
-                <div class="waveform-bar"></div>
-                <span style="font-family: monospace; font-size: 9px; color: #2ee59d; margin-left: 6px;">PASIEN BERBICARA...</span>
-              </div>
+
 
               <!-- Dashboard Target Reticle (Invisible or clean) -->
               <div class="target-reticle" id="ar-reticle"></div>
@@ -237,6 +226,6 @@
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/tracking.js"></script>
   <script src="assets/js/pretest-gate.js"></script>
-  <script src="assets/js/ar-patient.js?v=3.5"></script>
+  <script src="assets/js/ar-patient.js?v=3.6"></script>
 </body>
 </html>

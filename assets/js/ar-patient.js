@@ -500,11 +500,6 @@ function initARPatient() {
 
   // Three.js Scene Variables
   let scene, camera, renderer, controls, model;
-  let voiceEnabled = false;
-  let lastSpokenText = "";
-
-  // Speech synthesis binding
-  const synth = window.speechSynthesis;
 
   // DOM Elements cache
   const activeCaseNameHud = document.getElementById("active-case-name-hud");
@@ -514,7 +509,6 @@ function initARPatient() {
   const chatMessagesContainer = document.getElementById("chat-messages-container");
   const chatbotUserInput = document.getElementById("chatbot-user-input");
   const btnSubmitChat = document.getElementById("btn-submit-chat");
-  const btnToggleVoice = document.getElementById("btn-toggle-voice");
 
   // Telemetry DOM items
   const telemetryHr = document.getElementById("tele-hr");
@@ -543,38 +537,7 @@ function initARPatient() {
     });
   }
 
-  // Voice toggle listener
-  btnToggleVoice?.addEventListener("click", () => {
-    voiceEnabled = !voiceEnabled;
-    if (voiceEnabled) {
-      btnToggleVoice.innerHTML = "🔊 SUARA: AKTIF";
-      btnToggleVoice.style.background = "rgba(91, 134, 229, 0.15)";
-      btnToggleVoice.style.color = "#5b86e5";
-      btnToggleVoice.style.borderColor = "rgba(91, 134, 229, 0.3)";
-      if (lastSpokenText) speakText(lastSpokenText);
-    } else {
-      btnToggleVoice.innerHTML = "🔇 SUARA: SENYAP";
-      btnToggleVoice.style.background = "rgba(100, 116, 139, 0.15)";
-      btnToggleVoice.style.color = "#64748b";
-      btnToggleVoice.style.borderColor = "rgba(100, 116, 139, 0.3)";
-      if (synth) synth.cancel();
-    }
-  });
 
-  function speakText(text) {
-    if (!synth) return;
-    synth.cancel();
-    lastSpokenText = text;
-    if (!voiceEnabled) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = synth.getVoices();
-    const indonesianVoice = voices.find(v => v.lang.includes("id-ID") || v.lang.includes("id_ID"));
-    if (indonesianVoice) utterance.voice = indonesianVoice;
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-    synth.speak(utterance);
-  }
 
   // Add chat bubble helper
   function addChatMessage(sender, text) {
@@ -788,8 +751,7 @@ function initARPatient() {
     const welcomeMsg = `Halo, Nutri Student! Selamat datang di simulasi gizi klinis **Fase ${phase.charAt(0).toUpperCase() + phase.slice(1)} - Level ${level.toUpperCase()}**.🩺<br><br>Pasien saat ini adalah **${caseObj.name.split(' (')[0]}**.<br>Keluhan utama: *"${caseObj.complaint}"*<br><br>Silakan periksa data antropometri, klinis, dan recall di panel sebelah kanan. Ketikkan hasil analisis Anda (Diagnosis dan rencana Intervensi Pangan) di sini untuk dievaluasi oleh AI Supervisor.`;
     addChatMessage("ai", welcomeMsg);
 
-    // Speak intro narrative
-    speakText(caseObj.spokenIntro);
+
 
     // Load Model
     loadGLBModel(caseObj.modelPath);
@@ -1228,7 +1190,7 @@ function initARPatient() {
           }
         }, 300);
 
-        speakText("Luar biasa! Analisis Anda tepat sekali. Pekerjaan Anda selesai dengan sempurna.");
+
 
       } else {
         streakValue = 0;
@@ -1247,7 +1209,7 @@ function initARPatient() {
         const aiResponse = `**EVALUASI AI SUPERVISOR:**<br>${hint}`;
         addChatMessage("ai", aiResponse);
 
-        speakText("Diagnosis atau rekomendasi Anda masih kurang tepat. Silakan periksa kembali data pasien dan coba lagi.");
+
       }
     }, 1200);
   }
