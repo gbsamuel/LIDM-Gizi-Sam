@@ -725,14 +725,6 @@ function initARPatient() {
           if (child.isMesh) {
             child.castShadow = false;
             child.receiveShadow = false;
-            try {
-              const wireframe = new THREE.WireframeGeometry(child.geometry);
-              const line = new THREE.LineSegments(wireframe);
-              line.material.color.setHex(0x5b86e5);
-              line.material.transparent = true;
-              line.material.opacity = 0.15;
-              child.add(line);
-            } catch (e) {}
           }
         });
 
