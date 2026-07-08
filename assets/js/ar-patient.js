@@ -637,6 +637,9 @@ function initARPatient() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
     container.appendChild(renderer.domElement);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -646,18 +649,18 @@ function initARPatient() {
     controls.minDistance = 1.0;
     controls.maxDistance = 10.0;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight1.position.set(2, 4, 5);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x5b86e5, 1.0);
+    const dirLight2 = new THREE.DirectionalLight(0x5b86e5, 0.3);
     dirLight2.position.set(-2, 2, -3);
     scene.add(dirLight2);
 
-    const spotLight = new THREE.SpotLight(0x2ee59d, 4);
+    const spotLight = new THREE.SpotLight(0x2ee59d, 0.8);
     spotLight.position.set(0, 5, 0);
     spotLight.angle = Math.PI / 4;
     spotLight.penumbra = 0.5;
