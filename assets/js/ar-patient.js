@@ -500,6 +500,7 @@ function initARPatient() {
 
   // Three.js Scene Variables
   let scene, camera, renderer, controls, model;
+  let currentLoadingPath = "";
 
   // DOM Elements cache
   const activeCaseNameHud = document.getElementById("active-case-name-hud");
@@ -658,10 +659,38 @@ function initARPatient() {
 
   function loadGLBModel(modelPath) {
     if (!scene) return;
+    
+    currentLoadingPath = modelPath;
+
+    // Remove the current active model from scene
     if (model) {
       scene.remove(model);
       model = null;
     }
+
+    // Completely remove any other meshes/groups from the scene (such as fallbacks or models from overlapping loads)
+    // and dispose of their assets to prevent GPU memory leaks
+    const toRemove = [];
+    scene.children.forEach((child) => {
+      if (!child.isLight && 
+          !(child instanceof THREE.GridHelper) && 
+          !(child instanceof THREE.Camera)) {
+        toRemove.push(child);
+      }
+    });
+    toRemove.forEach((obj) => {
+      scene.remove(obj);
+      obj.traverse((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => m.dispose());
+          } else {
+            child.material.dispose();
+          }
+        }
+      });
+    });
 
     const scanStatus = document.getElementById("scan-status-badge");
     if (scanStatus) {
@@ -673,6 +702,11 @@ function initARPatient() {
     loader.load(
       modelPath,
       function (gltf) {
+        // Discard if user has already navigated to a different model
+        if (currentLoadingPath !== modelPath) {
+          return;
+        }
+
         model = gltf.scene;
 
         const box = new THREE.Box3().setFromObject(model);
@@ -701,12 +735,14 @@ function initARPatient() {
         }
       },
       function (xhr) {
+        if (currentLoadingPath !== modelPath) return;
         if (xhr.total > 0 && scanStatus) {
           const percent = Math.round((xhr.loaded / xhr.total) * 100);
           scanStatus.textContent = `MEMUAT MODEL 3D (${percent}%)...`;
         }
       },
       function (error) {
+        if (currentLoadingPath !== modelPath) return;
         console.error("Error loading GLB model:", error);
         if (scanStatus) {
           scanStatus.textContent = "3D FALLBACK LOADED";
