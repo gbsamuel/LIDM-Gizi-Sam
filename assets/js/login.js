@@ -1,6 +1,6 @@
 (function () {
-  const ADMIN_PASSWORD = "nutriverse123";
-  const ADMIN_UNLOCK_KEY = "nutriverse_admin_unlocked";
+  const ADMIN_PASSWORD = "nutrisphere123";
+  const ADMIN_UNLOCK_KEY = "nutrisphere_admin_unlocked";
 
   const loginForm = document.querySelector("[data-login-form]");
   const adminLoginForm = document.querySelector("[data-admin-login-form]");
@@ -37,7 +37,7 @@
 
   async function handleLogin(event) {
     event.preventDefault();
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.isConfigured()) {
       setStatus("Supabase belum dikonfigurasi. Isi URL dan anon key dulu.", "error");
       return;
@@ -75,7 +75,7 @@
 
   async function handleRegister(event) {
     event.preventDefault();
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.isConfigured()) {
       setStatus("Supabase belum dikonfigurasi. Isi URL dan anon key dulu.", "error");
       return;

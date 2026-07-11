@@ -1,4 +1,4 @@
-window.NUTRIVERSE_PRETEST_QUESTIONS = [
+window.NUTRISPHERE_PRETEST_QUESTIONS = [
   {
     id: "q1",
     category: "PSG",

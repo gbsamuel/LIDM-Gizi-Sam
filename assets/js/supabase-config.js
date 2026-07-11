@@ -16,10 +16,10 @@
     isConfigured: isConfigured()
   };
 
-  window.NUTRIVERSE_SUPABASE_CONFIG = config;
-  window.NUTRIVERSE_SUPABASE = null;
+  window.NUTRISPHERE_SUPABASE_CONFIG = config;
+  window.NUTRISPHERE_SUPABASE = null;
 
   if (config.isConfigured && window.supabase?.createClient) {
-    window.NUTRIVERSE_SUPABASE = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.NUTRISPHERE_SUPABASE = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 })();

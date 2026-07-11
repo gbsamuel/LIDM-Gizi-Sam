@@ -7,12 +7,12 @@
   const FEATURE_EVENT_TABLE = "feature_events";
 
   // Local storage keys for developer mock mode
-  const MOCK_USER_KEY = "nutriverse_mock_user";
-  const MOCK_ATTEMPTS_KEY = "nutriverse_mock_attempts";
-  const MOCK_USERS_LIST_KEY = "nutriverse_mock_users_list";
+  const MOCK_USER_KEY = "nutrisphere_mock_user";
+  const MOCK_ATTEMPTS_KEY = "nutrisphere_mock_attempts";
+  const MOCK_USERS_LIST_KEY = "nutrisphere_mock_users_list";
 
   function client() {
-    return window.NUTRIVERSE_SUPABASE || null;
+    return window.NUTRISPHERE_SUPABASE || null;
   }
 
   function authError() {
@@ -125,7 +125,7 @@
     const emailLower = email.trim().toLowerCase();
     
     // Intercept dev bypass accounts
-    if (emailLower.endsWith("@nutriverse.local")) {
+    if (emailLower.endsWith("@nutrisphere.local")) {
       const list = getMockUsersList();
       const existing = list[emailLower];
       
@@ -209,7 +209,7 @@
     const emailLower = email.trim().toLowerCase();
 
     // Intercept dev bypass registration
-    if (emailLower.endsWith("@nutriverse.local")) {
+    if (emailLower.endsWith("@nutrisphere.local")) {
       addMockUserToList(emailLower, password, { full_name: fullName, nim, role: "student" });
       
       const mockUser = {
@@ -471,7 +471,7 @@
     });
   }
 
-  window.NutriVerseAuth = {
+  window.NutriSphereAuth = {
     isConfigured,
     getCurrentSession,
     getCurrentUser,

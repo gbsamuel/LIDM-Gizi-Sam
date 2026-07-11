@@ -168,7 +168,7 @@ as $$
     from public.feature_events
     group by user_id
   ) events on events.user_id = p.id
-  where admin_password = 'nutriverse123'
+  where admin_password = 'nutrisphere123'
     and p.role = 'student'
   order by p.full_name asc;
 $$;

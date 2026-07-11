@@ -1,5 +1,5 @@
 (function () {
-  const COMPLETED_KEY = "nutriverse_pretest_v1_completed";
+  const COMPLETED_KEY = "nutrisphere_pretest_v1_completed";
   const OPEN_PAGES = new Set(["", "index.html", "login.html", "pretest.html", "nutriquest.html", "dashboard-dosen.html"]);
 
   function currentPage() {
@@ -39,7 +39,7 @@
   }
 
   async function hasCompletedPretest(user) {
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.isConfigured() || !user) return false;
     const done = await auth.hasCompletedAttempt(user.id, "pretest");
     if (done) {
@@ -53,11 +53,11 @@
   }
 
   async function initPretestGate() {
-    if (new URLSearchParams(window.location.search).get("bypass") === "true" || window.localStorage.getItem("nutriverse_dev_bypass") === "true") {
+    if (new URLSearchParams(window.location.search).get("bypass") === "true" || window.localStorage.getItem("nutrisphere_dev_bypass") === "true") {
       return;
     }
     if (OPEN_PAGES.has(currentPage())) return;
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
 
     if (!auth?.isConfigured()) {
       overlay({
@@ -83,16 +83,16 @@
     if (!(await hasCompletedPretest(user))) {
       overlay({
         title: "Untuk buka fitur, kamu harus pretest dulu",
-        message: "Pretest menjadi baseline awal sebelum kamu memakai fitur NutriVerse.",
+        message: "Pretest menjadi baseline awal sebelum kamu memakai fitur NutriSphere.",
         href: pretestUrl(),
         action: "Mulai Pretest"
       });
     }
   }
 
-  window.NutriVersePretestGate = {
+  window.NutriSpherePretestGate = {
     completedKey: COMPLETED_KEY,
-    getCurrentUser: () => window.NutriVerseAuth?.getCurrentUser(),
+    getCurrentUser: () => window.NutriSphereAuth?.getCurrentUser(),
     hasCompletedPretest,
     loginUrl,
     pretestUrl

@@ -4,10 +4,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 const pages = [
-  ["index.html", ["NUTRIVERSE", "NutriSolve", "NutriBase", "NutriPath", "NutriRead", "NutriQuest"]],
-  ["login.html", ["Login NutriVerse", "Daftar Mahasiswa", "Email", "NIM"]],
-  ["pretest.html", ["Pretest NutriVerse", "Baseline Awal", "data-test-type=\"pretest\""]],
-  ["posttest.html", ["Posttest NutriVerse", "Evaluasi Akhir", "data-test-type=\"posttest\""]],
+  ["index.html", ["NUTRISPHERE", "NutriSolve", "NutriBase", "NutriPath", "NutriRead", "NutriQuest"]],
+  ["login.html", ["Login NutriSphere", "Daftar Mahasiswa", "Email", "NIM"]],
+  ["pretest.html", ["Pretest NutriSphere", "Baseline Awal", "data-test-type=\"pretest\""]],
+  ["posttest.html", ["Posttest NutriSphere", "Evaluasi Akhir", "data-test-type=\"posttest\""]],
   ["dashboard-dosen.html", ["Dashboard Dosen", "Rekap Kompetensi", "Kasus Selesai"]],
   ["nutriquest.html", ["NutriQuest", "Pretest", "Posttest", "Asesmen Kasus", "Progress Kompetensi", "Dashboard Dosen"]],
   ["nutrisolve.html", ["Decision Support System", "Anthropometry", "Clinical", "Dietary"]],
@@ -22,7 +22,7 @@ const pages = [
   ["journal_ebook.html", ["Jurnal", "E-Book", "Metadata Referensi", "Topik", "Tahun"]],
 ];
 
-test("planned static pages exist with NutriVerse content markers", () => {
+test("planned static pages exist with NutriSphere content markers", () => {
   for (const [file, markers] of pages) {
     assert.equal(existsSync(file), true, `${file} should exist`);
     const html = readFileSync(file, "utf8");
@@ -50,14 +50,14 @@ test("pretest page and data implement the feature gate contract", () => {
   assert.equal(existsSync("assets/js/pretest-gate.js"), true, "pretest gate script should exist");
 
   const html = readFileSync("pretest.html", "utf8");
-  assert.match(html, /Pretest NutriVerse/);
+  assert.match(html, /Pretest NutriSphere/);
   assert.match(html, /data-pretest-progress/);
   assert.match(html, /data-pretest-options/);
   assert.match(html, /assets\/js\/pretest-data\.js/);
   assert.match(html, /assets\/js\/test-runner\.js/);
 
   const data = readFileSync("assets/js/pretest-data.js", "utf8");
-  assert.match(data, /window\.NUTRIVERSE_PRETEST_QUESTIONS/);
+  assert.match(data, /window\.NUTRISPHERE_PRETEST_QUESTIONS/);
   assert.equal((data.match(/id:\s*"q\d+"/g) || []).length, 25, "should include 25 questions");
   for (const category of ["PSG", "GDDK", "MIPMG", "MAKRO"]) {
     assert.match(data, new RegExp(`category:\\s*"${category}"`), `should include ${category}`);
@@ -203,7 +203,7 @@ test("pretest and posttest share question data and save official attempts to Sup
   assert.match(runner, /percentage/);
   assert.match(runner, /completedAt|submitted_at/);
   assert.match(runner, /Test ini sudah pernah diselesaikan/);
-  assert.doesNotMatch(runner, /localStorage\.setItem\("nutriverse_pretest_v1_result"/);
+  assert.doesNotMatch(runner, /localStorage\.setItem\("nutrisphere_pretest_v1_result"/);
 });
 
 test("login and dashboard implement static admin unlock flow", () => {
@@ -226,10 +226,10 @@ test("login and dashboard implement static admin unlock flow", () => {
   const dashboardJs = readFileSync("assets/js/dashboard-dosen.js", "utf8");
   const loginJs = readFileSync("assets/js/login.js", "utf8");
   const authJs = readFileSync("assets/js/auth.js", "utf8");
-  assert.match(loginJs, /nutriverse123/);
-  assert.match(loginJs, /nutriverse_admin_unlocked/);
+  assert.match(loginJs, /nutrisphere123/);
+  assert.match(loginJs, /nutrisphere_admin_unlocked/);
   assert.match(loginJs, /dashboard-dosen\.html/);
-  assert.match(dashboardJs, /nutriverse_admin_unlocked/);
+  assert.match(dashboardJs, /nutrisphere_admin_unlocked/);
   assert.match(dashboardJs, /admin_dashboard_rows/);
   assert.match(dashboardJs, /function escapeHtml/);
   assert.doesNotMatch(dashboardJs, /requireTeacher/);
@@ -253,7 +253,7 @@ test("static admin RPC and optional posttest contract are documented in code", (
   const schema = readFileSync("supabase/schema.sql", "utf8");
   assert.match(schema, /create or replace function public\.admin_dashboard_rows/);
   assert.match(schema, /admin_password text/);
-  assert.match(schema, /nutriverse123/);
+  assert.match(schema, /nutrisphere123/);
   assert.match(schema, /security definer/i);
   assert.match(schema, /pretest_score/);
   assert.match(schema, /posttest_score/);
@@ -265,12 +265,12 @@ test("static admin RPC and optional posttest contract are documented in code", (
 
   const gate = readFileSync("assets/js/pretest-gate.js", "utf8");
   assert.doesNotMatch(gate, /hasCompletedAttempt\(user\.id,\s*"posttest"\)/, "posttest should not be a global feature gate");
-  assert.doesNotMatch(gate, /nutriverse_posttest/i, "posttest should not have a global gate cache key");
+  assert.doesNotMatch(gate, /nutrisphere_posttest/i, "posttest should not have a global gate cache key");
 });
 
 test("auth gate protects feature pages while leaving landing and auth pages open", () => {
   const gate = readFileSync("assets/js/pretest-gate.js", "utf8");
-  assert.match(gate, /nutriverse_pretest_v1_completed/);
+  assert.match(gate, /nutrisphere_pretest_v1_completed/);
   assert.match(gate, /getCurrentUser/);
   assert.match(gate, /login\.html/);
   assert.match(gate, /pretest\.html/);
@@ -323,7 +323,7 @@ test("hero hierarchy is lighter and cards expose engaging icon hooks", () => {
   const index = readFileSync("index.html", "utf8");
   const allHtml = pages.map(([file]) => readFileSync(file, "utf8")).join("\n");
 
-  assert.match(index, /<h1>NUTRIVERSE<\/h1>/);
+  assert.match(index, /<h1>NUTRISPHERE<\/h1>/);
   assert.match(index, /class="hero-subtitle"/);
   assert.doesNotMatch(index, /<h1>[^<]*untuk belajar/i);
   assert.match(css, /\.hero-subtitle/);

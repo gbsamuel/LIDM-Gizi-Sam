@@ -1,6 +1,6 @@
 (function () {
   async function currentUserId() {
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.getCurrentUser) return null;
     try {
       const user = await auth.getCurrentUser();
@@ -11,7 +11,7 @@
   }
 
   async function trackFeatureEvent(feature, eventType, resourceId, metadata = {}) {
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.trackFeatureEvent) return null;
     try {
       return await auth.trackFeatureEvent({
@@ -22,13 +22,13 @@
         metadata
       });
     } catch (error) {
-      console.warn("NutriVerse tracking skipped:", error.message || error);
+      console.warn("NutriSphere tracking skipped:", error.message || error);
       return null;
     }
   }
 
   async function upsertLearningProgress(moduleId, status = "viewed", progressPercentage = 25) {
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.upsertLearningProgress) return null;
     const userId = await currentUserId();
     if (!userId) return null;
@@ -40,7 +40,7 @@
         progressPercentage
       });
     } catch (error) {
-      console.warn("NutriVerse progress tracking skipped:", error.message || error);
+      console.warn("NutriSphere progress tracking skipped:", error.message || error);
       return null;
     }
   }
@@ -71,7 +71,7 @@
     });
   }
 
-  window.NutriVerseTracking = {
+  window.NutriSphereTracking = {
     trackFeatureEvent,
     upsertLearningProgress,
     initDeclarativeTracking

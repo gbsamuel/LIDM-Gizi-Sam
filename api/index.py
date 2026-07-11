@@ -645,7 +645,7 @@ def chat():
                 })
             
             system_instruction = (
-                "Kamu adalah NutriBot, asisten AI interaktif dan pakar gizi ramah dari NutriVerse.\n"
+                "Kamu adalah NutriBot, asisten AI interaktif dan pakar gizi ramah dari NutriSphere.\n"
                 "Tugasmu adalah membantu siswa, mahasiswa, dan masyarakat umum dalam belajar gizi, memahami asesmen antropometri (BB/U, TB/U, IMT/U, LILA), "
                 "memahami gejala klinis defisiensi gizi (seperti anemia, angular cheilitis, obesitas, stunting), dan merancang diet sehat.\n"
                 "Berikan jawaban yang ramah, ringkas, mudah dipahami, akurat secara medis, dan mendidik.\n"
@@ -688,7 +688,7 @@ def chat():
             reply = ""
             
             if any(w in msg_lower for w in ["halo", "hai", "pagi", "siang", "sore", "malam", "assalamualaikum"]):
-                reply = "Halo! Saya **NutriBot**, asisten gizi pintar Anda di NutriVerse. 🍎🥦 Ada yang bisa saya bantu hari ini tentang pola makan sehat, berat badan, atau keluhan kesehatan?"
+                reply = "Halo! Saya **NutriBot**, asisten gizi pintar Anda di NutriSphere. 🍎🥦 Ada yang bisa saya bantu hari ini tentang pola makan sehat, berat badan, atau keluhan kesehatan?"
             elif any(w in msg_lower for w in ["stunting", "pendek", "tinggi"]):
                 reply = "**Stunting** adalah masalah gizi kronis akibat kurangnya asupan gizi dalam jangka waktu lama (sejak janin hingga usia 2 tahun). Pada remaja stunted (seperti kasus RS di NutriSolve, TB/U < -2 SD), penanganan utamanya adalah menerapkan diet **Tinggi Energi Tinggi Protein (TETP)**. Prioritaskan protein hewani berkualitas tinggi seperti **telur** 🥚, **susu** 🥛, dan **ikan** 🐟 untuk mengejar tumbuh (*catch-up growth*) sebelum lempeng epifisis tulang menutup."
             elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):

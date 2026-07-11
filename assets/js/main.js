@@ -570,7 +570,7 @@ function initGlobalNutriBot() {
       <div class="nutribot-messages" id="nutribot-messages">
         <div class="nutribot-message bot">
           <div class="nutribot-bubble">
-            Halo! Saya <strong>NutriBot</strong>, asisten AI gizi personal Anda dari NutriVerse. 🍎 Broccoli dan apel segar siap menemani belajar Anda! 🥦<br><br>
+            Halo! Saya <strong>NutriBot</strong>, asisten AI gizi personal Anda dari NutriSphere. 🍎 Broccoli dan apel segar siap menemani belajar Anda! 🥦<br><br>
             Ada yang bisa saya bantu hari ini tentang kesehatan gizi, antropometri, atau studi kasus klinis di NutriSolve? Tanyakan apa saja! 😊
           </div>
           <div class="nutribot-time">Baru saja</div>

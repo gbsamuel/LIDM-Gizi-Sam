@@ -1,5 +1,5 @@
 // ==========================================================================
-// NutriVerse AI Summary - API Client & Markdown Renderer Engine
+// NutriSphere AI Summary - API Client & Markdown Renderer Engine
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const data = await response.json();
           summaryText.innerHTML = renderMarkdown(data.summary);
           resultBox.classList.add("active");
-          await window.NutriVerseTracking?.trackFeatureEvent("nutriread", "ai_summary", "backend", {
+          await window.NutriSphereTracking?.trackFeatureEvent("nutriread", "ai_summary", "backend", {
             input_length: input.length,
             mode: "backend"
           });
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     summaryText.innerHTML = responseText;
     resultBox.classList.add("active");
-    window.NutriVerseTracking?.trackFeatureEvent("nutriread", "ai_summary", "local_simulation", {
+    window.NutriSphereTracking?.trackFeatureEvent("nutriread", "ai_summary", "local_simulation", {
       input_length: input.length,
       mode: "local_simulation"
     });

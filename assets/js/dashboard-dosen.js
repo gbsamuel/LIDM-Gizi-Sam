@@ -1,6 +1,6 @@
 (function () {
-  const ADMIN_PASSWORD = "nutriverse123";
-  const ADMIN_UNLOCK_KEY = "nutriverse_admin_unlocked";
+  const ADMIN_PASSWORD = "nutrisphere123";
+  const ADMIN_UNLOCK_KEY = "nutrisphere_admin_unlocked";
 
   const tableBody = document.querySelector("[data-dashboard-table]");
   const statusEl = document.querySelector("[data-dashboard-status]");
@@ -108,7 +108,7 @@
   }
 
   async function fetchStaticAdminDashboardRows() {
-    const client = window.NUTRIVERSE_SUPABASE;
+    const client = window.NUTRISPHERE_SUPABASE;
     if (!client) throw new Error("Supabase belum dikonfigurasi. Dashboard belum bisa memuat data.");
     const { data, error } = await client.rpc("admin_dashboard_rows", {
       admin_password: ADMIN_PASSWORD

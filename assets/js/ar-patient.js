@@ -1,5 +1,5 @@
 // ==========================================================================
-// NutriVerse Interactive 3D AR Patient Case Studies Engine
+// NutriSphere Interactive 3D AR Patient Case Studies Engine
 // ==========================================================================
 
 function initARPatient() {
@@ -1096,7 +1096,7 @@ function initARPatient() {
 
         // Insert case attempt tracker into Supabase if configured
         try {
-          const auth = window.NutriVerseAuth;
+          const auth = window.NutriSphereAuth;
           if (auth && typeof auth.getCurrentUser === 'function') {
             auth.getCurrentUser().then(user => {
               if (user && typeof auth.insertCaseAttempt === 'function') {
@@ -1112,7 +1112,7 @@ function initARPatient() {
             });
           }
           // trackFeatureEvent tracking case_attempt to satisfy test assertions
-          window.NutriVerseTracking?.trackFeatureEvent("nutrisolve", "case_attempt", caseObj.id, {
+          window.NutriSphereTracking?.trackFeatureEvent("nutrisolve", "case_attempt", caseObj.id, {
             case_name: caseObj.name,
             score: 100,
             success: true
@@ -1151,7 +1151,7 @@ function initARPatient() {
               <div class="chat-bubble system success" style="width: 100%; text-align: center; background: rgba(18,164,111,0.06); border:1px solid rgba(18,164,111,0.2); padding:10px; border-radius:10px; color:var(--green); font-size:12.5px;">
                 🏆 **CONGRATULATIONS!** 🏆<br>
                 Anda telah menyelesaikan seluruh Fase Kasus Klinis Gizi dengan sempurna!<br>
-                Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRIVERSE**.<br><br>
+                Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRISPHERE**.<br><br>
                 <button class="chatbot-next-level-btn" id="btn-restart-game" style="background:var(--blue); border:none; padding:8px 16px; border-radius:6px; font-weight:800; color:white; cursor:pointer;">Mulai Ulang Simulasi ↺</button>
               </div>
             `;

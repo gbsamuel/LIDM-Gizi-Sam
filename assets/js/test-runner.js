@@ -1,5 +1,5 @@
 (function () {
-  const questions = window.NUTRIVERSE_PRETEST_QUESTIONS || [];
+  const questions = window.NUTRISPHERE_PRETEST_QUESTIONS || [];
   const OFFICIAL_ATTEMPT_TABLE = "test_attempts";
   const TEST_TYPE_FIELD = "test_type";
   const SCORE_PERCENTAGE_FIELD = "percentage";
@@ -99,7 +99,7 @@
   }
 
   async function saveResult() {
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.isConfigured()) {
       throw new Error("Supabase belum dikonfigurasi. Nilai resmi belum bisa disimpan.");
     }
@@ -147,7 +147,7 @@
       if (!saved) return;
       if (testType === "pretest") {
         try {
-          window.localStorage.setItem("nutriverse_pretest_v1_completed", "true");
+          window.localStorage.setItem("nutrisphere_pretest_v1_completed", "true");
         } catch (error) {
           // Cache only; official state is stored in Supabase.
         }
@@ -172,7 +172,7 @@
       return;
     }
 
-    const auth = window.NutriVerseAuth;
+    const auth = window.NutriSphereAuth;
     if (!auth?.isConfigured()) {
       disableRunner("Supabase belum dikonfigurasi. Isi URL dan anon key sebelum test dipakai.");
       return;
