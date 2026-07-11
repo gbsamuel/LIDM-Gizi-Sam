@@ -147,6 +147,7 @@
         }
       };
       setMockUser(mockUser);
+      localStorage.setItem("last_login_time", Date.now().toString());
       return { user: mockUser };
     }
 
@@ -155,6 +156,7 @@
     if (error) throw error;
     if (data?.user) {
       await ensureStudentProfile(data.user);
+      localStorage.setItem("last_login_time", Date.now().toString());
     }
     return data;
   }
@@ -171,6 +173,7 @@
     }
     if (data?.user) {
       await ensureStudentProfile(data.user, { fullName, nim, email });
+      localStorage.setItem("last_login_time", Date.now().toString());
     }
     return data;
   }
@@ -222,6 +225,7 @@
         }
       };
       setMockUser(mockUser);
+      localStorage.setItem("last_login_time", Date.now().toString());
       return { user: mockUser };
     }
 
@@ -239,6 +243,7 @@
     if (error) throw error;
     if (data?.session && data?.user) {
       await ensureStudentProfile(data.user, { fullName, nim, email });
+      localStorage.setItem("last_login_time", Date.now().toString());
       return data;
     }
 

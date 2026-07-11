@@ -485,6 +485,30 @@ function initARPatient() {
     }
   };
 
+  // Check for login timeout (24 hours) and reset progress if needed
+  const LOGIN_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in ms
+  const lastLogin = localStorage.getItem("last_login_time");
+  let progressWasReset = false;
+
+  if (lastLogin) {
+    const elapsed = Date.now() - parseInt(lastLogin, 10);
+    if (elapsed > LOGIN_TIMEOUT) {
+      localStorage.setItem("unlockedPhases", JSON.stringify(["balita"]));
+      localStorage.setItem("completedCases", JSON.stringify({
+        balita: [],
+        remaja: [],
+        dewasa: [],
+        lansia: []
+      }));
+      localStorage.setItem("diagStreak", "0");
+      progressWasReset = true;
+      console.log("AR Patient progress has been reset due to session timeout (>24 hours since last login).");
+    }
+  } else {
+    // Set default initial login timestamp if not present
+    localStorage.setItem("last_login_time", Date.now().toString());
+  }
+
   // 2. Lifecycle Progression State Manager
   let unlockedPhases = JSON.parse(localStorage.getItem("unlockedPhases")) || ["balita"];
   let completedCases = JSON.parse(localStorage.getItem("completedCases")) || {
@@ -497,6 +521,11 @@ function initARPatient() {
   let currentPhase = "balita";
   let currentLevel = "easy";
   let streakValue = parseInt(localStorage.getItem("diagStreak")) || 0;
+  
+  // Stateful question tracking
+  let currentCaseDiagCorrect = false;
+  let currentCaseIntervCorrect = false;
+  let chatHistory = [];
 
   // Three.js Scene Variables
   let scene, camera, renderer, controls, model;
@@ -543,6 +572,14 @@ function initARPatient() {
   // Add chat bubble helper
   function addChatMessage(sender, text) {
     if (!chatMessagesContainer) return;
+    
+    // Add to chat history for API context
+    if (sender === "user") {
+      chatHistory.push({ role: "user", text: text });
+    } else if (sender === "ai") {
+      chatHistory.push({ role: "model", text: text });
+    }
+
     const wrapper = document.createElement("div");
     wrapper.className = `chat-bubble-wrapper ${sender}`;
     
@@ -551,9 +588,9 @@ function initARPatient() {
     
     if (sender === "ai" || sender === "system") {
       let formattedText = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br>');
+         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+         .replace(/\*(.*?)\*/g, '<em>$1</em>')
+         .replace(/\n/g, '<br>');
       bubble.innerHTML = formattedText;
     } else {
       bubble.textContent = text;
@@ -764,6 +801,11 @@ function initARPatient() {
     const caseObj = casesData[phase][level];
     if (!caseObj) return;
 
+    // Reset status flags & chat history
+    currentCaseDiagCorrect = false;
+    currentCaseIntervCorrect = false;
+    chatHistory = [];
+
     // Reset Chat messages
     if (chatMessagesContainer) {
       chatMessagesContainer.innerHTML = "";
@@ -783,11 +825,15 @@ function initARPatient() {
     // Write to tabs
     populateTabs(caseObj);
 
-    // AI Greeting in Chat bubbles
-    const welcomeMsg = `Halo, Nutri Student! Selamat datang di simulasi gizi klinis **Fase ${phase.charAt(0).toUpperCase() + phase.slice(1)} - Level ${level.toUpperCase()}**.🩺<br><br>Pasien saat ini adalah **${caseObj.name.split(' (')[0]}**.<br>Keluhan utama: *"${caseObj.complaint}"*<br><br>Silakan periksa data antropometri, klinis, dan recall di panel sebelah kanan. Ketikkan hasil analisis Anda (Diagnosis dan rencana Intervensi Pangan) di sini untuk dievaluasi oleh AI Supervisor.`;
+    // AI Greeting in Chat bubbles with numbered instructions
+    const welcomeMsg = `Halo, Nutri Student! Selamat datang di simulasi gizi klinis **Fase ${phase.charAt(0).toUpperCase() + phase.slice(1)} - Level ${level.toUpperCase()}**.🩺<br><br>` +
+      `Pasien saat ini adalah **${caseObj.name.split(' (')[0]}**.<br>` +
+      `Keluhan utama: *"${caseObj.complaint}"*<br><br>` +
+      `Silakan periksa data antropometri, klinis, dan recall di panel sebelah kanan, kemudian jawablah pertanyaan berikut:<br>` +
+      `1. Berdasarkan data antropometri, klinis, dan laboratorium pasien, apakah diagnosis gizi/penyakit yang tepat untuk pasien ini?<br>` +
+      `2. Rencana intervensi gizi apa yang sebaiknya diberikan kepada pasien? Apa yang harus dilakukan oleh pasien, dan seperti apa rekomendasinya?<br><br>` +
+      `Ketikkan analisis Anda di bawah untuk dievaluasi oleh AI Supervisor.`;
     addChatMessage("ai", welcomeMsg);
-
-
 
     // Load Model
     loadGLBModel(caseObj.modelPath);
@@ -1097,7 +1143,7 @@ function initARPatient() {
     loadCase(currentPhase, currentLevel);
   }
 
-  function handleUserInput() {
+  async function handleUserInput() {
     if (!chatbotUserInput) return;
     const userText = chatbotUserInput.value;
     if (!userText.trim()) return;
@@ -1114,140 +1160,174 @@ function initARPatient() {
       return;
     }
 
-    // 2. Perform validation check
-    const result = checkAnswer(userText, caseObj);
+    const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+      ? "http://localhost:5000"
+      : window.location.origin;
 
-    setTimeout(() => {
-      removeTypingIndicator();
+    let isSuccess = false;
+    let aiResponse = "";
 
-      if (result.success) {
-        // Mark completed
-        if (!completedCases[currentPhase].includes(currentLevel)) {
-          completedCases[currentPhase].push(currentLevel);
-        }
+    try {
+      const response = await window["fetch"](`${BACKEND_URL}/api/validate_diagnosis`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          caseId: caseObj.id,
+          diagnosis_text: userText,
+          history: chatHistory.slice(0, -1) // Exclude current user message from previous history
+        })
+      });
 
-        streakValue++;
-        localStorage.setItem("diagStreak", streakValue);
-        if (streakHud) streakHud.textContent = `STREAK: ${streakValue}`;
+      if (!response.ok) {
+        throw new Error("HTTP error " + response.status);
+      }
 
-        // Insert case attempt tracker into Supabase if configured
-        try {
-          const auth = window.NutriSphereAuth;
-          if (auth && typeof auth.getCurrentUser === 'function') {
-            auth.getCurrentUser().then(user => {
-              if (user && typeof auth.insertCaseAttempt === 'function') {
-                auth.insertCaseAttempt({
-                  userId: user.id,
-                  caseId: caseObj.id,
-                  caseName: caseObj.name,
-                  score: 100,
-                  success: true,
-                  feedback: "Berhasil menyelesaikan studi kasus."
-                });
-              }
-            });
-          }
-          // trackFeatureEvent tracking case_attempt to satisfy test assertions
-          window.NutriSphereTracking?.trackFeatureEvent("nutrisolve", "case_attempt", caseObj.id, {
-            case_name: caseObj.name,
-            score: 100,
-            success: true
-          });
-        } catch (err) {
-          console.warn("Supabase analytics tracking skipped:", err);
-        }
+      const data = await response.json();
+      aiResponse = data.reply;
+      
+      const upperReply = aiResponse.toUpperCase();
+      if (upperReply.includes("[DIAGNOSIS_BENAR]")) {
+        currentCaseDiagCorrect = true;
+      }
+      if (upperReply.includes("[INTERVENSI_BENAR]")) {
+        currentCaseIntervCorrect = true;
+      }
+      if (upperReply.includes("[BERHASIL MENDIAGNOSIS]") || data.success) {
+        currentCaseDiagCorrect = true;
+        currentCaseIntervCorrect = true;
+        isSuccess = true;
+      }
+    } catch (err) {
+      console.warn("Backend AI validation offline or failed, falling back to local keywords check:", err);
+      const result = checkAnswer(userText, caseObj);
+      if (result.isDiagSuccess) currentCaseDiagCorrect = true;
+      if (result.isIntervSuccess) currentCaseIntervCorrect = true;
+      
+      isSuccess = currentCaseDiagCorrect && currentCaseIntervCorrect;
 
-        // Check for unlocking next phases
-        const phasesOrder = ["balita", "remaja", "dewasa", "lansia"];
-        const currentIdx = phasesOrder.indexOf(currentPhase);
-
-        if (currentIdx < phasesOrder.length - 1) {
-          const nextPhase = phasesOrder[currentIdx + 1];
-          if (!unlockedPhases.includes(nextPhase)) {
-            unlockedPhases.push(nextPhase);
-            localStorage.setItem("unlockedPhases", JSON.stringify(unlockedPhases));
-          }
-        }
-
-        // Save completions
-        localStorage.setItem("completedCases", JSON.stringify(completedCases));
-        updatePhaseMapUI();
-
-        let aiResponse = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
+      if (isSuccess) {
+        aiResponse = `**ANALISIS MEDIS AI SUPERVISOR (SEMPURNA - 100%):**<br><br>` +
           `**Diagnosis Tepat:** Anda berhasil mendiagnosis kasus **${caseObj.name}** dengan tepat.<br><br>` +
           `**Evaluasi Terapi:** Sempurna! Rekomendasi tatalaksana gizi dan terapi pangan Anda telah memenuhi standar kompetensi ahli gizi klinis.<br><br>` +
           `**[BERHASIL MENDIAGNOSIS]**`;
-
-        addChatMessage("ai", aiResponse);
-
-        // Next Action Button
-        setTimeout(() => {
-          if (currentPhase === "lansia") {
-            const restartBanner = `
-              <div class="chat-bubble system success" style="width: 100%; text-align: center; background: rgba(18,164,111,0.06); border:1px solid rgba(18,164,111,0.2); padding:10px; border-radius:10px; color:var(--green); font-size:12.5px;">
-                🏆 **CONGRATULATIONS!** 🏆<br>
-                Anda telah menyelesaikan seluruh Fase Kasus Klinis Gizi dengan sempurna!<br>
-                Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRISPHERE**.<br><br>
-                <button class="chatbot-next-level-btn" id="btn-restart-game" style="background:var(--blue); border:none; padding:8px 16px; border-radius:6px; font-weight:800; color:white; cursor:pointer;">Mulai Ulang Simulasi ↺</button>
-              </div>
-            `;
-            addChatMessage("system", restartBanner);
-
-            // Bind restart action
-            document.getElementById("btn-restart-game")?.addEventListener("click", () => {
-              unlockedPhases = ["balita"];
-              completedCases = { balita: [], remaja: [], dewasa: [], lansia: [] };
-              streakValue = 0;
-              localStorage.setItem("unlockedPhases", JSON.stringify(unlockedPhases));
-              localStorage.setItem("completedCases", JSON.stringify(completedCases));
-              localStorage.setItem("diagStreak", 0);
-              
-              if (streakHud) streakHud.textContent = `STREAK: 0`;
-              currentPhase = "balita";
-              currentLevel = "easy";
-              updatePhaseMapUI();
-              updateLevelTabsUI();
-              loadCase(currentPhase, currentLevel);
-            });
-
-          } else {
-            const nextLvlBanner = `
-              <div class="chat-bubble system success" style="width: 100%; text-align: center; background: rgba(91,134,229,0.06); border:1px solid rgba(91,134,229,0.2); padding:10px; border-radius:10px; color:var(--blue); font-size:12.5px;">
-                ◈ Level Selesai dengan Sempurna! ◈<br><br>
-                <button class="chatbot-next-level-btn" id="btn-next-level" style="background:var(--blue); border:none; padding:8px 16px; border-radius:6px; font-weight:800; color:white; cursor:pointer;">Lanjut ke Level / Fase Selanjutnya ➜</button>
-              </div>
-            `;
-            addChatMessage("system", nextLvlBanner);
-
-            // Bind next level action
-            document.getElementById("btn-next-level")?.addEventListener("click", () => {
-              advanceToNextLevel();
-            });
-          }
-        }, 300);
-
-
-
+      } else if (currentCaseDiagCorrect && !currentCaseIntervCorrect) {
+        aiResponse = `**EVALUASI AI SUPERVISOR:**<br>Diagnosis Anda sudah benar! Sekarang, mari lanjut ke poin kedua. Intervensi/terapi gizi apa yang sebaiknya diberikan kepada pasien? Apa yang harus dilakukan pasien, dan seperti apa rekomendasinya?<br><br>**[DIAGNOSIS_BENAR]**`;
+      } else if (!currentCaseDiagCorrect && currentCaseIntervCorrect) {
+        aiResponse = `**EVALUASI AI SUPERVISOR:**<br>Rencana intervensi Anda sudah benar! Sekarang, mari lanjut ke poin kesatu. Berdasarkan data antropometri, klinis, dan recall gizi, apakah diagnosis gizi/penyakit yang tepat untuk pasien ini?<br><br>**[INTERVENSI_BENAR]**`;
       } else {
-        streakValue = 0;
-        localStorage.setItem("diagStreak", 0);
-        if (streakHud) streakHud.textContent = `STREAK: 0`;
-
-        let hint = "Diagnosis dan intervensi Anda masih kurang tepat. Perhatikan kembali data antropometri, klinis, dan recall 24 jam pasien.";
-        if (result.isDiagSuccess && !result.isIntervSuccess) {
-          hint = "Diagnosis Anda sudah tepat, namun rekomendasi terapi pangan atau modifikasi diet Anda belum mencakup tatalaksana spesifik untuk kebutuhan pasien.<br><br>*Petunjuk: Perhatikan kembali dietary recall dan riwayat defisiensi pasien di panel kanan!*";
-        } else if (!result.isDiagSuccess && result.isIntervSuccess) {
-          hint = "Rekomendasi diet Anda sudah mengarah ke hal yang benar, namun diagnosis gizi utama masih belum tepat.<br><br>*Petunjuk: Perhatikan kembali status antropometri dan hasil klinis pasien!*";
-        } else {
-          hint = "Diagnosis dan tatalaksana Anda belum tepat, Nutri Student. Gejala klinis pasien serta hasil laboratorium tidak mendukung analisis tersebut.<br><br>*Petunjuk: Harap hitung nilai IMT pasien, tentukan diagnosis berdasarkan antropometri/klinis, dan berikan terapi diet yang sesuai. Silakan coba lagi!*";
-        }
-
-        const aiResponse = `**EVALUASI AI SUPERVISOR:**<br>${hint}`;
-        addChatMessage("ai", aiResponse);
-
-
+        aiResponse = `**EVALUASI AI SUPERVISOR:**<br>Diagnosis dan tatalaksana Anda belum tepat, Nutri Student. Gejala klinis pasien serta hasil laboratorium tidak mendukung analisis tersebut.<br><br>*Petunjuk: Harap hitung nilai IMT pasien, tentukan diagnosis berdasarkan antropometri/klinis, dan berikan terapi diet yang sesuai. Silakan coba lagi!*`;
       }
-    }, 1200);
+    }
+
+    removeTypingIndicator();
+    addChatMessage("ai", aiResponse);
+
+    if (isSuccess) {
+      // Mark completed
+      if (!completedCases[currentPhase].includes(currentLevel)) {
+        completedCases[currentPhase].push(currentLevel);
+      }
+
+      streakValue++;
+      localStorage.setItem("diagStreak", streakValue);
+      if (streakHud) streakHud.textContent = `STREAK: ${streakValue}`;
+
+      // Insert case attempt tracker into Supabase if configured
+      try {
+        const auth = window.NutriSphereAuth;
+        if (auth && typeof auth.getCurrentUser === 'function') {
+          auth.getCurrentUser().then(user => {
+            if (user && typeof auth.insertCaseAttempt === 'function') {
+              auth.insertCaseAttempt({
+                userId: user.id,
+                caseId: caseObj.id,
+                caseName: caseObj.name,
+                score: 100,
+                success: true,
+                feedback: "Berhasil menyelesaikan studi kasus."
+              });
+            }
+          });
+        }
+        // trackFeatureEvent tracking case_attempt to satisfy test assertions
+        window.NutriSphereTracking?.trackFeatureEvent("nutrisolve", "case_attempt", caseObj.id, {
+          case_name: caseObj.name,
+          score: 100,
+          success: true
+        });
+      } catch (err) {
+        console.warn("Supabase analytics tracking skipped:", err);
+      }
+
+      // Check for unlocking next phases
+      const phasesOrder = ["balita", "remaja", "dewasa", "lansia"];
+      const currentIdx = phasesOrder.indexOf(currentPhase);
+
+      if (currentIdx < phasesOrder.length - 1) {
+        const nextPhase = phasesOrder[currentIdx + 1];
+        if (!unlockedPhases.includes(nextPhase)) {
+          unlockedPhases.push(nextPhase);
+          localStorage.setItem("unlockedPhases", JSON.stringify(unlockedPhases));
+        }
+      }
+
+      // Save completions
+      localStorage.setItem("completedCases", JSON.stringify(completedCases));
+      updatePhaseMapUI();
+
+      // Next Action Button
+      setTimeout(() => {
+        if (currentPhase === "lansia") {
+          const restartBanner = `
+            <div class="chat-bubble system success" style="width: 100%; text-align: center; background: rgba(18,164,111,0.06); border:1px solid rgba(18,164,111,0.2); padding:10px; border-radius:10px; color:var(--green); font-size:12.5px;">
+              🏆 **CONGRATULATIONS!** 🏆<br>
+              Anda telah menyelesaikan seluruh Fase Kasus Klinis Gizi dengan sempurna!<br>
+              Gelar Anda saat ini: **SPESIALIS GIZI AR NUTRISPHERE**.<br><br>
+              <button class="chatbot-next-level-btn" id="btn-restart-game" style="background:var(--blue); border:none; padding:8px 16px; border-radius:6px; font-weight:800; color:white; cursor:pointer;">Mulai Ulang Simulasi ↺</button>
+            </div>
+          `;
+          addChatMessage("system", restartBanner);
+
+          // Bind restart action
+          document.getElementById("btn-restart-game")?.addEventListener("click", () => {
+            unlockedPhases = ["balita"];
+            completedCases = { balita: [], remaja: [], dewasa: [], lansia: [] };
+            streakValue = 0;
+            localStorage.setItem("unlockedPhases", JSON.stringify(unlockedPhases));
+            localStorage.setItem("completedCases", JSON.stringify(completedCases));
+            localStorage.setItem("diagStreak", 0);
+            
+            if (streakHud) streakHud.textContent = `STREAK: 0`;
+            currentPhase = "balita";
+            currentLevel = "easy";
+            updatePhaseMapUI();
+            updateLevelTabsUI();
+            loadCase(currentPhase, currentLevel);
+          });
+
+        } else {
+          const nextLvlBanner = `
+            <div class="chat-bubble system success" style="width: 100%; text-align: center; background: rgba(91,134,229,0.06); border:1px solid rgba(91,134,229,0.2); padding:10px; border-radius:10px; color:var(--blue); font-size:12.5px;">
+              ◈ Level Selesai dengan Sempurna! ◈<br><br>
+              <button class="chatbot-next-level-btn" id="btn-next-level" style="background:var(--blue); border:none; padding:8px 16px; border-radius:6px; font-weight:800; color:white; cursor:pointer;">Lanjut ke Level / Fase Selanjutnya ➜</button>
+            </div>
+          `;
+          addChatMessage("system", nextLvlBanner);
+
+          // Bind next level action
+          document.getElementById("btn-next-level")?.addEventListener("click", () => {
+            advanceToNextLevel();
+          });
+        }
+      }, 300);
+
+    } else {
+      streakValue = 0;
+      localStorage.setItem("diagStreak", 0);
+      if (streakHud) streakHud.textContent = `STREAK: 0`;
+    }
   }
 
   // Bind input listeners
@@ -1271,6 +1351,12 @@ function initARPatient() {
   loadCase(currentPhase, currentLevel);
 
   if (streakHud) streakHud.textContent = `STREAK: ${streakValue}`;
+
+  if (progressWasReset) {
+    setTimeout(() => {
+      addChatMessage("system", `⚠️ **INFO:** Progres simulasi AR Patient Anda telah direset karena Anda sudah lama tidak login (melebihi 24 jam).`);
+    }, 500);
+  }
 }
 
 // Bind DOM loaded hook
