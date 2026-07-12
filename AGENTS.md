@@ -26,6 +26,7 @@ Pretest adalah global feature gate. Landing, login, dan halaman pretest tetap te
 - Semua halaman utama berada di root repository.
 - Shared stylesheet: `assets/css/styles.css`.
 - Shared behavior: `assets/js/main.js`.
+- Shared semantic icon sprite: `assets/icons/nutrisphere-icons.svg`; gunakan `<span class="card-icon"><svg><use ...></use></svg></span>` untuk kartu fitur/resource baru, bukan singkatan huruf sebagai icon.
 - Supabase JS v2 dimuat dari CDN pada setiap halaman utama.
 - Beberapa halaman memiliki inline script kecil; logic kompleks berada di `assets/js/`.
 - Three.js r128, GLTFLoader, OrbitControls, dan fflate dari CDN dipakai khusus AR Patient.
@@ -256,6 +257,7 @@ Berisi:
 - Clinical camera simulation.
 - Scroll reveal via IntersectionObserver.
 - Global NutriBot widget yang diinjeksi ke hampir semua halaman. Chat memanggil `/api/chat`, mengirim history lokal, merender subset Markdown, dan fallback ke pesan offline bila request gagal.
+- Global account control pada sidebar yang menampilkan state login, identitas singkat, tautan login/register, dan tombol logout di seluruh halaman.
 
 Karena file ini dimuat global, semua initializer harus aman saat elemen halaman tidak ada (gunakan optional checks/early return) dan tidak boleh mengasumsikan DOM khusus satu halaman.
 

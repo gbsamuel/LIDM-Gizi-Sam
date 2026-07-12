@@ -3772,10 +3772,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 .feature-card { grid-column: span 4; min-height: 230px; display: flex; flex-direction: column; }
 .feature-card.wide { grid-column: span 6; }
 .feature-card { position: relative; overflow: hidden; }
-.feature-asset { position: absolute; top: 16px; right: 16px; width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(7,61,50,.14)); transition: transform .28s cubic-bezier(.2,.8,.2,1); }
+.feature-asset { position: absolute; top: 14px; right: 18px; width: 112px; height: 112px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(7,61,50,.14)); transition: transform .28s cubic-bezier(.2,.8,.2,1); }
 .feature-card:hover .feature-asset { transform: translateY(-4px) rotate(2deg) scale(1.04); }
-.feature-card .feature-number { color: var(--green); font-size: 12px; font-weight: 900; letter-spacing: .12em; }
-.feature-card h3 { max-width: calc(100% - 86px); margin: 48px 0 9px; font-size: 22px; }
+.feature-card .feature-number { width: fit-content; min-height: 34px; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid rgba(11,147,101,.14); border-radius: 999px; color: #087452; background: rgba(220,245,232,.78); font-size: 15px; font-weight: 900; letter-spacing: .075em; }
+.feature-card h3 { max-width: calc(100% - 96px); margin: 42px 0 9px; font-size: 24px; }
 .feature-card p { margin: 0 0 20px; }
 .feature-card .text-link { margin-top: auto; color: var(--green-dark); font-weight: 850; text-decoration: none; }
 .journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; counter-reset: journey; }
@@ -3816,6 +3816,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 .auth-session-card p { color: var(--muted); overflow-wrap: anywhere; }
 .auth-session-card .button { width: 100%; }
 
+/* Unified semantic card icons */
+.card-with-icon[data-icon] { min-height: 244px; padding: 28px; padding-top: 108px; }
+.card-with-icon[data-icon]::before { display: none; }
+.card-with-icon[data-icon]::after { width: 148px; height: 148px; top: -72px; right: -60px; opacity: .7; }
+.card-icon { position: absolute; top: 26px; left: 26px; z-index: 2; width: 60px; height: 60px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.72); border-radius: 19px; color: #fff; background: linear-gradient(145deg,#0b9365 0%,#3d55d9 100%); box-shadow: 0 14px 30px rgba(40,75,132,.20), inset 0 1px 0 rgba(255,255,255,.28); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease; }
+.card-icon svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.card-with-icon:hover .card-icon { transform: translateY(-3px) rotate(-2deg) scale(1.04); box-shadow: 0 18px 36px rgba(11,147,101,.25), inset 0 1px 0 rgba(255,255,255,.3); }
+.card-with-icon h3 { margin: 0 0 8px; font-size: clamp(20px,1.5vw,24px); line-height: 1.2; }
+.card-with-icon p { margin: 0; font-size: 15px; }
+.card-with-icon .tag-row, .card-with-icon > .tag { margin-top: 20px; }
+.database-grid .card-with-icon { min-height: 250px; }
+.database-grid .card-with-icon > .tag { display: inline-flex; }
+
+@media (min-width: 1180px) {
+  .grid:not(.two):not(.three) { grid-template-columns: repeat(4,minmax(0,1fr)); }
+}
+
 @media (max-width: 1080px) {
   .landing-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 96px; }
   .learning-map { max-width: 720px; }
@@ -3824,10 +3841,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 
 @media (max-width: 900px) {
   body, body.nav-open { padding-left: 0; }
-  .site-header { left: calc(-1 * var(--sidebar)); width: var(--sidebar); padding-top: 76px; }
+  .site-header { position: fixed; top: 0; bottom: 0; left: calc(-1 * var(--sidebar)); width: var(--sidebar); height: auto; padding-top: 76px; }
   .site-header.open { left: 0; }
-  .nav-toggle { display: flex; top: 16px; left: 16px; }
-  body.nav-open .nav-toggle { left: calc(var(--sidebar) + 14px); }
+  .site-header .nav { min-height: 100%; flex-direction: column; align-items: stretch; justify-content: flex-start; }
+  .site-header .brand { display: flex; }
+  .site-header .nav-links { position: static; inset: auto; display: flex; padding: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  .nav-toggle { position: fixed; display: flex; top: 16px; left: 16px; width: 44px; height: 44px; }
+  body.nav-open .nav-toggle { position: fixed; top: 16px; left: calc(var(--sidebar) + 14px); width: 44px; height: 44px; }
   body.nav-open::after { content: ""; position: fixed; inset: 0; z-index: 40; background: rgba(7,25,21,.36); backdrop-filter: blur(2px); }
   .hero, .page-hero, .section-inner, .footer-inner { width: min(100% - 36px, var(--content)); }
   .page-hero { padding-top: 92px; }
@@ -3840,7 +3860,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 @media (max-width: 640px) {
   body { font-size: 14px; }
   .hero, .page-hero, .section-inner, .footer-inner { width: min(100% - 28px, var(--content)); }
-  .landing-hero { gap: 32px; padding: 90px 0 42px; }
+  .landing-hero { gap: 32px; padding: 112px 0 42px; }
   .landing-hero h1 { font-size: clamp(42px, 15vw, 62px); }
   .hero-actions { display: grid; width: 100%; }
   .hero-actions .button { width: 100%; }
@@ -3848,7 +3868,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
   .landing-section { padding: 48px 0; }
   .feature-grid { grid-template-columns: 1fr; }
   .feature-card, .feature-card.wide { grid-column: auto; min-height: 210px; }
-  .feature-asset { width: 78px; height: 78px; }
+  .feature-asset { width: 88px; height: 88px; }
+  .feature-card .feature-number { min-height: 32px; padding-inline: 10px; font-size: 13px; }
+  .feature-card h3 { margin-top: 38px; font-size: 22px; }
+  .card-with-icon[data-icon] { min-height: 220px; padding: 92px 20px 22px; }
+  .card-icon { top: 20px; left: 20px; width: 54px; height: 54px; border-radius: 17px; }
+  .card-icon svg { width: 27px; height: 27px; }
   .macro-shell { gap: 28px; }
   .macro-card { padding: 20px; }
   .landing-cta { padding: 26px; border-radius: 22px; }

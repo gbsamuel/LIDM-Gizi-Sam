@@ -351,6 +351,20 @@ test("hero hierarchy is lighter and cards expose engaging icon hooks", () => {
   assert.ok((allHtml.match(/data-icon="/g) || []).length >= 16);
 });
 
+test("feature and resource cards use semantic SVG icons", () => {
+  assert.equal(existsSync("assets/icons/nutrisphere-icons.svg"), true, "SVG icon sprite should exist");
+  const iconSprite = readFileSync("assets/icons/nutrisphere-icons.svg", "utf8");
+  for (const icon of ["anthro", "clinical", "dietary", "ar", "table", "exchange", "target", "shield", "journal", "ai"]) {
+    assert.match(iconSprite, new RegExp(`id="${icon}"`), `icon sprite should include ${icon}`);
+  }
+
+  for (const file of ["nutrisolve.html", "nutribase.html", "nutripath.html", "nutriread.html", "nutriquest.html", "journal_ebook.html"]) {
+    const html = readFileSync(file, "utf8");
+    assert.match(html, /class="card-icon"/, `${file} should render semantic card icons`);
+    assert.match(html, /nutrisphere-icons\.svg#/, `${file} should use the shared icon sprite`);
+  }
+});
+
 test("sidebar exposes NutriSolve sub navigation", () => {
   const css = readFileSync("assets/css/styles.css", "utf8");
   const featurePages = pages.filter(([file]) => !["login.html", "pretest.html", "posttest.html", "dashboard-dosen.html"].includes(file));
