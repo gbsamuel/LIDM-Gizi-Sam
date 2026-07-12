@@ -768,3 +768,58 @@ if (document.readyState === "loading") {
 } else {
   initGlobalNutriBot();
 }
+
+// Global account state shown in the sidebar on every page.
+async function initGlobalAccountControl() {
+  const nav = document.querySelector(".nav");
+  const auth = window.NutriSphereAuth;
+  if (!nav || !auth || nav.querySelector("[data-global-account]")) return;
+
+  const account = document.createElement("div");
+  account.className = "global-account";
+  account.dataset.globalAccount = "";
+  account.setAttribute("aria-live", "polite");
+  nav.appendChild(account);
+
+  const user = await auth.getCurrentUser();
+  if (!user) {
+    account.innerHTML = `
+      <div class="global-account-copy"><span class="global-account-avatar">?</span><div><strong>Belum masuk</strong><small>Login untuk simpan progress</small></div></div>
+      <a class="global-account-action" href="login.html?next=${encodeURIComponent(window.location.pathname.split("/").pop() || "index.html")}">Masuk / Daftar</a>
+    `;
+    return;
+  }
+
+  let profile = null;
+  try {
+    profile = await auth.getCurrentProfile();
+  } catch (error) {
+    // Keep logout available even if profile lookup is temporarily unavailable.
+  }
+  const name = profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Mahasiswa";
+  const initials = name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  account.innerHTML = `
+    <div class="global-account-copy"><span class="global-account-avatar">${initials}</span><div><strong></strong><small></small></div></div>
+    <button class="global-account-action" type="button" data-global-signout>Keluar</button>
+  `;
+  account.querySelector("strong").textContent = name;
+  account.querySelector("small").textContent = profile?.nim ? `NIM ${profile.nim}` : (user.email || "Akun aktif");
+  account.querySelector("[data-global-signout]")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = "Keluar...";
+    try {
+      await auth.signOut();
+      window.location.href = "login.html";
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "Coba lagi";
+    }
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initGlobalAccountControl);
+} else {
+  initGlobalAccountControl();
+}

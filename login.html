@@ -36,15 +36,21 @@
             <button type="button" data-auth-mode="admin" aria-selected="false">Login as Admin</button>
           </div>
 
+          <div class="student-auth-tabs" data-student-auth-tabs>
+            <button class="active" type="button" data-student-auth="login">Sudah punya akun</button>
+            <button type="button" data-student-auth="register">Buat akun baru</button>
+          </div>
+
           <form class="auth-card" data-login-form>
             <h2>Masuk</h2>
             <label class="field">Email
               <input name="email" type="email" autocomplete="email" required>
             </label>
             <label class="field">Password
-              <input name="password" type="password" autocomplete="current-password" required>
+              <span class="password-field"><input name="password" type="password" autocomplete="current-password" required><button type="button" data-toggle-password aria-label="Tampilkan password">Lihat</button></span>
             </label>
             <button class="button primary" type="submit">Masuk</button>
+            <p class="auth-helper">Gunakan akun yang sama agar nilai dan progress tetap tersimpan.</p>
           </form>
 
           <form class="auth-card" data-admin-login-form hidden>
@@ -55,22 +61,33 @@
             <button class="button primary" type="submit">Buka Dashboard Admin</button>
           </form>
 
-          <form class="auth-card" data-register-form>
+          <form class="auth-card" data-register-form hidden>
             <h2>Daftar Mahasiswa</h2>
             <label class="field">Nama Lengkap
               <input name="full_name" type="text" autocomplete="name" required>
             </label>
             <label class="field">NIM
-              <input name="nim" type="text" required>
+              <input name="nim" type="text" inputmode="numeric" minlength="5" maxlength="30" required>
             </label>
             <label class="field">Email
               <input name="email" type="email" autocomplete="email" required>
             </label>
             <label class="field">Password
-              <input name="password" type="password" autocomplete="new-password" minlength="6" required>
+              <span class="password-field"><input name="password" type="password" autocomplete="new-password" minlength="6" required><button type="button" data-toggle-password aria-label="Tampilkan password">Lihat</button></span>
+            </label>
+            <label class="field">Ulangi Password
+              <span class="password-field"><input name="password_confirmation" type="password" autocomplete="new-password" minlength="6" required><button type="button" data-toggle-password aria-label="Tampilkan password">Lihat</button></span>
             </label>
             <button class="button secondary" type="submit">Buat Akun</button>
+            <p class="auth-helper">Dengan mendaftar, akun digunakan untuk menyimpan hasil evaluasi pembelajaran.</p>
           </form>
+
+          <div class="auth-card auth-session-card" data-auth-session-card hidden>
+            <span class="auth-session-avatar" data-auth-session-avatar>NS</span>
+            <div><h2>Anda sudah masuk</h2><p data-auth-session-label></p></div>
+            <a class="button primary" href="nutrisolve.html">Lanjut Belajar</a>
+            <button class="button secondary" type="button" data-login-page-signout>Keluar</button>
+          </div>
 
           <p class="auth-status" data-auth-status aria-live="polite"></p>
         </div>

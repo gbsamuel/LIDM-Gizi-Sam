@@ -148,7 +148,7 @@
       };
       setMockUser(mockUser);
       localStorage.setItem("last_login_time", Date.now().toString());
-      return { user: mockUser };
+      return { user: mockUser, session: { user: mockUser, access_token: "local-mock-session" } };
     }
 
     if (!client()) throw authError();
@@ -226,7 +226,7 @@
       };
       setMockUser(mockUser);
       localStorage.setItem("last_login_time", Date.now().toString());
-      return { user: mockUser };
+      return { user: mockUser, session: { user: mockUser, access_token: "local-mock-session" } };
     }
 
     if (!client()) throw authError();
@@ -261,6 +261,9 @@
   async function signOut() {
     setMockUser(null);
     localStorage.removeItem(MOCK_ATTEMPTS_KEY);
+    localStorage.removeItem("nutrisphere_pretest_v1_completed");
+    localStorage.removeItem("last_login_time");
+    sessionStorage.removeItem("nutrisphere_admin_unlocked");
     if (!client()) return;
     await client().auth.signOut();
   }

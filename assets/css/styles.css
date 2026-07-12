@@ -3771,8 +3771,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 .feature-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
 .feature-card { grid-column: span 4; min-height: 230px; display: flex; flex-direction: column; }
 .feature-card.wide { grid-column: span 6; }
+.feature-card { position: relative; overflow: hidden; }
+.feature-asset { position: absolute; top: 16px; right: 16px; width: 92px; height: 92px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(7,61,50,.14)); transition: transform .28s cubic-bezier(.2,.8,.2,1); }
+.feature-card:hover .feature-asset { transform: translateY(-4px) rotate(2deg) scale(1.04); }
 .feature-card .feature-number { color: var(--green); font-size: 12px; font-weight: 900; letter-spacing: .12em; }
-.feature-card h3 { margin: 34px 0 9px; font-size: 22px; }
+.feature-card h3 { max-width: calc(100% - 86px); margin: 48px 0 9px; font-size: 22px; }
 .feature-card p { margin: 0 0 20px; }
 .feature-card .text-link { margin-top: auto; color: var(--green-dark); font-weight: 850; text-decoration: none; }
 .journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; counter-reset: journey; }
@@ -3790,6 +3793,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
 .landing-cta { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: center; padding: 38px; border-radius: 28px; color: #fff; background: linear-gradient(135deg, #0a4c3e, #142c27); box-shadow: var(--shadow-lg); }
 .landing-cta h2 { margin: 0 0 8px; }
 .landing-cta p { margin: 0; color: rgba(255,255,255,.68); }
+
+/* Account and authentication */
+.global-account { margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.12); }
+.global-account-copy { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 10px; align-items: center; }
+.global-account-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; color: #083c31; background: linear-gradient(135deg,#a8f3ce,#fff); font-size: 12px; font-weight: 950; }
+.global-account-copy strong, .global-account-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.global-account-copy strong { color: #fff; font-size: 12px; }
+.global-account-copy small { margin-top: 2px; color: rgba(255,255,255,.55); font-size: 10px; }
+.global-account-action { width: 100%; min-height: 36px; display: grid; place-items: center; margin-top: 10px; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; color: rgba(255,255,255,.82); background: rgba(255,255,255,.07); text-decoration: none; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.global-account-action:hover { color: #fff; background: rgba(255,255,255,.13); }
+.global-account-action:disabled { cursor: wait; opacity: .62; }
+.student-auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 6px 0; }
+.student-auth-tabs button { min-height: 38px; border: 0; border-radius: 10px; color: var(--muted); background: transparent; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.student-auth-tabs button.active { color: var(--green-dark); background: var(--mint); }
+.password-field { position: relative; display: block; }
+.password-field input { width: 100%; padding-right: 92px !important; }
+.password-field button { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); min-height: 32px; padding: 0 9px; border: 0; border-radius: 8px; color: var(--green-dark); background: var(--mint); font: inherit; font-size: 11px; font-weight: 850; cursor: pointer; }
+.auth-helper { margin: -3px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.auth-session-card { align-items: center; text-align: center; }
+.auth-session-avatar { width: 58px; height: 58px; display: grid; place-items: center; margin: 0 auto; border-radius: 18px; color: #fff; background: linear-gradient(135deg,var(--green),var(--blue)); font-weight: 950; }
+.auth-session-card p { color: var(--muted); overflow-wrap: anywhere; }
+.auth-session-card .button { width: 100%; }
 
 @media (max-width: 1080px) {
   .landing-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 96px; }
@@ -3823,6 +3848,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green) !importan
   .landing-section { padding: 48px 0; }
   .feature-grid { grid-template-columns: 1fr; }
   .feature-card, .feature-card.wide { grid-column: auto; min-height: 210px; }
+  .feature-asset { width: 78px; height: 78px; }
   .macro-shell { gap: 28px; }
   .macro-card { padding: 20px; }
   .landing-cta { padding: 26px; border-radius: 22px; }

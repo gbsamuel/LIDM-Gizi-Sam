@@ -249,6 +249,24 @@ test("student signup is optimized for no email confirmation flow", () => {
   assert.doesNotMatch(loginJs, /cek email sebelum login/i);
 });
 
+test("global account controls keep login, register, and logout reachable", () => {
+  const login = readFileSync("login.html", "utf8");
+  const loginJs = readFileSync("assets/js/login.js", "utf8");
+  const mainJs = readFileSync("assets/js/main.js", "utf8");
+  const authJs = readFileSync("assets/js/auth.js", "utf8");
+
+  assert.match(login, /data-student-auth="login"/);
+  assert.match(login, /data-student-auth="register"/);
+  assert.match(login, /name="password_confirmation"/);
+  assert.match(login, /data-toggle-password/);
+  assert.match(loginJs, /Konfirmasi password belum sama/);
+  assert.match(loginJs, /data-login-page-signout/);
+  assert.match(mainJs, /data-global-signout/);
+  assert.match(mainJs, /initGlobalAccountControl/);
+  assert.match(authJs, /async function signOut/);
+  assert.match(authJs, /nutrisphere_pretest_v1_completed/);
+});
+
 test("static admin RPC and optional posttest contract are documented in code", () => {
   const schema = readFileSync("supabase/schema.sql", "utf8");
   assert.match(schema, /create or replace function public\.admin_dashboard_rows/);
