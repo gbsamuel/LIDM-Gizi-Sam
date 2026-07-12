@@ -170,8 +170,8 @@ test("all main pages expose NutriQuest navigation and refreshed feature position
   for (const marker of ["NutriSolve", "NutriBase", "NutriPath", "NutriRead", "NutriQuest"]) {
     assert.match(index, new RegExp(`<h3>${marker}</h3>`), `landing should show ${marker}`);
   }
-  for (const stat of ["Database terkurasi", "Modul pembelajaran", "Kasus latihan", "Evaluasi kompetensi"]) {
-    assert.match(index, new RegExp(stat), `landing should use realistic stat ${stat}`);
+  for (const purpose of ["PRAKTIK", "REFERENSI", "MODUL", "LITERATUR", "EVALUASI"]) {
+    assert.match(index, new RegExp(purpose), `landing should explain feature purpose ${purpose}`);
   }
 
   const nutripath = readFileSync("nutripath.html", "utf8");
@@ -323,8 +323,8 @@ test("hero hierarchy is lighter and cards expose engaging icon hooks", () => {
   const index = readFileSync("index.html", "utf8");
   const allHtml = pages.map(([file]) => readFileSync(file, "utf8")).join("\n");
 
-  assert.match(index, /<h1>NUTRISPHERE<\/h1>/);
-  assert.match(index, /class="hero-subtitle"/);
+  assert.match(index, /<h1>Belajar gizi dari data hingga/);
+  assert.match(index, /class="[^"]*landing-hero[^"]*"/);
   assert.doesNotMatch(index, /<h1>[^<]*untuk belajar/i);
   assert.match(css, /\.hero-subtitle/);
   assert.match(css, /\.page-hero h1\s*{[^}]*clamp\(28px,\s*4vw,\s*48px\)/s);

@@ -30,205 +30,79 @@
     </nav>
   </header>
 
-  <main style="position: relative;">
-    <!-- Floating Parallax Backdrop -->
-    <div class="micro-nutrients-parallax" id="parallax-container">
-      <div class="parallax-layer layer-1" data-depth="0.05">
-        <span class="float-item vit-a">A</span>
-        <span class="float-item zinc">Zn</span>
-        <span class="float-item circle-blur blur-pink"></span>
-      </div>
-      <div class="parallax-layer layer-2" data-depth="0.12">
-        <span class="float-item vit-c">C</span>
-        <span class="float-item iron">Fe</span>
-        <span class="float-item circle-blur blur-cyan"></span>
-      </div>
-      <div class="parallax-layer layer-3" data-depth="0.22">
-        <span class="float-item vit-d">D</span>
-        <span class="float-item calcium">Ca</span>
-        <span class="float-item circle-blur blur-yellow"></span>
-      </div>
-    </div>
-
-    <section class="section hero">
-      <div class="reveal-on-scroll">
-        <span class="eyebrow">Immersive Smart Nutrition Learning Ecosystem</span>
-        <h1>NUTRISPHERE</h1>
-        <p class="hero-subtitle">Belajar, menalar, dan membuktikan kompetensi gizi.</p>
-        <p class="lead">Ekosistem gizi digital dengan DSS, database, modul, library ilmiah, dan evaluasi kompetensi.</p>
+  <main>
+    <section class="section-inner landing-hero">
+      <div class="landing-hero-copy reveal-on-scroll">
+        <span class="eyebrow">Smart nutrition learning ecosystem</span>
+        <h1>Belajar gizi dari data hingga <span>keputusan.</span></h1>
+        <p class="lead">NutriSphere menyatukan asesmen, sumber ilmiah, simulasi kasus, dan evaluasi kompetensi dalam satu alur belajar yang terukur.</p>
         <div class="hero-actions">
-          <a class="button primary" href="nutriquest.html">Mulai NutriQuest</a>
-          <a class="button secondary" href="nutrisolve.html">Jelajahi DSS</a>
-          <a class="button secondary" href="#pilar">Lihat Fitur</a>
+          <a class="button primary" href="pretest.html">Mulai dari Pretest</a>
+          <a class="button secondary" href="#fitur">Jelajahi Ekosistem</a>
+        </div>
+        <div class="landing-trust" aria-label="Keunggulan NutriSphere">
+          <span>Berbasis kasus</span><span>Progress tersimpan</span><span>Sumber terkurasi</span>
         </div>
       </div>
-      <aside class="hero-panel reveal-on-scroll delay-100" aria-label="Alur NutriSphere">
-        <ol class="flow-list">
-          <li><span class="step-number">1</span><div><strong>Ukur baseline</strong><br><span class="muted">Pretest tersimpan sebagai titik awal kompetensi.</span></div></li>
-          <li><span class="step-number">2</span><div><strong>Latihan terpadu</strong><br><span class="muted">Gunakan DSS, modul, database, dan library ilmiah.</span></div></li>
-          <li><span class="step-number">3</span><div><strong>Lihat progres</strong><br><span class="muted">NutriQuest mencatat test, kasus, modul, dan aktivitas.</span></div></li>
-        </ol>
+      <aside class="learning-map reveal-on-scroll delay-100" aria-label="Alur belajar NutriSphere">
+        <div class="learning-map-head"><div><small>Learning journey</small><h2>Alur belajar terpadu</h2></div><span class="tag">4 tahap</span></div>
+        <div class="learning-map-step"><i>01</i><div><strong>Ukur baseline</strong><p>Pretest memetakan pengetahuan awal mahasiswa.</p></div></div>
+        <div class="learning-map-step"><i>02</i><div><strong>Pelajari fondasi</strong><p>Akses modul, database nasional, jurnal, dan e-book.</p></div></div>
+        <div class="learning-map-step"><i>03</i><div><strong>Latih penalaran</strong><p>Gunakan DSS dan pasien 3D untuk clinical reasoning.</p></div></div>
+        <div class="learning-map-step"><i>04</i><div><strong>Buktikan progres</strong><p>Posttest dan dashboard merangkum perkembangan kompetensi.</p></div></div>
       </aside>
     </section>
 
-    <!-- INTERACTIVE MACRO NUTRIENT CALCULATOR SECTION -->
-    <section class="section macro-calculator-section reveal-on-scroll" style="margin-bottom: 30px;">
-      <div class="section-inner grid two" style="align-items: center; gap: 40px;">
-        <div class="calculator-desc">
-          <span class="eyebrow" style="color: var(--blue);">Kalkulator Edukatif</span>
-          <h2>Rancang Kebutuhan Makronutrisi Anda</h2>
-          <p class="lead">Gunakan slider interaktif di samping untuk mensimulasikan pembagian kalori harian Anda ke dalam Karbohidrat, Protein, dan Lemak sesuai kebutuhan klinis.</p>
-          <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="dot-carb" style="width: 12px; height: 12px; border-radius: 50%; background: var(--blue); display: inline-block;"></span>
-              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Karbohidrat (4 kkal/g) - Sumber energi utama</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="dot-prot" style="width: 12px; height: 12px; border-radius: 50%; background: var(--green); display: inline-block;"></span>
-              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Protein (4 kkal/g) - Pembangunan sel & otot</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="dot-fat" style="width: 12px; height: 12px; border-radius: 50%; background: var(--amber); display: inline-block;"></span>
-              <span style="font-size: 14px; font-weight: 700; color: var(--ink);">Lemak (9 kkal/g) - Penyerapan vitamin & hormon</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="calculator-card panel" style="padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.85); box-shadow: var(--soft-shadow);">
-          <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; font-weight: 900; color: var(--muted); font-family: monospace;">MACRO PLANNER v1.0</span>
-            <span class="tag gold" id="macro-total-pct">Total: 100%</span>
-          </div>
-          
-          <div style="display: flex; flex-direction: column; gap: 20px;">
-            <!-- Calorie Slider -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="macro-calories" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Kebutuhan Energi</label>
-                <strong id="val-calories" style="font-family: monospace; font-size: 16px; color: var(--green);">2000 kkal</strong>
-              </div>
-              <input type="range" id="macro-calories" min="1200" max="4000" step="50" value="2000" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
-            </div>
-            
-            <!-- Carbs Slider -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="macro-carbs" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Karbohidrat (%)</label>
-                <strong id="val-carbs" style="font-family: monospace; font-size: 15px; color: var(--blue);">50% (250g)</strong>
-              </div>
-              <input type="range" id="macro-carbs" min="10" max="80" step="5" value="50" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
-            </div>
-            
-            <!-- Protein Slider -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="macro-protein" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Protein (%)</label>
-                <strong id="val-protein" style="font-family: monospace; font-size: 15px; color: var(--green);">20% (100g)</strong>
-              </div>
-              <input type="range" id="macro-protein" min="10" max="50" step="5" value="20" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
-            </div>
-            
-            <!-- Fat Slider -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="macro-fat" style="font-size: 12px; font-weight: 800; color: var(--green-dark);">Lemak (%)</label>
-                <strong id="val-fat" style="font-family: monospace; font-size: 15px; color: var(--amber);">30% (67g)</strong>
-              </div>
-              <input type="range" id="macro-fat" min="10" max="60" step="5" value="30" style="width: 100%; height: 6px; border-radius: 4px; outline: none; cursor: pointer;">
-            </div>
-          </div>
-          
-          <!-- Visual feedback bars -->
-          <div style="margin-top: 24px; height: 16px; border-radius: 8px; overflow: hidden; display: flex; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);">
-            <div id="bar-carbs" style="width: 50%; background: var(--blue); transition: width 0.2s ease;"></div>
-            <div id="bar-protein" style="width: 20%; background: var(--green); transition: width 0.2s ease;"></div>
-            <div id="bar-fat" style="width: 30%; background: var(--amber); transition: width 0.2s ease;"></div>
-          </div>
+    <section class="landing-section tinted" id="fitur">
+      <div class="section-inner">
+        <div class="section-head reveal-on-scroll"><span class="eyebrow">Lima pilar NutriSphere</span><h2>Satu ekosistem untuk seluruh proses belajar gizi.</h2><p class="lead">Setiap fitur punya peran yang jelas—mulai dari mencari referensi hingga berlatih mengambil keputusan.</p></div>
+        <div class="feature-grid">
+          <a class="card card-link feature-card wide reveal-on-scroll" href="nutrisolve.html"><span class="feature-number">01 · PRAKTIK</span><h3>NutriSolve</h3><p>DSS antropometri, screening klinis, asesmen dietary, dan pasien 3D untuk melatih clinical reasoning.</p><span class="text-link">Buka ruang praktik →</span></a>
+          <a class="card card-link feature-card wide reveal-on-scroll delay-100" href="nutribase.html"><span class="feature-number">02 · REFERENSI</span><h3>NutriBase</h3><p>Katalog TKPI, AKG, BPOM, buku foto makanan, PAGT, dan sumber nasional lain dalam satu tempat.</p><span class="text-link">Cari sumber gizi →</span></a>
+          <a class="card card-link feature-card reveal-on-scroll delay-100" href="nutripath.html"><span class="feature-number">03 · MODUL</span><h3>NutriPath</h3><p>Materi PPT, video, dan case Indonesia untuk belajar terarah.</p><span class="text-link">Mulai belajar →</span></a>
+          <a class="card card-link feature-card reveal-on-scroll delay-200" href="nutriread.html"><span class="feature-number">04 · LITERATUR</span><h3>NutriRead</h3><p>Jurnal, e-book, dan AI Summary untuk membaca lebih efisien.</p><span class="text-link">Buka library →</span></a>
+          <a class="card card-link feature-card reveal-on-scroll delay-300" href="nutriquest.html"><span class="feature-number">05 · EVALUASI</span><h3>NutriQuest</h3><p>Pretest, posttest, asesmen kasus, dan tracking kompetensi.</p><span class="text-link">Lihat evaluasi →</span></a>
         </div>
       </div>
     </section>
 
-    <section class="pillar-slider-section" id="pilar">
+    <section class="landing-section">
       <div class="section-inner">
-        <div class="section-head reveal-on-scroll">
-          <span class="eyebrow">Lima Fitur</span>
-          <h2>Struktur website mengikuti rancangan NUTRISPHERE terbaru.</h2>
-          <p class="lead">Setiap fitur punya fungsi jelas: praktik, database, modul, literatur, dan evaluasi.</p>
-        </div>
-        
-        <div class="pillar-slider">
-          <a class="pillar-slider-card reveal-on-scroll delay-100" href="nutrisolve.html">
-            <img src="assets/img/3d_medical_cross.png" alt="NutriSolve Icon" class="pillar-3d-icon">
-            <h3>NutriSolve</h3>
-            <p>Simulasi DSS dan AR Patient untuk latihan clinical reasoning.</p>
-            <span class="pillar-slider-btn">Jelajahi &rarr;</span>
-          </a>
-          
-          <a class="pillar-slider-card reveal-on-scroll delay-200" href="nutribase.html">
-            <img src="assets/img/3d_database.png" alt="NutriBase Icon" class="pillar-3d-icon">
-            <h3>NutriBase</h3>
-            <p>Database kebutuhan gizi: TKPI, DBMP, AKG, BPOM, SSGI, SKI, dan rumus.</p>
-            <span class="pillar-slider-btn">Jelajahi &rarr;</span>
-          </a>
-          
-          <a class="pillar-slider-card reveal-on-scroll delay-300" href="nutripath.html">
-            <img src="assets/img/3d_compass.png" alt="NutriPath Icon" class="pillar-3d-icon">
-            <h3>NutriPath</h3>
-            <p>Modul mahasiswa gizi berisi PPT, video, dan case Indonesia.</p>
-            <span class="pillar-slider-btn">Jelajahi &rarr;</span>
-          </a>
-          
-          <a class="pillar-slider-card reveal-on-scroll delay-400" href="nutriread.html">
-            <img src="assets/img/3d_open_book.png" alt="NutriRead Icon" class="pillar-3d-icon">
-            <h3>NutriRead</h3>
-            <p>Library jurnal, e-book, dan area AI Summary.</p>
-            <span class="pillar-slider-btn">Jelajahi &rarr;</span>
-          </a>
-
-          <a class="pillar-slider-card reveal-on-scroll delay-100" href="nutriquest.html">
-            <img src="assets/img/3d_medical_cross.png" alt="NutriQuest Icon" class="pillar-3d-icon">
-            <h3>NutriQuest</h3>
-            <p>Evaluasi dan tracking kompetensi mahasiswa dari awal sampai akhir.</p>
-            <span class="pillar-slider-btn">Jelajahi &rarr;</span>
-          </a>
+        <div class="section-head reveal-on-scroll"><span class="eyebrow">Cara belajar</span><h2>Dari konsep, praktik, sampai refleksi.</h2></div>
+        <div class="journey-grid">
+          <article class="card journey-card reveal-on-scroll"><h3>Bangun fondasi</h3><p>Pelajari konsep dari materi terstruktur dan referensi yang relevan sebelum masuk ke simulasi.</p></article>
+          <article class="card journey-card reveal-on-scroll delay-100"><h3>Uji keputusan</h3><p>Hubungkan data antropometri, tanda klinis, dan pola makan untuk menyusun diagnosis serta intervensi.</p></article>
+          <article class="card journey-card reveal-on-scroll delay-200"><h3>Pantau perkembangan</h3><p>Bandingkan pretest dan posttest, selesaikan kasus, lalu tinjau progres kompetensi secara objektif.</p></article>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-inner">
-        <div class="section-head reveal-on-scroll">
-          <span class="eyebrow">Kesiapan Data</span>
-          <h2>Rancangan siap diisi data resmi dan placeholder terstruktur.</h2>
+    <section class="landing-section tinted">
+      <div class="section-inner macro-shell">
+        <div class="reveal-on-scroll">
+          <span class="eyebrow">Eksplorasi edukatif</span><h2>Simulasikan distribusi makronutrisi.</h2>
+          <p class="lead">Atur energi dan komposisi makro untuk memahami hubungan persentase energi dengan gram zat gizi. Hasil bersifat pembelajaran, bukan resep klinis personal.</p>
+          <div class="macro-points"><div class="macro-point"><i style="background:var(--blue)"></i>Karbohidrat · 4 kkal per gram</div><div class="macro-point"><i style="background:var(--green)"></i>Protein · 4 kkal per gram</div><div class="macro-point"><i style="background:var(--amber)"></i>Lemak · 9 kkal per gram</div></div>
         </div>
-        <div class="stats">
-          <div class="stat reveal-on-scroll delay-100"><strong>8</strong><span>Database terkurasi</span></div>
-          <div class="stat reveal-on-scroll delay-200"><strong>3</strong><span>Modul pembelajaran</span></div>
-          <div class="stat reveal-on-scroll delay-300"><strong>5</strong><span>Kasus latihan</span></div>
-          <div class="stat reveal-on-scroll delay-400"><strong>4</strong><span>Evaluasi kompetensi</span></div>
+        <div class="panel macro-card calculator-card reveal-on-scroll delay-100">
+          <div class="learning-map-head"><strong>Macro Planner</strong><span class="tag gold" id="macro-total-pct">Total: 100%</span></div>
+          <div class="macro-control"><div class="macro-control-head"><label for="macro-calories">Kebutuhan energi</label><strong id="val-calories">2000 kkal</strong></div><input type="range" id="macro-calories" min="1200" max="4000" step="50" value="2000"></div>
+          <div class="macro-control"><div class="macro-control-head"><label for="macro-carbs">Karbohidrat</label><strong id="val-carbs">50% (250g)</strong></div><input type="range" id="macro-carbs" min="10" max="80" step="5" value="50"></div>
+          <div class="macro-control"><div class="macro-control-head"><label for="macro-protein">Protein</label><strong id="val-protein">20% (100g)</strong></div><input type="range" id="macro-protein" min="10" max="50" step="5" value="20"></div>
+          <div class="macro-control"><div class="macro-control-head"><label for="macro-fat">Lemak</label><strong id="val-fat">30% (67g)</strong></div><input type="range" id="macro-fat" min="10" max="60" step="5" value="30"></div>
+          <div class="macro-bar" aria-label="Distribusi makronutrisi"><div id="bar-carbs" style="width:50%;background:var(--blue)"></div><div id="bar-protein" style="width:20%;background:var(--green)"></div><div id="bar-fat" style="width:30%;background:var(--amber)"></div></div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-inner">
-        <div class="section-head reveal-on-scroll">
-          <span class="eyebrow">NutriQuest</span>
-          <h2>Evaluasi resmi dipusatkan di NutriQuest.</h2>
-          <p class="lead">Pretest, posttest, asesmen kasus, dan dashboard dosen berada dalam satu alur evaluasi.</p>
-          <div class="hero-actions">
-            <a class="button primary" href="nutriquest.html">Buka NutriQuest</a>
-            <a class="button secondary" href="pretest.html">Mulai Pretest</a>
-            <a class="button secondary" href="dashboard-dosen.html">Dashboard Dosen</a>
-          </div>
-        </div>
-      </div>
+    <section class="landing-section">
+      <div class="section-inner landing-cta reveal-on-scroll"><div><span class="eyebrow">Siap memulai?</span><h2>Ukur baseline sebelum membuka fitur belajar.</h2><p>Masuk sebagai mahasiswa, selesaikan 25 soal pretest, lalu lanjutkan perjalanan belajar di NutriSphere.</p></div><div class="hero-actions"><a class="button primary" href="pretest.html">Mulai Pretest</a><a class="button secondary" href="login.html">Masuk / Daftar</a></div></div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <div><strong>NUTRISPHERE</strong><p class="muted">Rancangan frontend static untuk LIDM Gizi.</p></div>
+      <div><strong>NUTRISPHERE</strong><p class="muted">Ekosistem pembelajaran dan evaluasi kompetensi gizi.</p></div>
       <div class="footer-links">
         <a href="nutrisolve.html">NutriSolve</a>
         <a href="nutribase.html">NutriBase</a>
