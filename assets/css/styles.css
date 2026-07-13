@@ -3264,6 +3264,11 @@ body.pretest-locked > .nutribot-widget {
   gap: 16px;
 }
 
+/* Keep inactive auth views out of layout even though cards define display. */
+.auth-panels [hidden] {
+  display: none !important;
+}
+
 .auth-mode-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;

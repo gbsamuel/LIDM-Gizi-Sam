@@ -254,6 +254,7 @@ test("global account controls keep login, register, and logout reachable", () =>
   const loginJs = readFileSync("assets/js/login.js", "utf8");
   const mainJs = readFileSync("assets/js/main.js", "utf8");
   const authJs = readFileSync("assets/js/auth.js", "utf8");
+  const css = readFileSync("assets/css/styles.css", "utf8");
 
   assert.match(login, /data-student-auth="login"/);
   assert.match(login, /data-student-auth="register"/);
@@ -265,6 +266,7 @@ test("global account controls keep login, register, and logout reachable", () =>
   assert.match(mainJs, /initGlobalAccountControl/);
   assert.match(authJs, /async function signOut/);
   assert.match(authJs, /nutrisphere_pretest_v1_completed/);
+  assert.match(css, /\.auth-panels\s+\[hidden\]\s*{[^}]*display:\s*none\s*!important/s);
 });
 
 test("static admin RPC and optional posttest contract are documented in code", () => {

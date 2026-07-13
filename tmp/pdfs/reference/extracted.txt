@@ -1,0 +1,1591 @@
+=== PAGE 1 ===
+PROPOSAL LOMBA INOVASI DIGITAL MAHASISWA (LIDM)
+DIVISI INOVASI TEKNOLOGI DIGITAL PENDIDIKAN
+“RADVent: Aplikasi Augmented Reality Interaktif Terintegrasi NeuroTag
+Scan untuk Eksplorasi Modalitas, Simulasi Posisi Anatomis, dan Latihan
+Klinis Mahasiswa Radiologi Guna Meningkatkan Kompetensi Calon
+Radiografer”
+Ketua Pelaksana
+Mohammad Pradana Setyawan/413241048
+Anggota
+Muhammad Naufal Aulia/164241069
+Davina W Aura Febritalianti/413241050
+Alfiyatul Khoiriyah/162241014
+Universitas Airlangga
+Surabaya
+2025
+
+=== PAGE 2 ===
+Halaman Pengesahan
+PROPOSAL KARYA LOMBA INOVASI DIGITAL MAHASISWA (LIDM)
+1. Judul Karya : RADVent : Aplikasi Augmented Reality Interaktif
+Terintegrasi NeuroTag Scan untuk Eksplorasi Modalitas, Simulasi Posisi
+Antomis, dan Latihan Klinis Mahasiswa Radiologi Guna Meningkatkan
+Kompetensi Calon Radiografer
+2. Divisi : Inovasi Teknologi Digital Pendidikan (ITDP)
+3. Jumlah Tim Peserta : (4) orang mahasiswa
+4. Susunan Tim Peserta :
+No. Posisi NIM Nama Prodi/Departemen/Fakultas
+1 Ketua 413241048 Mohammad D-IV Teknologi Radiologi
+Pradana Pencitraan/ Fakultas Vokasi
+Setyawan
+2 Anggota 164241069 Muhammad S1 Teknologi Sains Data/
+Naufal Aulia Fakultas Teknologi Maju dan
+Multidisiplin
+3 Anggota 413241050 Davina W Aura D-IV Teknologi Radiologi
+Febritalianti Pencitraan/ Fakultas Vokasi
+4 Anggota 162241014 Alfiyatul S1 Rekayasa Nanoteknologi/
+Khoiriyah Fakultas Teknologi Maju dan
+Multidisiplin
+Surabaya, 9 September 2025
+Mengetahui, Yang Menyatakan,
+Dosen Pendamping
+Amilia Kartika Sari S.Tr.Kes., M.T Mohammad Pradana Setyawan
+NIP.198405212020073201 NIM. 413241048
+Menyetujui,
+Direktur Kemahasiswaan
+2
+
+=== PAGE 3 ===
+ABSTRAK
+Pendidikan radiologi menuntut keterampilan teknis, mulai dari pengoperasian
+peralatan pencitraan, teknik positioning pasien, hingga interpretasi citra medis.
+Namun, keterbatasan fasilitas praktik, minimnya waktu akses alat, serta rendahnya
+integrasi teknologi digital masih menjadi hambatan dalam mencetak radiografer
+kompeten. Sebuah penelitian oleh Nabel menunjukkan keterbatasan fasilitas
+sebagai faktor utama kesulitan belajar mahasiswa radiologi, ditambah sulitnya
+memvisualisasikan alat, rendahnya literasi digital, serta minimnya latihan klinis
+mandiri. Untuk menjawab kebutuhan tersebut, dikembangkan RADVent, aplikasi
+pembelajaran berbasis Augmented Reality (AR) dengan integrasi NeuroTag Scan,
+yaitu pemindaian kode QR yang menghubungkan objek fisik dengan konten digital
+interaktif. Fitur utama meliputi eksplorasi 3D peralatan radiologi, ilustrasi
+positioning pasien, latihan kasus klinis berbasis case-based learning, serta
+perpustakaan digital berisi buku open access dan e-book institusional dilengkapi
+Generative AI Summarizer. Aplikasi ini mendukung pembelajaran sinkron (diskusi
+langsung dengan dosen) maupun asinkron (eksplorasi mandiri). Pengembangan
+dilakukan dengan pendekatan Design Thinking, Agile, dan User Centered Design.
+Uji coba awal melibatkan mahasiswa dan dosen D-4 Teknologi Radiologi
+Pencitraan Universitas Airlangga menggunakan pre-test dan post-test, System
+Usability Scale (SUS), serta User Acceptance Test (UAT). Hasilnya, RADVent
+diproyeksikan meningkatkan pemahaman konsep radiologi hingga 32%,
+memperoleh skor SUS “sangat baik” (±81), serta diterima positif oleh mayoritas
+responden (±92%)
+Kata kunci: Pendidikan radiologi, Augmented Reality, NeuroTag Scan, simulasi
+klinis, kompetensi radiografer
+ABSTRACT
+Radiology education requires technical skills, ranging from the operation of
+imaging equipment and patient positioning techniques to the interpretation of
+medical images. However, limited practice facilities, minimal access time to
+equipment, and the low integration of digital technology remain obstacles in
+producing competent radiographers. Nabel (2023) found that facility limitations
+are the main factor hindering radiology students’ learning, compounded by
+difficulties in visualizing equipment, low digital literacy, and limited independent
+clinical exercises. To address these challenges, RADVent was developed, a learning
+application based on Augmented Reality (AR) with NeuroTag Scan integration, a
+QR code scanning feature that links physical objects with interactive digital
+content. Its key features include 3D exploration of radiology equipment, patient
+positioning illustrations, case-based clinical exercises, and a digital library
+containing open-access radiology books and institutional e-books enhanced with a
+Generative AI Summarizer. The application supports both synchronous learning
+(interactive discussions with lecturers) and asynchronous learning (independent
+3
+
+=== PAGE 4 ===
+exploration). Development employed the Design Thinking, Agile, and User-
+Centered Design approaches. Initial trials involved students and lecturers of the D-
+4 Medical Imaging Technology Program, Universitas Airlangga, using pre-test and
+post-test evaluations, the System Usability Scale (SUS), and User Acceptance Test
+(UAT). Results project that RADVent can improve radiology concept
+comprehension by up to 32%, achieve a SUS score in the “excellent” category
+(≈81), and gain positive acceptance from the majority of respondents (≈92%).
+Keywords: Radiology education, Augmented Reality, NeuroTag Scan, clinical
+simulation, radiographer competence
+4
+
+=== PAGE 5 ===
+DAFTAR ISI
+HALAMAN PENGESAHAN ............................................................................. 2
+ABSTRAK .......................................................................................................... 3
+DAFTAR ISI ....................................................................................................... 5
+DAFTAR GAMBAR .......................................................................................... 6
+DAFTAR TABEL ............................................................................................... 7
+1. PENDAHULUAN .................................................................................. 8
+1.1 Latar Belakang ................................................................................. 8
+1.2 Tujuan .............................................................................................. 9
+1.3 Manfaat ............................................................................................ 10
+2. METODE PENGEMBANGAN PRODUK TEKNOLOGI
+DIGITAL ................................................................................................ 10
+2.1 Studi Literatur .................................................................................. 10
+2.2 Pendekatan Design Thinking dalam Pengembangan RADVent ..... 11
+2.3 Pendekatan Agile dalam Pengembangan RADVent ....................... 11
+2.4 Pendekatan User-Centered Design dalam Pengembangan
+RADVent ......................................................................................... 13
+2.5 Perancangan dan Implementasi Sistem ........................................... 14
+3. ANALISA FUNGSIONAL TEKNOLOGI DIGITAL .......................... 18
+3.1 Mekanisme Arsitektur Sistem ......................................................... 18
+3.2 Analisis Kelayakan RADVent sebagai Media Belajar
+dan Mengajar ................................................................................... 19
+4. DESAIN PRODUK TEKNOLOGI DIGITAL ...................................... 21
+5. RENCANA IMPLEMENTASI DAN VALIDASI
+PERANGKAT LUNAK ......................................................................... 24
+5.1 Rancangan Penggunaan Perangkat Lunak ...................................... 24
+5.2 Rencana Tahapan Berikutnya .......................................................... 25
+5.3 Rencana Jangka Panjang ................................................................. 25
+5.4 Validasi Perangkat Lunak ................................................................ 26
+6. TAUTAN VIDEO PENGEMBANGAN KARYA ................................ 28
+DAFTAR PUSTAKA ......................................................................................... 29
+LAMPIRAN ........................................................................................................ 31
+Lampiran 1. Biodata Ketua dan Anggota Tim Peserta ....................................... 31
+Lampiran 2. Biodata Dosen Pendamping............................................................ 40
+Lampiran 3. Surat Pernyataan Keterangan Karya ............................................... 43
+Lampiran 4. Susunan Organisasi Tim Pelaksana dan Pembagian Tugas............ 44
+Lampiran 5. Flowchart Alur Aplikasi ................................................................. 47
+Lampiran 6. Desain NeuroTag Scan ................................................................... 48
+5
+
+=== PAGE 6 ===
+DAFTAR GAMBAR
+Gambar 1. Tampilan NeuroTag Scan sebagai Trigger Marker .......................... 15
+Gambar 2. Alur sistem AI Summarization RADBook ........................................ 17
+Gambar 3. Rencana Penggunaan Aplikasi .......................................................... 24
+Gambar 4. Rencana Jangka Panjang RADVent .................................................. 25
+Gambar 5. Halaman Depan Fakultas Vokasi Universitas Airlangga, Surabaya . 26
+Gambar 6. Rumus Perhitungan SUS ................................................................... 27
+Gambar 7. Rumus Perhitungan UAT .................................................................. 27
+Gambar 8. Visualisasi Posisi Menggunakan Metode SUS ................................. 28
+6
+
+=== PAGE 7 ===
+DAFTAR TABEL
+Tabel 1. Iterasi Sprint Pengembangan Aplikasi RADVent ................................. 12
+Tabel 2. Fitur Utama RADVent .......................................................................... 18
+Tabel 3. Tabel Komparasi Keunggulan RADVent dengan Aplikasi Sejenis...... 19
+Tabel 4. Analisis Kelayakan Pengembangan RADVent ..................................... 20
+Tabel 5. Desain Fitur-Fitur RADVent ................................................................ 22
+Tabel 6. Daftar Pertanyaan SUS ......................................................................... 26
+Tabel 7. Daftar Pertanyaan UAT ........................................................................ 27
+Tabel 8. Penilaian Pertanyaan SUS dan UAT ..................................................... 27
+7
+
+=== PAGE 8 ===
+1. PENDAHULUAN
+1.1. Latar Belakang
+Radiologi merupakan salah satu pilar penting dalam pelayanan kesehatan
+modern karena berperan dalam mendeteksi, mendiagnosis, dan memantau berbagai
+penyakit melalui pencitraan medis. Peralatan radiologi seperti X-ray, CT-Scan,
+MRI, hingga USG menjadi instrumen vital dalam mendukung pengambilan
+keputusan klinis yang cepat dan tepat. Oleh karena itu, radiografer memiliki peran
+strategis dalam menjamin akurasi hasil pencitraan sekaligus menjaga keselamatan
+pasien dari paparan radiasi berlebih. Namun, kebutuhan tenaga radiografer di
+Indonesia masih jauh dari memadai. Data Kementerian Kesehatan RI [1] mencatat
+hanya terdapat 18.504 radiografer, jauh di bawah rasio ideal 0,18 per 1.000
+penduduk, dengan defisit di Jawa Tengah dan DIY mencapai 4.630 orang.
+Sementara itu, permintaan layanan radiologi terus meningkat, dari 19,3 juta
+pemeriksaan pada 2017 menjadi 28,7 juta pada 2021 dengan rata-rata kenaikan
+10,6% per tahun [2]. Kondisi ini diperparah dengan percepatan teknologi radiologi
+yang menuntut penguasaan keterampilan operasional canggih, sementara
+kurangnya kompetensi lulusan berpotensi menurunkan kualitas layanan dan
+meningkatkan risiko klinis.
+Ditinjau dalam sisi pendidikan, keterbatasan fasilitas praktik akibat mahalnya
+harga peralatan menyebabkan laboratorium radiologi hanya memiliki alat terbatas,
+sehingga mahasiswa harus bergantian dengan waktu praktik yang singkat. Temuan
+Nabel Frilia Zivana [3] menguatkan bahwa keterbatasan fasilitas menjadi faktor
+utama kesulitan belajar mahasiswa radiologi. Pada saat pembelajaran teori,
+mahasiswa juga mengalami kesulitan memvisualisasikan bentuk dan komponen
+alat, diperburuk dengan rendahnya literasi digital serta keterbatasan soal-soal klinis
+mandiri. Hal ini sejalan dengan temuan Hajime Kasai et al. [4] bahwa keterbatasan
+fasilitas praktik di negara berkembang menyulitkan mahasiswa melatih
+keterampilan klinis secara optimal. Sejumlah penelitian telah membuktikan
+efektivitas Augmented Reality (AR) dalam pendidikan kesehatan, seperti simulasi
+intubasi oleh Hamza-Lup et al. [5] maupun ulasan sistematis Akçayır & Akçayır
+[6] yang menegaskan kontribusi AR terhadap peningkatan pengetahuan dan
+keterampilan klinis. Namun, implementasinya masih terbatas pada kedokteran dan
+keperawatan, belum menjawab kebutuhan spesifik mahasiswa vokasi radiologi.
+Situasi ini semakin relevan dengan arah kebijakan pemerintah. Permenkes No.
+33 Tahun 2019 [7] telah menegaskan standar kompetensi radiografer yang
+menekankan keterampilan klinis, sementara kebijakan Merdeka Belajar Kampus
+Merdeka mendorong pemanfaatan teknologi inovatif dalam pendidikan vokasi.
+Lebih jauh, RPJMN 2025–2029 melalui Perpres No. 12 Tahun 2025 [8]
+menempatkan penguatan SDM kesehatan dan digitalisasi layanan salah satunya
+pendidikan sebagai prioritas nasional dalam rangka menuju Indonesia Emas 2045.
+Berdasarkan kompleksnya permasalahan tersebut, penulis berinisiatif
+mengembangkan RADVent, aplikasi berbasis website yang dilengkapi empat fitur
+8
+
+=== PAGE 9 ===
+unggulan: RADWorld (eksplorasi model 3D peralatan radiologi dengan NeuroTag
+Scan, ilustrasi positioning pasien), RADCase (Latihan daya ingat dan kasus klinis
+pasien), RADBook (pustaka digital radiologi), dan RADSult (hasil & analisis
+otomatis), sebagai langkah strategis untuk memastikan mahasiswa tidak hanya
+memahami teori tetapi juga menguasai keterampilan praktis yang esensial bagi
+profesi radiografer.
+Pengembangan RADVent dilakukan dengan menerapkan pendekatan Design
+Thinking, Agile Development menggunakan framework Scrum, dan User-Centered
+Design, sehingga desain aplikasi berangkat dari kebutuhan nyata mahasiswa dan
+dosen. Aplikasi ini mengintegrasikan empat metode pembelajaran yang telah
+terbukti efektif dalam pendidikan tinggi. Pertama, Problem-Based Learning (PBL)
+diterapkan untuk mendorong analisis kasus nyata dan pengembangan keterampilan
+berpikir kritis mahasiswa [9]. Kedua, Blended Learning yang menggabungkan
+pembelajaran sinkronus dan asinkronus untuk meningkatkan fleksibilitas,
+aksesibilitas, dan interaksi daring antara mahasiswa dan dosen [10]. Ketiga,
+Experiential Learning melalui pengalaman langsung dan simulasi model 3D
+memungkinkan mahasiswa mengaitkan teori dengan praktik, meningkatkan
+pemahaman praktis [11]. Keempat, Gamification Learning diterapkan untuk
+meningkatkan motivasi dan keterlibatan mahasiswa dalam proses pembelajaran
+[12]. Dengan keempat metode tersebut, RADVent hadir sebagai solusi strategis
+untuk mengatasi keterbatasan fasilitas praktik, waktu latihan, dan literasi digital
+mahasiswa radiologi. Lebih jauh, RADVent juga selaras dengan agenda global
+Sustainable Development Goals (SDGs), khususnya SDG 3 (Good Health and
+Well-Being) melalui peningkatan kompetensi tenaga kesehatan untuk mendukung
+layanan medis yang lebih aman dan berkualitas, serta SDG 4 (Quality Education)
+menghadirkan akses pendidikan inovatif, inklusif, dan berbasis teknologi. Dengan
+demikian, RADVent bukan hanya menjawab kebutuhan belajar mahasiswa
+radiologi, tetapi juga menjadi bagian dari upaya transformasi kesehatan dan
+pendidikan secara global.
+1.2. Tujuan
+1. Meningkatkan pemahaman mahasiswa radiologi terhadap modalitas alat
+radiologi berbasis AR 3D dan ilustrasi positioning pasien.
+2. Meningkatkan daya ingat dan keterampilan mahasiswa radiologi dalam
+menganalisis dan menyelesaikan kasus klinis secara praktis dan sistematis.
+3. Mendukung transformasi digital dalam pendidikan radiologi di Indonesia
+dengan menghadirkan metode pembelajaran inovatif berbasis teknologi.
+9
+
+=== PAGE 10 ===
+1.3. Manfaat
+1.3.1. Mahasiswa
+1. Mahasiswa dapat mempelajari modalitas praktikum radiologi tanpa risiko
+paparan radiasi.
+2. Mahasiswa dapat memvisualisasikan modalitas radiologi secara interaktif
+dan fleksibel tanpa terbatas oleh waktu.
+3. Mahasiswa dapat berlatih soal-soal klinis radiologi, sekaligus meningkatkan
+daya ingat dan pemahaman konsep.
+4. Mendorong peningkatan kolaborasi dan interaksi mahasiswa selama
+pembelajaran di kelas.
+1.3.2. Dosen
+1. Mendukung proses pembelajaran dengan media digital yang imersif dan
+interaktif saat dikelas.
+2. Memudahkan evaluasi perkembangan kompetensi mahasiswa secara
+sistematis dan hasil analisis otomatis.
+3. Menghemat waktu dan mempermudah penyampaian teori mengenai
+modalitas atau alat-alat radiologi.
+4. Memungkinkan dosen menambahkan soal-soal secara mudah di aplikasi
+untuk melatih kompetensi mahasiswa secara kontinu.
+2. METODE PENGEMBANGAN PRODUK TEKNOLOGI DIGITAL
+2.1. Studi Literatur
+Studi literatur ini bertujuan untuk mengidentifikasi, mengeksplorasi, dan
+memahami informasi yang berkaitan dengan pengembangan RADVent, sebuah
+perangkat lunak pembelajaran berbasis Augmented Reality (AR) yang dipadukan
+dengan NeuroTag Scan, dirancang khusus untuk meningkatkan keterampilan
+analisis teknis mahasiswa radiologi, daya ingat, serta pemahaman terkait modalitas
+alat dan posisi pasien melalui simulasi interaktif yang aman tanpa paparan radiasi
+dan fleksibel. Untuk mendukung pengembangan yang relevan dengan kebutuhan
+pengguna dan selaras dengan tren teknologi pendidikan kesehatan, studi literatur
+ini berfokus pada penelaahan terhadap konsep pendidikan radiologi, penerapan
+teknologi imersif, serta strategi evaluasi pembelajaran klinis. Secara khusus, studi
+literatur ini meliputi penelaahan pada topik-topik berikut:
+1. Menganalisis potensi dan implementasi teknologi AR dalam pendidikan
+radiologi, dengan fokus pada kemampuan menghadirkan visualisasi 3D
+peralatan pencitraan medis, simulasi teknik positioning pasien sesuai
+Standard Operating Procedure (SOP) klinis, serta pemanfaatan AI untuk
+memberikan umpan balik otomatis. Serta, integrasi dengan modul
+pembelajaran berbasis kasus (case-based learning).
+2. Mengidentifikasi pendekatan teknologi pembelajaran imersif yang efektif
+untuk memenuhi kebutuhan dinamis mahasiswa radiologi, baik di kelas
+10
+
+=== PAGE 11 ===
+maupun pembelajaran mandiri, dengan mempertimbangkan keterbatasan
+fasilitas praktik, risiko paparan radiasi, dan fleksibilitas akses. Penelaahan
+ini meliputi evaluasi terhadap model pengembangan perangkat lunak
+edukasi (Design Thinking, Agile Development, User-Centered Design)
+yang terbukti efektif dalam meningkatkan keterlibatan dan retensi belajar
+pada mahasiswa bidang kesehatan.
+3. Meninjau kebutuhan dosen terhadap sistem evaluasi kompetensi yang
+efisien, terukur, dan berbasis data, termasuk metode penilaian otomatis,
+serta penggunaan instrumen validasi seperti uji pre-test/post-test untuk
+mengukur peningkatan pemahaman.
+Dengan cakupan tersebut, studi literatur ini diharapkan memberikan dasar
+konseptual dan teknis yang kuat bagi pengembangan RADVent, sehingga
+perangkat lunak ini efektif secara pedagogis, relevan dengan kebutuhan pengguna,
+dan mampu menjadi model transformasi digital pendidikan radiologi di Indonesia.
+2.2. Pendekatan Design Thinking dalam Pengembangan RADVent
+Design Thinking (DT) merupakan metodologi inovatif yang berfokus pada
+pemecahan masalah dengan pendekatan kreatif yang menempatkan empati terhadap
+pengguna sebagai inti proses. DT memiliki lima fase utama yang dilakukan secara
+berurutan. Pertama, Empati (Empathize) di mana tim melakukan observasi dan
+wawancara dengan mahasiswa, dosen, dan praktisi radiologi untuk
+mengidentifikasi masalah utama seperti keterbatasan peralatan praktik, kesulitan
+visualisasi modalitas radiologi, dan minimnya akses terhadap soal klinis interaktif
+[13]. Kedua, Definisi Masalah (Define), yaitu merumuskan kebutuhan utama
+berupa media pembelajaran interaktif yang memungkinkan eksplorasi peralatan
+radiologi, latihan kasus, pustaka digital, serta evaluasi otomatis [14]. Ketiga, Ideasi
+(Ideate), di mana tim menghasilkan solusi inovatif dalam bentuk empat fitur
+RADVent: RADWorld (modalitas radiologi 3D dan ilustrasi poisitioning pasien),
+RADCase (latihan kasus klinis), RADBook (pustaka digital), dan RADSult
+(analisis hasil otomatis). Keempat, Prototipe (Prototype), yaitu membangun
+prototipe awal yang diuji oleh mahasiswa dan dosen untuk menilai fungsionalitas
+dan efektivitas pembelajaran. Kelima, Pengujian (Test) dilakukan untuk
+memastikan fitur aplikasi relevan secara pedagogis, efektif secara teknis, dan
+mampu meningkatkan keterampilan praktis mahasiswa secara signifikan [13].
+Pendekatan ini menegaskan pentingnya kolaborasi dan iterasi dalam menghasilkan
+solusi yang benar-benar sesuai kebutuhan pengguna\
+2.3. Pendekatan Agile dalam Perancangan RADVent
+Pengembangan aplikasi RADVent menerapkan metode Agile dengan
+kerangka kerja Scrum, yaitu kerangka kerja pengembangan yang menekankan
+kolaborasi tim, iterasi singkat (sprint), serta adaptasi berkelanjutan terhadap
+perubahan kebutuhan. Batasan utama dari pendekatan ini terletak pada struktur
+11
+
+=== PAGE 12 ===
+kerja yang sangat terorganisir dengan peran, artefak, dan ritme tertentu [15].
+Metode Agile mencakup tahapan plan, design, develop, test, deploy, review, dan
+launch, yang memfasilitasi penyusunan fitur RADVent secara bertahap, meliputi
+RADWorld, RADCase, RADBook, dan RADSult. Pendekatan Scrum
+memungkinkan mengidentifikasi risiko teknis, seperti kompatibilitas perangkat dan
+akurasi model 3D, serta memastikan setiap fitur memenuhi standar pedagogis dan
+teknis. Pembagian peran yang jelas antara Product Owner, Scrum Master, dan
+Development Team meningkatkan efisiensi koordinasi lintas disiplin, dan tanggung
+jawab antar anggota tim dapat dilihat pada Lampiran 4 [16]. RADVent
+dikembangkan melalui enam sprint, yang setiap sprintnya fokus pada
+pengembangan dan pengujian fitur, serta evaluasi dampak terhadap kompetensi
+mahasiswa, sebagaimana dijelaskan lebih lengkap pada Tabel 1.
+Tabel 1. Iterasi Sprint Pengembangan Aplikasi RADVent
+Sprint Bulan Tujuan Fitur yang Output
+Sprint Dikembangkan Utama
+1 Juli (Awal – Fondasi • Desain UI/UX Prototype
+Tengah) sistem & (wireframe) Awal
+rancangan • Perancangan database
+• Model 3D dasar
+• Desain NeuroTag
+2 Juli (Akhir) Integrasi • Implementasi desain Implementasi
+awal 3D alat radiologi Awal
+• Pembuatan ilustrasi
+positioning pasien
+• Pembuatan skema
+database
+• Inisialisasi proyek
+3 Agustus Fitur • Pengembangan fitur RADCase
+(Awal) klinis RADCase (kasus dan RADSult
+tahap 1 klinis simulasi) versi awal
+• Pengembangan
+RADSult (hasil
+analisis)
+• Pengembangan sistem
+autentikasi
+4 Agustus Fitur • Pengembangan RADBook
+(Pertengahan) penunjang RADBook (referensi versi awal
+digital)
+• Pengembangan
+dashboard dosen
+• Pengembangan CMS
+(content management
+system) untuk
+RADCase dan
+RADSult
+12
+
+=== PAGE 13 ===
+5 Agustus Integrasi • Pengembangan CMS Versi Beta
+(Akhir) sistem (content management 1.0 (Internal)
+awal system) untuk
+RADBook
+• Uji coba awal (alpha
+testing)
+6 September Validasi • Finalisasi fitur Evaluasi
+(Awal) terbatas aplikasi Awal
+(50%) • Slicing user interface (Progress
+• Optimasi tahap awal 50%)
+7 September Uji coba • Uji coba pada 30 – 50 Versi Beta
+(Pertengahan user 2.0 (dengan
+– Akhir) • Analisis feedback security)
+user
+8 Oktober Uji coba • Improvisasi fitur Evaluasi
+(Awal) skala aplikasi sesuai Skala
+besar feedback user Menengah
+9 Oktober Finalisasi • Penyempurnaan Web Release
+(Pertengahan fitur app RADVent Candidate
+– Akhir) (RC 1.0)
+10 November Rilis • Deploy aplikasi ke Versi Final
+(Awal – resmi server 1.0 (Rilis
+Akhir) (100%) • Dokumentasi lengkap Resmi)
+(user guide & manual)
+• Pelatihan mahasiswa
+dan dosen
+2.4. Pendekatan User-Centered Design dalam Pengembangan RADVent
+Pendekatan User-Centered Design (UCD) adalah sebuah pendekatan yang
+menempatkan kebutuhan, konteks, serta pengalaman pengguna sebagai pusat dalam
+setiap tahap perancangan. UCD berbeda dari DT maupun Agile karena
+menitikberatkan pada keterlibatan aktif pengguna secara langsung sejak tahap awal
+hingga evaluasi produk. Proses ini mencakup identifikasi konteks pengguna,
+analisis kebutuhan fungsional dan non-fungsional, prototyping antarmuka yang
+intuitif, serta evaluasi berbasis umpan balik untuk menyempurnakan desain [18].
+Penerapan UCD terbukti mampu meningkatkan efektivitas dan kepuasan pengguna
+dalam pengembangan sistem pembelajaran; sebuah systematic review di bidang e-
+learning menunjukkan bahwa penggunaan UCD dalam desain antarmuka mampu
+menghasilkan pengalaman pengguna yang lebih baik [17], [18]. Dengan melibatkan
+mahasiswa dan dosen secara aktif dalam setiap tahapan, RADVent dirancang agar
+intuitif, efektif secara pedagogis, dan mampu memberdayakan analisis yang
+responsif terhadap gaya belajar serta kebutuhan pengguna.
+13
+
+=== PAGE 14 ===
+2.5. Perancangan dan Implementasi Sistem
+Tahap ini merupakan langkah awal dalam pengembangan RADVent,
+mencakup proses perancangan dan implementasi sistem yang dirancang khusus
+untuk mendukung pembelajaran radiologi secara imersif, aman, dan terintegrasi
+dengan teknologi terkini
+2.5.1 Desain Perangkat Lunak
+Perancangan aplikasi RADVent diawali dengan analisis kebutuhan
+pendidikan radiologi yang masih terbatas pada fasilitas praktik. Untuk
+menghadirkan pengalaman belajar interaktif, desain aplikasi mengintegrasikan
+Augmented Reality (AR) dengan NeuroTag Scan sebagai pemicu simulasi 3D
+peralatan radiologi. Dalam mendukung perancangan antarmuka dan
+pengalaman pengguna, digunakan Figma untuk membuat wireframe dan
+mockup, sedangkan FigJam dimanfaatkan untuk menyusun flowchart, struktur
+database, dan alur sistem. Proses desain ini juga dilengkapi dengan Canva untuk
+memudahkan pembuatan materi presentasi yang komunikatif, sehingga setiap
+fitur dapat divisualisasikan secara jelas kepada pengguna dan pemangku
+kepentingan.
+1. Perancangan dan Implementasi Fungsional Sistem
+Tahapan ini meliputi pengembangan komponen inti RADVent
+yang terdiri dari:
+a. Aplikasi Pembelajaran Mahasiswa : menyediakan 3D desain
+peralatan radiologi, teknik positioning pasien sesuai Standard
+Operating Procedure (SOP), latihan interpretasi citra medis berbasis
+kasus nyata dirumah sakit, pustaka digital radiologi berbasis AI, dan
+menyediakan analisis hasil belajar kompeherensif secara otomatis
+hingga akhirnya RADVent layak untuk digunakan media belajar
+mahasiswa.
+b. Dashboard Dosen : menyediakan akses untuk memantau
+perkembangan analisis keterampilan kasus mahasiswa melalui skor
+atau nilai siswa, mengelola, menginput bank kasus klinis radiologi,
+dan memberikan umpan balik kepada mahasiswa serta aksestabilitas
+RADVent dalam mode sinkronus sebagai alat bantu mengajar dosen
+didalam kelas.
+c. Integrasi Database & Konten 3D : memastikan seluruh data dan
+model dapat diakses secara real-time dan optimal pada perangkat
+mobile maupun desktop.
+2. Perancangan Sistem Pembelajaran Radiologi Berbasis Digital
+Perancangan RADVent mengintegrasikan berbagai teknologi
+digital, dengan Augmented Reality (AR) sebagai fitur utama, untuk
+menciptakan pengalaman belajar radiologi yang imersif, interaktif,
+dan mudah diakses. NeuroTag Scan berfungsi sebagai trigger marker
+14
+
+=== PAGE 15 ===
+yang mengaktifkan model 3D interaktif dari peralatan radiologi atau
+bagian tubuh pasien secara real-time, sehingga memungkinkan
+mahasiswa melakukan simulasi penggunaan alat, teknik positioning ,
+dan prosedur pencitraan sesuai Standard Operating Procedure (SOP)
+tanpa risiko paparan radiasi.
+NeuroTag Scan merupakan komponen kunci dalam RADVent
+yang memungkinkan pemanggilan objek virtual dengan cepat dan
+akurat. NeuroTag dapat diwujudkan dalam bentuk fisik, misalnya
+dicetak sebagai kartu atau disisipkan di dalam buku dan modul,
+sehingga mahasiswa dapat menggunakannya secara mandiri. Selain
+itu, NeuroTag juga dapat ditampilkan dalam bentuk digital, misalnya
+melalui slide presentasi (PPT) atau proyektor di kelas, sehingga dosen
+dapat memfasilitasi pembelajaran interaktif langsung bersama
+mahasiswa. Dengan fleksibilitas ini, NeuroTag Scan mendukung baik
+pembelajaran individual maupun pembelajaran klasikal, sekaligus
+memperkaya pengalaman belajar mahasiswa. Gambar berikut
+memperlihatkan contoh tampilan NeuroTag Scan yang digunakan
+dalam sistem RADVent:
+Gambar 1. Tampilan NeuroTag Scan sebagai Trigger Marker
+RADVent tidak hanya mengandalkan AR, tetapi juga
+melengkapi pembelajaran dengan modul interaktif lain yang
+mendukung penguasaan kompetensi praktis mahasiswa serta
+mempermudah dosen dalam memberikan demonstrasi di kelas.
+Empat fitur unggulannya adalah:
+a. RADWorld (Eksplorasi Peralatan Radiologi & Positioning
+Pasien)
+1. Eksplorasi 3D Peralatan Radiologi menggunakan AR dan
+model 3D interaktif untuk menampilkan alat radiologi
+beserta komponen dan fungsinya. Mahasiswa dapat
+memutar, memperbesar, dan mempelajari setiap bagian
+15
+
+=== PAGE 16 ===
+secara real-time, sehingga membantu visualisasi
+praktikum tanpa risiko paparan radiasi.
+2. Ilustrasi Teknik Positioning Pasien menyediakan
+panduan posisi pasien (misalnya supine/AP), parameter
+teknis (kV, mA, mAs), serta kolimasi dalam bentuk
+gambar dan teks.
+b. RADCase (Latihan Kasus Klinis)
+Fitur ini menyediakan skenario klinis yang sesuai kondisi
+lapangan di rumah sakit. Sistem memberikan hasil
+pengerjaan, sementara dosen dapat memberikan umpan balik
+terkait positioning pasien dan pemilihan modalitas
+pencitraan, sehingga mendukung peningkatan pemahaman
+klinis dan daya analisis.
+c. RADBook (Pustaka Digital Radiologi Berbasis AI)
+RADBook merupakan pustaka digital yang berisi modul
+pembelajaran, referensi teori, dan panduan operasional
+peralatan radiologi yang dapat diakses kapan saja.
+Keunggulannya adalah integrasi dengan teknologi Artificial
+Intelligence (AI) yang mampu melakukan automatic
+summarization terhadap konten pembelajaran, termasuk
+artikel ilmiah atau jurnal yang sulit dipahami. Dengan fitur
+ini, mahasiswa dapat memperoleh ringkasan yang lebih
+sederhana dan mudah dimengerti tanpa kehilangan esensi
+dari materi ilmiah.
+d. RADSult (Hasil & Analisis Otomatis)
+Menampilkan hasil latihan, analisis performa mahasiswa,
+serta rekomendasi perbaikan. Fitur ini memudahkan dosen
+dan mahasiswa dalam memantau perkembangan kompetensi
+bagi mahasiswa serta memberikan evaluasi bagi dosen.
+3. Perancangan Sistem AI Summarization pada RADBook
+Fitur AI Summarization pada RADBook memiliki alur
+sistem yang dimulai ketika dosen atau mahasiswa mengunggah atau
+membaca file literatur dalam format PDF di platform RADBook.
+File tersebut kemudian diproses oleh backend untuk mengekstraksi
+teks sehingga dapat dibaca oleh Large Language Model (LLM).
+Selanjutnya, LLM menghasilkan ringkasan otomatis yang
+terstruktur sesuai kebutuhan akademik, mencakup bagian penting
+seperti latar belakang, metode, hasil, dan kesimpulan. Ringkasan
+yang dihasilkan kemudian dikirim kembali ke backend, disimpan
+dalam database bersama metadata seperti judul, penulis, dan tahun
+publikasi, lalu ditampilkan di dashboard RADBook. Dengan
+demikian, pengguna dapat langsung mengakses ringkasan,
+16
+
+=== PAGE 17 ===
+membandingkannya dengan teks asli, atau menyimpannya sebagai
+bahan referensi.
+Gambar 2. Alur sistem AI Summarization RADBook
+2.5.2 Validasi dan Evaluasi Perangkat Lunak
+Proses validasi dan evaluasi RADVent dilakukan secara berlapis
+untuk menjamin kesesuaian teknis, fungsional, dan pedagogis dengan
+kebutuhan pendidikan radiologi modern. Tahap awal mencakup uji
+fungsional internal, yang memverifikasi stabilitas sistem, kompatibilitas
+lintas perangkat, serta kinerja modul inti, termasuk simulasi positioning
+pasien, pemindaian NeuroTag, dan pembelajaran berbasis kasus.
+Selanjutnya dilakukan validasi konten oleh dosen dan praktisi radiologi
+untuk memastikan seluruh prosedur, model 3D, dan instruksi sesuai
+Standard Operating Procedure (SOP) klinis sehingga aman, akurat, dan
+relevan sebagai media pembelajaran. Evaluasi pengguna dilakukan melalui
+User Acceptance Test (UAT) untuk menilai sejauh mana RADVent
+memenuhi kebutuhan dan ekspektasi mahasiswa dan dosen [10], yang
+dilengkapi dengan System Usability Scale (SUS) untuk memperoleh data
+kuantitatif terkait kegunaan dan kepuasan antarmuka [1] Selanjutnya,
+efektivitas pedagogis diuji melalui perbandingan hasil pre-test dan post-test
+mahasiswa, mengukur peningkatan keterampilan teknis dan pemahaman
+konsep radiologi setelah menggunakan RADVent. Hasil evaluasi dianalisis
+secara kritis untuk perbaikan berkelanjutan, sehingga RADVent tidak hanya
+layak secara teknis, tetapi juga efektif sebagai inovasi digital yang
+17
+
+=== PAGE 18 ===
+menjembatani kesenjangan teori dan praktik, dengan rincian pertanyaan dan
+indikator pengujian.
+3. ANALISA FUNGSIONAL TEKNOLOGI DIGITAL
+3.1 Mekanisme Arsitektur Sistem
+RADVent memiliki serangkaian fitur utama yang dirancang untuk
+meningkatkan interaktivitas, efektivitas, dan keamanan dalam proses pembelajaran
+radiologi melalui teknologi Interactive Learning Through 3D Models. Berikut
+merupakan kebutuhan sistem dari masing-masing fitur dan keluaran yang
+dihasilkan, disajikan pada Tabel 2.
+Tabel 2. Fitur Utama RADVent
+No Fitur Input Proses Output
+1 Pembelajaran Modalitas 1. Memuat model Mahasiswa
+Berbasis AR radiologi 3D alat radiologi memutar,
+2. Menyajikan memperbesar, dan
+ilustrasi mempelajari setiap
+positioning bagian alat atau
+pasien posisi pasien
+3. Menangkap
+interaksi
+pengguna
+melalui sensor
+perangkat
+2 Pemindaian Marker fisik 1. Mengidentifikasi Mahasiswa masuk
+NeuroTag berbentuk marker ke laman 3D
+kartu atau menggunakan website sesuai
+digital kamera dengan alat
+seperti perangkat radiologi yang
+proyektor 2. Memanggil discan
+konten 3D atau
+instruksi
+prosedur dari
+server
+3 Pembelajaran Data kasus 1. Menyajikan citra Mahasiswa dapat
+Berbasis radiologi dari medis dan melihat nilai dan
+Kasus (Case- database riwayat kasus hasil pengerjaan
+Based klinis pasien 2. Memberikan
+Learning) dirumah feedback
+sakit berbasis salah
+atau benar
+jawaban
+4 Pustaka Pencarian Sistem menampilkan Mahasiswa
+Digital Pustaka konten digital yang memperoleh
+Radiologi pembelajaran sesuai dan secara literatur atau konten
+otomatis meringkas digital beserta hasil
+ringkasan
+18
+
+=== PAGE 19 ===
+konten digital
+Generative AI
+5 Hasil dan Jawaban 1. Sistem Skor pengerjaan
+Feedback latihan dari menganalisis dan Feedback
+dosen RADCase jawaban benar, Dosen
+dan 2. Dosen
+Komentar menginput
+Dosen feedback,
+rekomendasi
+perbaikan, serta
+strategi belajar
+RADVent dirancang dengan arsitektur client-server yang menghubungkan
+pengguna dengan server dan API untuk integrasi layanan, menggunakan MySQL
+sebagai basis data untuk menyimpan riwayat belajar, skor, dan materi pembelajaran.
+Aplikasi dikembangkan dengan PHP 8.1 dan Laravel 10 untuk back-end, serta
+Blade dan Tailwind CSS untuk front-end, memastikan antarmuka responsif dan
+mudah diperbarui. Fitur NeuroTag Scan dijalankan dengan menggunakan library
+php-qrcode yang dioptimalkan agar berjalan lancar pada berbagai perangkat.
+Desain sistem ini memungkinkan setiap modul beroperasi secara independen
+namun tetap terintegrasi, mendukung pembaruan dan penambahan fitur tanpa
+mengganggu kinerja keseluruhan aplikasi.
+3.2 Analisis Kelayakan RADVent sebagai Media Belajar dan Mengajar
+Perkembangan teknologi pendidikan dalam bidang radiologi menuntut
+adanya media pembelajaran yang tidak hanya menyajikan teori, tetapi juga mampu
+mengintegrasikan kasus klinis, simulasi interaktif, serta evaluasi pembelajaran.
+Sejumlah aplikasi telah dikembangkan sebelumnya, seperti Posiciones
+Radiológicas, RX Trivia, dan 3D Anatomy. Namun, sebagian besar aplikasi tersebut
+hanya menekankan pada aspek tertentu, misalnya posisi radiografi, latihan kuis
+sederhana, atau eksplorasi anatomi secara umum.
+RADVent hadir untuk menjawab keterbatasan tersebut dengan
+menggabungkan berbagai komponen pembelajaran dalam satu platform terpadu.
+Melalui integrasi RadCase, RadBook, RadWorld, dan RadSult, aplikasi ini
+menawarkan pengalaman belajar yang lebih komprehensif mulai dari teori,
+protokol radiologi, kasus klinis, hingga pelacakan progres mahasiswa. Dengan
+demikian, RADVent diposisikan sebagai media pembelajaran yang tidak hanya
+bersifat informatif, tetapi juga interaktif, adaptif, dan berorientasi pada kompetensi.
+Tabel 3. Tabel Komparasi Keunggulan RADVent dengan Aplikasi Sejenis
+Kriteria Unggulan RADVent Posiciones RX Trivia 3D Anatomy
+Radiológicas
+Integrasi Materi ✔ ✘ ✘ ✘
+Lengkap (RadCase,
+19
+
+=== PAGE 20 ===
+RadBook, RadWorld,
+RadSult)
+Kasus Klinis ✔ ✘ ✘ ✘
+Radiologi untuk
+Problem-Solving
+Referensi Protokol & ✔ ✔(terbatas ✘ ✘
+Teori Radiologi posisi)
+Modalitas Radiologi ✔ ✘ ✘ ✔ (anatomi,
+3D dan Ilustrasi bukan radiologi)
+poisitioning
+Evaluasi & Tracking ✔ ✘ ✔ (skor ✘
+Progres Mahasiswa kuis
+sederhana)
+Interaktivitas Tinggi ✔ ✘ ✔ (kuis ✔ (eksplorasi
+(quiz, leaderboard, saja) anatomi)
+tracking kelas)
+Cakupan Pengguna ✔ ✔ ✔ ✔
+Luas (mahasiswa,
+dosen, tenaga
+kesehatan muda)
+Teknologi Lanjutan ✔ ✘ ✘ ✘
+(AI, analitik performa,
+rekomendasi belajar)
+Skalabilitas ✔ ✘ ✘ ✘
+Kurikulum (kelas &
+individu)
+Berdasarkan perbandingan di atas, terlihat bahwa RADVent memiliki
+cakupan fitur yang lebih luas dibandingkan aplikasi sejenis. Keunggulan utamanya
+terletak pada kemampuan untuk mengintegrasikan teori, praktik kasus klinis,
+simulasi posisi radiologi, serta analitik performa berbasis AI. Hal ini menjadikan
+RADVent tidak hanya sebagai media latihan tambahan, melainkan sebagai solusi
+pembelajaran menyeluruh yang mendukung transformasi digital pendidikan
+radiologi.
+Selanjutnya, untuk memastikan RADVent dapat diimplementasikan secara
+optimal, perlu dilakukan analisis kelayakan yang mencakup aspek teknis,
+operasional, ekonomi, pedagogis, serta inovasi. Analisis ini menjadi dasar dalam
+menilai kesiapan RADVent untuk diterapkan dalam konteks pembelajaran
+radiologi di tingkat universitas maupun profesional.
+Tabel 4. Analisis Kelayakan Pengembangan RADVent
+Aspek
+Uraian
+Kelayakan
+Teknis 1. Menggunakan PHP 8.1 & Laravel 10 (back-end),
+Blade & Tailwind CSS (front-end), kompatibel di
+20
+
+=== PAGE 21 ===
+berbagai perangkat.
+2. Arsitektur modular mendukung pemeliharaan,
+integrasi fitur, dan pengembangan teknologi lanjutan
+(AI adaptif, virtual patient simulation).
+3. Sistem NeuroTag berbasis marker recognition berjalan
+optimal pada perangkat kelas menengah.
+Operasional 1. Sistem berorientasi user-centered dengan mahasiswa
+dan dosen sebagai pengguna utama sehingga proses
+belajar intuitif dan efektif
+2. Fitur RADSult memungkinkan pemantauan performa
+mahasiswa secara real-time serta mendorong
+pembelajaran mandiri
+3. Latihan kasus klinis dan pustaka digital menjadikan
+RADVent teknologi tepat guna bagi mahasiswa
+radiologi
+Ekonomi 1. Mengurangi kebutuhan laboratorium fisik dan paparan
+radiasi langsung sehingga menekan biaya operasional
+jangka panjang
+2. Memanfaatkan perangkat lunak dan basis data MySQL
+untuk meminimalkan biaya lisensi
+3. Sistem cloud-based memungkinkan skalabilitas tanpa
+investasi infrastruktur besa r
+Pendidikan & 1. Menyediakan lingkungan belajar aman dan adaptif
+Pedagogis untuk memahami modalitas radiologi dengan risiko
+minimal
+2. Pembelajaran berbasis kasus mendukung evidence-
+based learning serta keterampilan analisis dan
+pengambilan keputusan klinis
+3. Progress tracking meningkatkan motivasi dan retensi
+materi sesuai prinsip comp etency-based learning
+Inovasi & 1. Integrasi unik AR imersif dan marker-based NeuroTag
+Relevansi yang belum ada dalam pendidikan radiologi di
+Indonesia
+2. Mendukung transformasi digital pembelajaran
+radiologi agar lebih aman, efektif, adaptif, dan relevan
+dengan perkembangan tek nologi pendidikan global
+4. DESAIN PRODUK TEKNOLOGI DIGITAL
+Berikut merupakan desain fitur-fitur aplikasi RADVent yang tersedia untuk
+untuk mahasiswa dapat dilihat pada Tabel 5. Desain dibangun dengan
+memerhatikan aspek inovatif yang memudahkan untuk diakses oleh mahasiswa.
+Dengan antarmuka yang ramah pengguna, aplikasi ini memungkinkan pengguna
+untuk dengan mudah menavigasi melalui berbagai fungsi, meningkatkan
+keterlibatan dalam proses belajar, serta mendukung pengembangan kegiatan
+pembelajaran yang lebih kolaboratif dan interaktif.
+21
+
+=== PAGE 22 ===
+Tabel 5. Desain Fitur-Fitur RADVENT
+Fitur untuk Mahasiswa/i
+Fitur Login: Dashboard
+Mahasiswa dapat masuk Mahasiswa : Sebagai
+menggunakan email dan laman utama untuk
+NIM sebagai identitas akses fitur-fitur yang
+utama untuk keamanan terdapat dalam
+dan personalisasi akun. aplikasi RADVent
+Fitur Fitur
+RADWorld
+(Ilustrasi
+Positioning ) :
+Menyediakan
+ilustrasi
+positioning
+pasien (AP, PA,
+Lateral,
+Oblique, dll.)
+yang RADWorld (3D Model) : Simulasi
+menunjukkan arah sinar, central ray, dan 3D modalitas radiologi (X-Ray,
+marker anatomi. Fitur ini membantu MRI, CT-Scan, USG, ds) lengkap
+memahami teknik pemeriksaan secara dengan detail komponen. Mahasiswa
+visual, aman, dan praktis tanpa perlu alat dapat memutar, memperbesar, dan
+nyata. mempelajari bagian alat secara
+fleksibel.
+Fitur RADCase : Berisi Fitur RADBook:
+latihan soal-soal berbasis Koleksi referensi
+kasus nyata di rumah digital, e-book, dan
+sakit untuk mengasah bahan bacaan ilmiah
+pemahaman mahasiswa yang dapat diakses
+terhadap teori dan praktik mahasiswa sebagai
+radiologi klinis sesuai sumber pembelajaran,
+kebutuhan lapangan. serta otomatic
+summerize berbasis
+AI .
+22
+
+=== PAGE 23 ===
+Fitur RADSult: Profile:
+Fitur yang menampilkan Menyediakan layanan
+hasil latihan mahasiswa, hotline 24/7,
+termasuk nilai, analisis informasi biodata diri,
+jawaban, dan umpan balik layanan feedback
+untuk evaluasi aplikasi, serta
+pemahaman klinis dilengkapi laporan
+mahasiswa. statistik hingga histori
+penggunaan aplikasi
+RADVent.
+Fitur untuk Dosen
+Fitur Login: Fitur Penugasan
+Dosen masuk dengan (Create Quiz) :
+melalui login email, Menyediakan laman
+sedangkan ID/NIP/NID dalam membuat soal
+digunakan untuk untuk RADCase
+mengklasifikasi kelas dengan tipe soal MCQ
+dan mahasiswa. atupun esai, beserta
+kunci jawabannya
+Fitur Penugasan (Edit Dashboard Dosen:
+Quiz): Laman utama dosen
+Fitur lanjutan dari fitur berisi progress dari
+RADCase, memudahkan RADCase mahasiswa
+dosen dalam mengedit (RADSult) dan juga
+dan menambahkan detail detail quiz yang telah
+yang kurang pada quiz diunggah.
+yang telah diberikan
+sebelumnya.
+Fitur RADSult (Detail Fitur Uload
+Quiz Student Result): RADBook:
+Berisi laporan progress Dosen dapat
+mahasiswa dan dosen mengunggah buku,
+dapat memantau modul, literatur
+perkembangan seluruh ilmiah. sebagai
+mahasiswa di kelas. penunjang
+pembelajaran
+bersama mahasiswa.
+23
+
+=== PAGE 24 ===
+5. RENCANA IMPLEMENTASI DAN VALIDASI PERANGKAT LUNAK
+5.1 Rancangan Penggunaan Perangkat Lunak
+Implementasi Implementasi RADVent dapat dilakukan secara sinkronus
+(pembelajaran di kelas) maupun asinkronus (pembelajaran mandiri di luar kelas)
+untuk mendukung proses pembelajaran radiologi berbasis teknologi AR. Pada
+pembelajaran sinkronus di kelas, dosen memberikan pengarahan awal dan instruksi
+kepada mahasiswa untuk membawa perangkat yang mendukung AR
+(smartphone/tablet/laptop). Mahasiswa diminta login ke aplikasi RADVent dan
+memilih modul pembelajaran yang sesuai. Proses pembelajaran dimulai dengan
+RadWorld, di mana mahasiswa memindai NeuroTag pada peralatan atau marker
+untuk menampilkan model 3D peralatan radiologi, mempelajari fungsi, komponen,
+dan prosedur penggunaannya. Selanjutnya mahasiswa berpindah teknik positioning
+pasien berbasis AR sesuai SOP klinis. Setelah itu, mahasiswa mengakses RadCase,
+menganalisis kasus radiologi berbasis citra medis, mengidentifikasi temuan, dan
+membuat laporan diagnosis awal. Pada pembelajaran asinkronus, mahasiswa dapat
+mengulang simulasi RadWorld untuk memperkuat pemahaman, serta mencoba
+variasi kasus baru di RadCase untuk melatih interpretasi citra medis. Dosen
+kemudian meninjau hasil laporan dan progres mahasiswa melalui fitur RADSult,
+memberikan evaluasi, serta merencanakan tindak lanjut pembelajaran pada
+pertemuan berikutnya. Alur penerapan RADVent yang mengintegrasikan
+fungsionalitas sistem, desain pembelajaran, dan interaksi pengguna
+divisualisasikan pada Gambar 3 untuk memberikan gambaran yang lebih jelas
+mengenai proses implementasinya.
+Gambar 3. Rencana Penggunaan Aplikasi
+24
+
+=== PAGE 25 ===
+5.2 Rencana Tahapan Berikutnya
+Pada tahap berikutnya, pengembangan RADVent akan difokuskan pada
+peningkatan kualitas fitur dan optimisasi sistem agar lebih efektif mendukung
+pembelajaran radiologi, dengan rencana sebagai berikut:
+1. Penyempurnaan fitur pembelajaran mandiri pada RadWorld dan RadCase
+agar mahasiswa dapat mengakses materi, simulasi, dan latihan kasus
+secara optimal di luar jam kuliah.
+2. Peningkatan skalabilitas sistem untuk memastikan aplikasi dapat
+digunakan secara bersamaan oleh banyak pengguna tanpa penurunan
+kinerja, khususnya pada pemrosesan model 3D dan simulasi AR.
+3. Validasi dan evaluasi lanjutan terhadap versi final RADVent, melibatkan
+dosen, mahasiswa, dan praktisi radiologi guna memastikan kesesuaian
+dengan standar akademik dan kebutuhan lapangan klinis.
+5.3 Rencana Jangka Panjang
+Setelah prototipe awal selesai dikembangkan, pada tahun 2025 RADVent
+akan memasuki tahap finalisasi melalui perbaikan, pengujian, pembaruan, dan
+evaluasi menyeluruh, serta didaftarkan sebagai Hak Kekayaan Intelektual
+(HKI). Memasuki tahun-tahun berikutnya, RADVent direncanakan
+memperluas konten, melakukan validasi pedagogis dan teknis,
+mengintegrasikan sistem ke dalam pembelajaran universitas, hingga ekspansi
+ke tingkat regional dan nasional melalui kerja sama dengan asosiasi pendidikan,
+mitra teknologi, serta institusi terkait. Secara garis besar, rencana jangka
+panjang RADVent selama lima tahun ke depan dapat dilihat pada gambar
+berikut.
+Gambar 4. Rencana Jangka Panjang RADVent
+25
+
+=== PAGE 26 ===
+5.4 Validasi Perangkat Lunak
+Gambar 5. Halaman Depan Fakultas Vokasi dan Rumah Sakit Khusus Infeksi
+Universitas Airlangga, Surabaya
+Validasi penggunaan aplikasi RADVent akan dilakukan melalui kolaborasi
+dengan Program Studi Teknologi Radiologi Pencitraan Universitas Airlangga dan
+Rumah Sakit Khusus Infeksi sebagai Laboratorium Radiologi Pencitraan
+Universitas Airlangga, seperti tampak pada Gambar 5, dengan tujuan memastikan
+kesesuaian sistem terhadap kebutuhan pendidikan radiologi modern. Kolaborasi ini
+melibatkan dosen, praktisi radiologi, dan mahasiswa sebagai pengguna utama untuk
+mengidentifikasi tantangan pembelajaran di laboratorium maupun kelas. Pada
+tahap ini, evaluasi diarahkan pada kesesuaian fitur inti seperti RADBook,
+RADWorld, RadSult dan RADCase dengan standar operasional klinis (SOP) serta
+efektivitasnya dalam meningkatkan keterampilan teknis mahasiswa.
+Menurut survey sementara salah satu dosen radiologi senior yang juga
+menjabat sebagai koordinator laboratorium, “Mahasiswa radiologi membutuhkan
+media pembelajaran yang dapat menjembatani gap antara teori dan praktik, tanpa
+sepenuhnya bergantung pada ketersediaan peralatan mahal. Teknologi seperti AR
+dan pemindaian objek dapat menghadirkan simulasi yang mendekati realitas,
+sehingga mahasiswa bisa lebih siap saat dikelas teori sebelum kelas praktik.”
+Berdasarkan pernyataan tersebut, integrasi teknologi imersif dalam pembelajaran
+radiologi menjadi krusial untuk meningkatkan keterlibatan, pemahaman prosedur,
+dan kesiapan mahasiswa menghadapi situasi nyata di lapangan. Dengan demikian,
+RADVent memerlukan instrumen evaluasi yang tepat untuk mengukur
+keberhasilan implementasi, baik dari sisi teknis, pedagogis, maupun pengalaman
+pengguna. Evaluasi ini akan mencakup uji User Acceptance Test (UAT),
+pengukuran System Usability Scale (SUS), dan analisis kualitatif melalui
+wawancara terstruktur, yang kriterianya akan disajikan pada Tabel 6, 7 dan 8
+Tabel 6. Daftar Pertanyaan SUS
+No Pertanyaan
+1 Saya berpikir akan menggunakan RADVent lagi.
+2 Saya merasa RADVent rumit untuk digunakan.
+3 Saya merasa RADVent mudah digunakan.
+4 Saya membutuhkan bantuan dari orang lain atau teknisi dalam
+menggunakan RADVent.
+26
+
+=== PAGE 27 ===
+5 Saya merasa fitur-fitur RADVent berjalan dengan semestinya.
+6 Saya merasa ada banyak hal yang tidak konsisten (tidak serasi) pada sistem
+ini.
+7 Saya merasa orang lain akan memahami cara menggunakan RADVent
+dengan cepat.
+8 Saya merasa RADVent membingungkan.
+9 Saya merasa tidak ada hambatan dalam menggunakan RADVent.
+10 Saya perlu membiasakan diri terlebih dahulu sebelum menggunakan
+RADVent.
+Tabel 7. Daftar Pertanyaan UAT
+No Pertanyaan
+1 Seberapa puas Anda dengan pengalaman menggunakan RADVent?
+2 Bagaimana pendapat Anda tentang kualitas fitur-fitur RADVent, seperti
+RADWorld, RADPosition, dan RADCase?
+3 Apakah Anda merasa RADVent memenuhi kebutuhan pembelajaran
+radiologi Anda?
+4 Apakah Anda akan merekomendasikan RADVent kepada mahasiswa atau
+pendidik radiologi lain?
+5 Sejauh mana Anda merasa RADVent memberikan nilai tambah bagi
+proses belajar radiologi Anda?
+Tabel 8. Penilaian Pertanyaan SUS dan UAT
+No Pertanyaan Skor
+1 Sangat Tidak Setuju (STS) 1
+2 Tidak Setuju (TS) 2
+3 Ragu-ragu (RG) 3
+4 Setuju (S) 4
+5 Sangat Setuju (SS) 5
+Dalam menghitung perhitungan pertanyaan SUS, berlaku rumus rata-rata dari
+hasil observasi untuk mendapatkan hasil akhir terlihat pada Gambar 6 dan
+Gambar 7.
+𝑥̅ = Skor Rata-rata
+∑𝑥
+𝑥̅ = ∑𝑥 = Jumlah Skor SUS
+𝑛
+𝑛 = Jumlah Responden
+Gambar 6. Rumus Perhitungan SUS
+𝑁𝑖𝑙𝑎𝑖 𝑅𝑎𝑡𝑎−𝑟𝑎𝑡𝑎
+𝑃𝑟𝑒𝑠𝑒𝑛𝑡𝑎𝑠𝑒 = ×100%
+𝐵𝑜𝑏𝑜𝑡 𝑀𝑎𝑘𝑠𝑖𝑚𝑢𝑚
+Gambar 7. Rumus Perhitungan UAT
+27
+
+=== PAGE 28 ===
+Perhitungan SUS dapat diilustrasikan seperti pada Gambar 8 untuk mendapat
+prediksi penerimaan dari sisi pendidik dan peserta didik.
+Gambar 8. Visualisasi Posisi Menggunakan Metode SUS
+6. TAUTAN VIDEO PENGEMBANGAN KARYA
+Judul Video: LIDM 2025 - Divisi Inovasi Teknologi Pendidikan - 001004 -
+RADJU Team - RADVent - Proposal
+Tautan: https://youtu.be/yC7mSFivvKY?si=7OSdfuycSA4wBjrB
+28
+
+=== PAGE 29 ===
+DAFTAR PUSTAKA
+[1] M. Defriani, M. G. Resmi, and I. Jaelani, "Uji Usability Dengan Metode
+Cognitive. Walkthrough Dan System Usability Scale (SUS) Pada Situs Web
+STT Wastukancana," INTECOMS J. Inf. Technol. Comput. Sci., vol. 4, no. 1,
+pp. 30–39, 2021, doi: 10.31539/intecoms.v4i1.2072.
+[2] English First, "Pentingnya Belajar Bahasa Inggris untuk Masa Depan | EF
+Blog," EF Blog, 2020. [Online]. Available:
+https://www.ef.co.id/englishfirst/kids/blog/pentingnya-belajar-bahasa-
+inggris-untuk-masa-depan/. [Accessed: Mar. 6, 2024].
+[3] English First, "EF EPI 2020 - Indeks Kecakapan Bahasa Inggris EF," 2023.
+[Online]. Available: https://www.ef.co.id/epi/. [Accessed: Mar. 6, 2024].
+[4] A. Hamka, "Belajar Bahasa Inggris dengan Cara Seru dan Menyenangkan,"
+Kementerian Keuangan RI, Jakarta, 2022. [Online]. Available:
+https://www.djkn.kemenkeu.go.id/kpknl-biak/baca-artikel/14909/Belajar-
+Bahasa-Inggris-dengan-Cara-Seru-dan-Menyenangkan.html. [Accessed:
+Mar. 6, 2024].
+[5] I. Malik, "Model Pembelajaran Totally Physical Response Meningkatkan
+Prestasi Belajar Speaking Dalam Bahasa Inggris Siswa SMK," J. Lesson
+Learn. Stud., vol. 4, no. 2, pp. 183–188, 2021, doi: 10.23887/jlls.v4i2.38192.
+[6] L. P. Mangori, "Peningkatan Keterampilan Menulis Teks Naratif Melalui
+Penerapan Metode Task Based Learning Dengan Teknik Clozed Procedural
+Pada Siswa Kelas XI MIPA 5 SMA Negeri 1 Malinau," Secondary, vol. 3,
+no. 3, pp. 209–218, 2023, doi: 10.51878/secondary.v3i3.2395.
+[7] J. L. O. Martín, I. B. Hameleers, J. M. Trujillo-Torres, and A. J. Moreno-
+Guerrero, "A Comparison between Collaborative and Individual Writings in
+Promoting Motivation and Language Acquisition," Sustainability, vol. 12, no.
+19, p. 7959, 2020. [Online]. Available: https://www.mdpi.com/2071-
+1050/12/19/7959/htm. [Accessed: Mar. 6, 2024].
+[8] R. Mello, E. Freitas, F. Pereira, L. Cabral, P. Tedesco, and G. Ramalho,
+"Education in the age of Generative AI: Context and Recent Developments,"
+arXiv, 2023, doi: 10.48550/arXiv.2309.12332.
+[9] M. Obisuru and W. Purbani, "Kemampuan menulis bahasa Inggris siswa
+melalui self-editing and self-correcting berdasarkan analisis kesalahan
+gramatikal dan kosakata," LingTera, vol. 3, no. 1, pp. 51–59, 2016, doi:
+10.21831/lt.v3i1.8473.
+[10] Pojiah, "Mari Mengenal User Acceptance Test (UAT): Definisi, Jenis,
+Tahapan, dan tujuannya," Idmetafora, 2022. [Online]. Available:
+https://idmetafora.com/id/blog/read/2266/Mari-Mengenal-User-Acceptance-
+Test-UAT-Definisi-Jenis-Tahapan-dan-tujuannya.html. [Accessed: Mar. 6,
+2024].
+29
+
+=== PAGE 30 ===
+[11] I. Rifai, N. Syahria, F. D. Andanty, S. Nabhan, and S. Siyaswati, "Strategi
+Pembelajaran Bahasa Inggris Melalui Collaborative Writing dan
+Synchronous Corrective Feedback bagi Guru SMA/SMK di Surabaya," J.
+Gramaswara, vol. 1, no. 1, pp. 10–25, 2021, doi:
+10.21776/ub.gramaswara.2021.001.01.02.
+[12] S. Rose, D. Engel, N. Cramer, and W. Cowley, "Automatic Keyword
+Extraction from Individual Documents," in Text Mining: Applications and
+Theory, 2010, pp. 1–20. [Online]. Available:
+https://www.researchgate.net/publication/227988510_Automatic_Keyword_
+Extraction_from_Individual_Documents. [Accessed: Mar. 6, 2024]
+[13] A. C. Sassa, I. Alves de Almeida, T. N. Fernandes Pereira, and M. Silva de
+Oliveira, "Scrum: A Systematic Literature Review," Int. J. Adv. Comput. Sci.
+Appl., vol. 14, no. 4, 2023. [Online]. Available:
+https://thesai.org/Downloads/Volume14No4/Paper_20-
+Scrum_A_Systematic_Literature_Review.pdf. [Accessed: Apr. 14, 2024].
+[14] Scrum, "What is Scrum," 2024. [Online]. Available:
+https://www.scrum.org/learning-series/what-is-scrum/. [Accessed: Apr. 14,
+2024].
+[15] I. P. E. Sutrisna, "Model Pembelajaran Inovatif Berbasis Flipped Classroom
+dalam Pengajaran English Grammar," Padma Sari J. Ilmu Pendidik., vol. 2,
+no. 01, pp. 1–10, 2022, doi: 10.53977/ps.v2i01.409.
+[16] World Bank, Pendidikan untuk Pertumbuhan. Washington, DC: World Bank,
+2018. [Online]. Available:
+https://documents1.worldbank.org/curated/en/379011531893611851/pdf/12
+6891-BAHASA-PUBLIC-IEQ-June-2018-IDN-For-web.pdf. [Accessed:
+Mar. 6, 2024].
+[17] B. Xu, A. Yang, J. Lin, Q. Wang, C. Zhou, Y. Zhang, and Z. Mao,
+"ExpertPrompting: Instructing Large Language Models to be Distinguished
+Experts," arXiv, 2023, doi: 10.48550/arXiv.2305.14688.
+[18] M. Zhang, "Towards a quantitative model of understanding the dynamics of
+collaboration in collaborative writing," J. Second Lang. Writ., vol. 45, pp. 16–
+30, 2019, doi: 10.1016/j.jslw.2019.04.001.
+30
+
+=== PAGE 31 ===
+LAMPIRAN
+Lampiran 1. Biodata Ketua dan Anggota Tim Peserta
+BIODATA KETUA
+A. Identitas Diri
+1. Nama Lengkap : Mohammad Pradana Setyawan
+2. Jenis Kelamin : Laki-Laki
+3. Program Studi : D-IV Teknologi Radiologi Pencitraan
+4. NIM : 413241048
+5. Tempat dan Tanggal Lahir : Bojonegoro, 01 Mei 2006
+6. Alamat Email : m.pradana1506@gmail.com
+7. Nomor Telepon/HP : 088217357491
+B. Kegiatan Kemahasiswaan yang Sedang/Pernah Diikuti
+No. Jenis Kegiatan Status dalam Kegiatan Waktu Tempat
+1 Camp Pengabdian Staff 2024 Nganjuk, Jawa
+Timur
+2 FutureLink.id Founder 2024- Universitas
+sekarang Airlangga
+3 SuaraPariwisata.id Founder Campaign 2024- Universitas
+sekarang Airlangga
+4 Earth Hour Surabaya Campaign Creative 2024- Universitas
+sekarang Airlangga
+5 UKM Penalaran Sekretaris Divisi 2024- Universitas
+UNAIR Penelitian sekarang Airlangga
+6 UKM Garuda Sakti Bendahara Divisi PIM 2024- Universitas
+UNAIR sekarang Airlangga
+7 PPID Universitas Staf Hubungan 2024- Universitas
+Airlangga Masyarakat sekarang Airlangga
+8 UNAIR Mengajar Staf Program 2024 Universitas
+(SCOLAH) Airlangga
+C. Penghargaan yang Pernah Di
+31
+
+=== PAGE 32 ===
+Juara 1 BPC Nasional Universitas Sultan 2025
+MEGAMIC Agung Semarang
+6 Juara 1 LKTI UIN KHAS Jember 2024
+Nasional
+SHECOFEST
+7 Juara 1 Esai Nasional Universitas Negeri 2025
+NEC HMPD Malang
+8 Juara 1 Esai Nasional Universitas Negeri 2025
+NAESCO Surabaya
+9 Juara 1 FISIP Universitas Negeri 2025
+Achievement Week Semarang
+10 Juara 2 LKTI UIN SATU Tulungagung 2024
+Nasional MKS
+LEGACY
+11 Juara 2 Esai Nasional Universitas Negeri 2025
+LENSA Yogyakarta
+12 Juara 3 Esai Nasional UIN Raden Intan 2024
+BIOEXPO Lampung
+13 Juara 3 Esai Nasional Universitas Trunojoyo 2025
+NECUTM 2025 Madura
+14 Juara 3 Esai Nasional Juara 3 Esai Nasional 2025
+KEJAR PGSD UNS KEJAR PGSD UNS
+15 Top 3 Besar Terbaik Universitas Negeri 2024
+LKTI Inosains Sub- Surabaya
+Theme
+16 Runner-up 3 Duta Paguyuban Duta 2025
+Pariwisata Jawa Pariwisata Jawa Timur
+Timur
+17 Juara 1 Duta Pemuda Paguyuban Duta Pemuda 2024
+& Budaya & Budaya Kabupaten
+Bojonegoro
+32
+
+=== PAGE 33 ===
+18 Juara 3 Duta Wisata Pemerintah Kabupaten 2025
+Kang Yune, Bojonegoro
+Bojonegoro
+Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan
+dapat dipertanggungjawabkan secara hukum. Apabila di kemudian hari ternyata
+dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+Demikian biodata ini saya buat dengan sebenarnya untuk memenuhi salah satu
+persyaratan dalam Lomba Inovasi Digital Mahasiswa (LIDM) 2025.
+Surabaya, 9 September 2025
+Ketua Tim
+Mohammad Pradana Setyawan
+33
+
+=== PAGE 34 ===
+BIODATA ANGGOTA I
+A. Identitas Diri
+1. Nama Lengkap : Muhammad Naufal Aulia
+2. Jenis Kelamin : Laki-laki
+3. Program Studi : S1 Teknologi Sains Data
+4. NIM : 164241069
+5. Tempat dan Tanggal Lahir : Jakarta, 24 September 2005
+6. Alamat Email : muhammad.naufal.aulia-
+2024@ftmm.unair.ac.id
+7. Nomor Telepon/HP : 081911150626
+B. Kegiatan Kemahasiswaan yang Sedang/Pernah Diikuti
+No. Jenis Kegiatan Status dalam Kegiatan Waktu Tempat
+1. Satria Data Big Data Lolos Seleksi Internal 22 Mei - Universitas
+Challenge Universitas Sekarang Airlangga
+2. Gemastik Data Mining Lolos Seleksi Internal 1 Juli - Universitas
+Universitas Sekarang Airlangga
+3. Pengurus UKM Tenis Sekretaris II Februari Universitas
+Lapangan 2025 - Airlangga
+Sekarang
+4. World Young Inventor Team Lead 29-31 Kuala Lumpur,
+Exhibition, Kuala Mei Malaysia
+Lumpur 2025
+5. Compfest Data Mentee 23 July- Universitas
+Science Academy Sekarang Indonesia
+C. Penghargaan yang Pernah Diterima
+No. Jenis Kegiatan Pemberi Penghargaan Tahun
+Finalis Turnamen Universitas Airlangga 2024
+1.
+Sains Data Nasional
+Gold Medalist, World Malaysian Invention and 2025
+Young Inventor Design Society (MINDS)
+2.
+Exhibition, Kuala
+Lumpur
+34
+
+=== PAGE 35 ===
+Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan
+dapat dipertanggungjawabkan secara hukum. Apabila di kemudian hari ternyata
+dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+Demikian biodata ini saya buat dengan sebenarnya untuk memenuhi salah satu
+persyaratan dalam Lomba Inovasi Digital Mahasiswa (LIDM) 2025.
+Surabaya, 9 September 2025
+Muhammad Naufal Aulia
+35
+
+=== PAGE 36 ===
+BIODATA ANGGOTA II
+A. Identitas Diri
+1. Nama Lengkap : Davina W Aura Febritalianti
+2. Jenis Kelamin : Perempuan
+3. Program Studi : D-IV Teknologi Radiologi Pencitraan
+4. NIM : 413241050
+5. Tempat dan Tanggal Lahir : Sungailiat, 23 Februari 2005
+6. Alamat Email : davina.w.aura@gmail.com
+7. Nomor Telepon/HP : 082269208443
+B. Kegiatan Kemahasiswaan yang Sedang/Pernah Diikuti
+No. Jenis Kegiatan Status dalam Kegiatan Waktu Tempat
+1. UKM Garuda Sakti Anggota Divisi PKM 2025- Universitas
+sekarang Airlangga
+2. HIMA Radiologi Sekretaris II 2025- Universitas
+sekarang Airlangga
+3. Get To Know Liason Officer Januari Universitas
+Airlangga 2025 Airlangga
+4 Radiology Liason Officer Juni Universitas
+Competition 2025 Airlangga
+(RADCOm)
+5 Visiting Radiology Staf Acara Agustus Universitas
+Vol.2 2025 Airlangga
+C. Penghargaan yang Pernah Diterima
+No. Jenis Kegiatan Pemberi Penghargaan Tahun
+1. Patent of HalalPreneur Ministry of Law and 2025
+Application Human Rights of the
+Republic of Indonesia
+2. Gold Medalist UIN KHAS JEMBER 2024
+Scientific Writing
+Competition at
+SHECOFEST
+36
+
+=== PAGE 37 ===
+Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan
+dapat dipertanggungjawabkan secara hukum. Apabila di kemudian hari ternyata
+dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+Demikian biodata ini saya buat dengan sebenarnya untuk memenuhi salah satu
+persyaratan dalam Lomba Inovasi Digital Mahasiswa (LIDM) 2025.
+Surabaya, 9 September 2025
+Anggota Tim
+Davina W Aura Febritalianti
+37
+
+=== PAGE 38 ===
+BIODATA ANGGOTA III
+A. Identitas Diri
+1. Nama Lengkap : Alfiyatul Khoiriyah
+2. Jenis Kelamin : Perempuan
+3. Program Studi : S1 Rekayasa Nanoteknologi
+4. NIM : 162241014
+5. Tempat dan Tanggal Lahir : Pasuruan, 1 Desember 2005
+6. Alamat Email : alfiyatulkhoiriyah112@gmail.com
+7. Nomor Telepon/HP : 085655022807
+B. Kegiatan Kemahasiswaan yang Sedang/Pernah Diikuti
+No. Jenis Kegiatan Status dalam Kegiatan Waktu Tempat
+1. Anggota Badan Direktur Jenderal Media, 1 Februari Universitas
+Eksekutif Mahasiswa Komunikasi dan - Sekarang Airlangga
+(BEM) Informasi
+2. Panitia PKKMB Koordinator 30 Universitas
+Fakultas (KARSA April - Airlangga
+FTMM 2025) 8
+Agustus
+2025
+3. Panitia Airnology 4.0 Staff 28 April - Universitas
+Sekarang Airlangga
+4. Panitia Staff 12 Universitas
+Synreach FTMM Cup Agustus - Airlangga
+Sekarang
+5. Panitia Pelatihan Staff 11 Universitas
+Resci Camp Agustus - Airlangga
+Sekarang
+6. Panitia PKKMB Staff 1 – 2 Universitas
+Universitas Agustus Airlangga
+Airlangga 2025
+7. Pelatihan Editing Ketua Pelaksana 1 April Universitas
+EDGY (Editing – 18 Airlangga
+Dynamics for Graphics Mei
+Yields) 2025
+8. Webinar of Public Peserta 13 Universitas
+Health International Oktober Airlangga
+Competition (PHIC) 2024
+9. Talkshow Health Peserta 2 Mei Universitas
+Buddies FTMM 2025 Airlangga
+38
+
+=== PAGE 39 ===
+C. Penghargaan yang Pernah Diterima
+No. Jenis Kegiatan Pemberi Penghargaan Tahun
+1. 2nd Place Winner Asosiasi Program 2023
+National Informatics Studi Teknik
+Olympiad Informatika
+Perguruan Tinggi
+Persatuan Guru
+Republik Indonesia
+Bekerja Sama dengan
+Program Studi
+Teknik Informatika
+Universitas PGRI
+Semarang
+2. Meraih IDE Science Hunter 2023
+TERBAIK dan Indonesia (SHI),
+menyelesaikan seluruh Yayasan Karya Riset
+kegiatan dan penilaian Indonesia, PT Riset
+dalam "From East to Prestasi Indonesia,
+be the Best Young Konsulat Amerika
+Scientist (FEBYS) #2 Serikat di Surabaya
+Pasuruan dan Dinas Pendidikan
+Provinsi Jawa
+Timur
+3. Juara 3 Lomba Mural Perpustakaan Al Hikmah 2022
+dengan tema "Hero SMA Maarif NU Pandaan
+Of Today"
+Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan
+dapat dipertanggungjawabkan secara hukum. Apabila di kemudian hari ternyata
+dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+Demikian biodata ini saya buat dengan sebenarnya untuk memenuhi salah satu
+persyaratan dalam Lomba Inovasi Digital Mahasiswa (LIDM) 2025.
+Surabaya, 9 September 2025
+Anggota Tim
+39
+
+=== PAGE 40 ===
+Lampiran 2. Biodata Dosen Pendamping
+BIODATA DOSEN PENDAMPING
+A. Identitas Diri
+1. Nama Lengkap : Amillia Kartika Sari,S.Tr.Kes.,M.T
+2. Jenis Kelamin : Perempuan
+3. Program Studi : D-IV Teknologi Radiologi Pencitraan
+8. NIP/NUPTK : 198405212020073201/0021058409
+9. Tempat dan Tanggal Lahir : Surabaya, 21 Mei 1984
+10. Alamat Email : amilia.kartika.sari@vokasi.unair.ac.id
+11. Nomor Telepon/HP : 085648051889
+B. Riwayat Pendidikan
+Tahun
+No. Jenjang Bidang Ilmu Institusi
+Lulus
+1. Sarjana (S1) D-IV Radiologi Universitas Airlangga 2015
+2. Magister (S2) Tehnobiomedik Universitas Airlangga 2018
+3. Doktoral (S3) - - -
+C. Rekam Jejak Tri Dharma PT (dalam 3 tahun terakhir)
+Pendidikan/Pengajaran
+No. Nama Mata Kuliah Wajib/Pilihan SKS
+1 Radiografi I Wajib 2 sks
+2 Radiografi II Wajib 2 sks
+3 Radiografi III Wajib 2 sks
+4 Radiografi Kegawatdaruratan Wajib 2 sks
+5 Proteksi Radiasi Wajib 2 sks
+6 Instrumentasi Imejing Penunjang 2 sks
+7 CT-Scan Dasar Wajib 2 sks
+8 CT-Scan Lanjut Wajib 2 sks
+9 Kendali Mutu Penunjang 2 sks
+10 Komunikasi Kesehatan dan Pilihan 2 sks
+Layanan DasarKesehatan
+11 Radiografi Komprehensif Wajib 2 sks
+12 Metodologi Penelitian Terapan Penunjang 2 sks
+40
+
+=== PAGE 41 ===
+Penelitian
+No. Judul Riset Penyandang Dana Tahun
+1 Aplikasi Implan Biokompatibel DIPA TA-LIPI 2019
+Basis Panduan Ti, Target Implan
+Terpasang di Pasien
+2 Tehnik Post Processing Pulse PDP 2021
+Sequence 3D Isotropic Proton
+Density Weighted Image Untuk
+studi antropometri pada citra
+MRI genu
+Pengembangan Metode Baru BRIN 2022
+untuk Klasifikasi
+COVID-19 pada Citra
+3. Radiografi X-Ray Dada
+Berbasis Deep Learning sebagai
+Upaya Percepatan Diagnosa
+Penyakit
+4 Pengembangan Desinfeksi MF-DIKTI 2023
+Otomatis Wall Bucky Stand
+Berbasis Sistem Cerdas Untuk
+Meminimalisir Infeksi
+Nosokomial Pada Pasien
+Radiologi
+5 Immersive VRCT Scan sebagai Padanan Dana- DIKSI 2024
+Media Peningkatan Kompetensi
+Tenaga Kesehatan dalam bidang
+Pencitraan Medis
+6 Komparasi Distribusi Dosis ARF (Airlangga Research 2024
+Radiasi Yang Di Terima Fund)
+Radiologist dan Cardiologist
+Pada Tindakan Angiografi
+Intervensional Diagnostik
+maupun Terapeutik Sebagai
+Langkah Preventif Penyakit
+Akibat Kerja
+7 Holographics Sistem Berbasis Padanan Dana- DIKSI 2024
+Artificial Intelligence Untuk
+Interprofesional Healthcare
+Services Education
+41
+
+=== PAGE 42 ===
+Pengabdian kepada Masyarakat
+Judul Pengabdian kepada
+No. Penyandang Dana Tahun
+Masyarakat
+1 Deteksi Dini Kanker Payudara Universitas Airlangga 2018
+dengan metode Tutorial Kader
+Kesehatan di Puskesmas Bluluk
+Lamongan
+2 Aplikasi Teknologi OSTA Universitas Airlangga 2021
+(osteoporosis self- assesment
+tools for asian)sebagai alat
+deteksi dini dan skrining
+osteoporosis di kecamatan
+porong Sidoarjo
+3 Pengembangan Metode Imaging Universitas Airlangga 2022
+Diagnostik
+Sebagai Upaya Pencegahan
+Syunting di Kecamatan Krucil
+Probolinggo
+4 Pemberdayaan Masyarakat Universitas Airlangga 2023
+Melalui aplikasi bye-bye stunting
+sebagai upaya pencegahan
+stunting di Pasongsongan
+Sumenep
+5 Pengembangan Imejing Bone Universitas Airlangga 2024
+Age sebagai Metode Monitoring
+Stunting di Kecamatan Tegal
+Ampel Bondowoso
+Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan
+dapat dipertanggungjawabkan secara hukum. Apabila di kemudian hari ternyata
+dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+42
+
+=== PAGE 43 ===
+Lampiran 3. Surat Pernyataan Keterangan Karya
+SURAT PERNYATAAN KETERANGAN KARYA
+Yang bertandatangan di bawah ini:
+Ketua Tim : Mohammad Pradana Setyawan
+Nomor Induk Mahasiswa : 413241048
+Program Studi : D-IV Teknologi Radiologi Pencitraan
+Dosen Pendamping : Amilia Kartika Sari S.Tr.Kes.,M.T.
+Perguruan Tinggi : Universitas Airlangga
+Dengan ini menyatakan bahwa proposal karya Lomba Inovasi Digital Mahasiswa
+(LIDM) tim saya pada Divisi yang diikutsertakan dalam kompetisi merupakan
+karya asli tim kami dan belum pernah diikutsertakan pada kompetisi lain dan LIDM
+tahun sebelumnya.
+Bilamana di kemudian hari ditemukan ketidaksesuaian dengan pernyataan ini,
+maka saya bersedia dituntut dan diproses sesuai dengan ketentuan yang berlaku dan
+menerima sanksi.
+Demikian pernyataan ini dibuat dengan sesungguhnya dan dengan sebenar-
+benarnya.
+Surabaya, 9 September
+2025
+Mengetahui,
+Yang Menyatakan,
+Dosen Pendamping
+Amilia Kartika Sari
+S.Tr.Kes.,M.T. Mohammad Pradana
+Setyawan
+NIP.198405212020073201
+NIM. 413241048
+Menyetujui,
+Direktur Kemahasiswaan
+43
+
+=== PAGE 44 ===
+Lampiran 4. Susunan Organisasi Tim Pelaksana dan Pembagian Tugas
+Nama/NIM Alokasi
+Peran
+No Program (jam/ Sprint Uraian Tugas Detail
+Scrum
+Studi minggu)
+1 M. Pradana Product 8 Sprint Menentukan roadmap
+Setyawan / Owner 1–10 fitur RADVent
+413241048 (RADWorld,
+RADCase, RADBook,
+D-4 Teknologi
+RADSult),
+Radiologi
+mengumpulkan
+Pencitraan
+kebutuhan pengguna
+(mahasiswa & dosen),
+menetapkan prioritas
+backlog, menyetujui
+prototipe, memberikan
+feedback
+berkelanjutan,
+memvalidasi fitur
+sebelum peluncuran
+Beta & Release
+Candidate,
+memastikan
+kesesuaian pedagogis
+dan teknis, serta
+melakukan validasi
+akhir sebelum rilis
+resmi.
+2 Davina W Scrum 8 Sprint Memfasilitasi
+Aura Master 1–10 jalannya sprint,
+Febritalianti / memonitor progres
+413241050 tim, menghapus
+hambatan teknis dan
+D-4 Teknologi
+koordinasi, memimpin
+Radiologi
+daily stand-up, sprint
+Pencitraan
+review &
+retrospective, menjaga
+komunikasi efektif
+antara Product Owner
+dan Development
+Team, memastikan
+44
+
+=== PAGE 45 ===
+timeline sprint tetap
+teratur, mendukung
+transisi ke uji coba
+skala besar (Sprint 8–
+9), hingga memastikan
+kelancaran
+deployment &
+pelatihan pengguna
+(Sprint 10).
+3 Alfiyatul Development 8 Sprint Membuat tampilan
+Khoiriyah / Team (Front- 1–10 antarmuka dan
+162241014 End) navigasi RADVent,
+mengintegrasikan
+S1
+model 3D pada
+Nanoteknologi
+RADWorld,
+memastikan interaksi
+pengguna intuitif,
+membuat animasi &
+visualisasi interaktif,
+melakukan pengujian
+UX/UI, menyesuaikan
+desain berdasarkan
+feedback, memastikan
+kompatibilitas di
+berbagai perangkat,
+melakukan optimasi
+performa & UX
+(Sprint 7), mendukung
+uji coba pengguna luas
+(Sprint 8), serta
+melakukan finalisasi
+tampilan untuk
+Release Candidate &
+versi final (Sprint 9–
+10).
+4 Muhammad Development 8 Sprint Mengembangkan
+Naufal Aulia / Team (Back- 1–10 backend aplikasi
+164241069 End) RADVent, membuat
+integrasi database
+untuk RADBook &
+45
+
+=== PAGE 46 ===
+S1 Teknologi RADSult,
+Sains Data membangun API
+untuk komunikasi
+frontend-backend,
+mengimplementasikan
+logika perhitungan
+hasil pada RADSult,
+melakukan pengujian
+fungsional setiap
+increment,
+memperbaiki bug &
+optimasi kinerja,
+menambahkan fitur
+autentikasi &
+keamanan (Sprint 7),
+mendukung uji coba
+skala besar (Sprint 8–
+9), dan memastikan
+server-side
+deployment (Sprint
+10).
+46
+
+=== PAGE 47 ===
+Lampiran 5. Flowchart Alur Aplikasi
+Flowchart Alur Mahasiswa
+. Flowchart Alur Dosen
+47
+
+=== PAGE 48 ===
+Lampiran 6. Desain NeuroTag Scan
+Desain RADVENT Card
+48
