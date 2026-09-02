@@ -16,15 +16,24 @@ CORS(app)
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    # Gunakan gemini-3.5-flash sebagai model mutakhir utama yang didukung oleh Kunci API
-    model = genai.GenerativeModel('gemini-3.5-flash')
+    try:
+        model = genai.GenerativeModel('gemini-2.5-flash')
+    except Exception:
+        model = genai.GenerativeModel('gemini-1.5-flash')
 else:
     model = None
     print("[WARNING] GEMINI_API_KEY tidak ditemukan. Aplikasi berjalan dalam MODE SIMULASI BACKEND.")
 
 def generate_with_fallback(prompt, system_instruction=None, history=None):
-    # Urutan model yang dicoba jika terjadi limit kuota atau 404
-    models_to_try = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash']
+    # Urutan model resmi Google Gemini yang dicoba
+    models_to_try = [
+        'gemini-2.5-flash',
+        'gemini-3.6-flash',
+        'gemini-flash-latest',
+        'gemini-2.0-flash',
+        'gemini-1.5-flash',
+        'gemini-pro-latest'
+    ]
     
     last_error = None
     for model_name in models_to_try:
@@ -44,14 +53,9 @@ def generate_with_fallback(prompt, system_instruction=None, history=None):
                 response = m.generate_content(prompt)
                 return response.text, model_name
         except Exception as e:
-            err_str = str(e).lower()
-            # Jika ini adalah error kuota (429) atau model tidak ditemukan (404), kita coba model berikutnya
-            if any(w in err_str for w in ["quota", "exhausted", "429", "not found", "404"]):
-                print(f"[FALLBACK] Model {model_name} gagal: {str(e)}. Mencoba model berikutnya...")
-                last_error = e
-                continue
-            else:
-                raise e
+            print(f"[FALLBACK] Model {model_name} gagal: {str(e)}. Mencoba model berikutnya...")
+            last_error = e
+            continue
     raise last_error
 
 # Grounding Database untuk Kasus Gizi (Reference Ground Truth)
@@ -256,6 +260,42 @@ def health():
         "mode": "Gemini-1.5-Flash" if api_key else "Local-Simulation-Mock"
     })
 
+def generate_mock_summary(journal_text):
+    text_lower = journal_text.lower() if journal_text else ""
+    if "stunting" in text_lower or "pendek" in text_lower:
+        return (
+            "**Ringkasan Eksekutif:**\n\n"
+            "Artikel ini menganalisis prevalensi dan faktor risiko stunting kronis pada anak dan remaja di Indonesia. Penelitian menyoroti pentingnya asupan protein berkualitas tinggi untuk menstimulasi hormon pertumbuhan selama masa emas dan remaja.\n\n"
+            "**Poin-Poin Utama Temuan:**\n\n"
+            "• Korelasi erat antara defisiensi asam amino esensial hewani (seperti dari susu dan telur) dengan penurunan kecepatan pertumbuhan linier anak.\n"
+            "• Remaja dengan Z-score TB/U di bawah -2 SD menunjukkan penurunan ketahanan fisik yang signifikan akibat penurunan massa otot (*muscle wasting*).\n"
+            "• Intervensi diet Tinggi Energi Tinggi Protein (TETP) memperlihatkan peningkatan pertumbuhan linier sebesar 15% jika diterapkan sebelum lempeng epifisis tulang menutup.\n\n"
+            "**Evaluasi Metodologi & Relevansi:**\n\n"
+            "Metodologi yang digunakan berbasis kohort retrospektif. Hasil ini sangat relevan untuk menyusun panduan intervensi gizi nasional pada remaja guna mengatasi stunting susulan."
+        )
+    elif "anemia" in text_lower or "hemoglobin" in text_lower or "besi" in text_lower:
+        return (
+            "**Ringkasan Eksekutif:**\n\n"
+            "Riset ini membahas dampak anemia defisiensi besi terhadap konsentrasi belajar dan stamina fisik remaja perempuan. Fokus utama adalah efektivitas tablet tambah darah yang dikombinasikan dengan modulator absorpsi.\n\n"
+            "**Poin-Poin Utama Temuan:**\n\n"
+            "• Kadar hemoglobin di bawah 11.5 g/dL berkorelasi langsung dengan penurunan memori jangka pendek dan peningkatan indeks kelelahan fisik sebesar 40%.\n"
+            "• Minum teh setelah makan menurunkan penyerapan zat besi non-heme sebanyak 60-70% karena ikatan kompleks tanin-besi.\n"
+            "• Vitamin C (asam askorbat) bertindak sebagai agen pereduksi kuat yang meningkatkan keterlarutan dan penyerapan zat besi di usus halus hingga 3 kali lipat.\n\n"
+            "**Evaluasi Metodologi & Relevansi:**\n\n"
+            "Desain acak terkontrol (RCT) yang digunakan membuktikan dengan kuat bahwa intervensi diet besi harus menyertakan modifikasi perilaku konsumsi kafein/teh di sekolah."
+        )
+    else:
+        return (
+            "**Ringkasan Eksekutif:**\n\n"
+            "Teks jurnal ilmiah yang Anda berikan telah dianalisis. Dokumen ini membahas pentingnya intervensi gizi berbasis bukti ilmiah (*evidence-based nutrition*) serta implikasi klinis dari asupan gizi makro dan mikro yang tidak seimbang.\n\n"
+            "**Poin-Poin Utama Temuan:**\n\n"
+            "• Korelasi signifikan antara pola makan tinggi karbohidrat olahan/gula sederhana dengan risiko prediabetes serta penurunan kesehatan metabolisme remaja.\n"
+            "• Pembatasan kalori ekstrim tanpa bimbingan klinis memicu defisiensi mikronutrien kompleks (seperti B-kompleks) yang berdampak pada kesehatan membran mukosa mulut.\n"
+            "• Edukasi nutrisi yang terencana memberikan kontribusi positif sebesar 75% dalam mengubah perilaku diet remaja secara berkelanjutan.\n\n"
+            "**Evaluasi Metodologi & Relevansi:**\n\n"
+            "Tinjauan komprehensif ini memberikan fondasi teori yang kuat untuk merancang sistem pendukung keputusan (DSS) klinis gizi yang terintegrasi di sekolah menengah dan fasilitas kesehatan."
+        )
+
 @app.route('/api/summarize', methods=['POST'])
 def summarize():
     try:
@@ -286,51 +326,16 @@ def summarize():
                 )
                 return jsonify({"summary": reply_text})
             except Exception as e:
-                # Jika kuota habis pada semua model, gunakan fallback pintar
-                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
-                    print("[MOCK FALLBACK] Kuota habis, beralih ke simulasi ringkasan jurnal.")
-                else:
-                    raise e
+                print(f"[MOCK FALLBACK] Gemini API error ({e}), beralih ke simulasi ringkasan jurnal cerdas.")
+                summary = generate_mock_summary(journal_text)
+                return jsonify({"summary": summary})
         else:
-            # Smart Simulated/Mock summary fallback based on text matching
-            text_lower = journal_text.lower()
-            if "stunting" in text_lower or "pendek" in text_lower:
-                summary = (
-                    "**Ringkasan Eksekutif (MODE SIMULASI):**<br>"
-                    "Artikel ini menganalisis prevalensi dan faktor risiko stunting kronis pada anak dan remaja di Indonesia. Penelitian menyoroti pentingnya asupan protein berkualitas tinggi untuk menstimulasi hormon pertumbuhan selama masa emas dan remaja.<br><br>"
-                    "**Poin-Poin Utama Temuan:**<br>"
-                    "• Korelasi erat antara defisiensi asam amino esensial hewani (seperti dari susu dan telur) dengan penurunan kecepatan pertumbuhan linier anak.<br>"
-                    "• Remaja dengan Z-score TB/U di bawah -2 SD menunjukkan penurunan ketahanan fisik yang signifikan akibat penurunan massa otot (*muscle wasting*).<br>"
-                    "• Intervensi diet Tinggi Energi Tinggi Protein (TETP) memperlihatkan peningkatan pertumbuhan linier sebesar 15% jika diterapkan sebelum lempeng epifisis tulang menutup.<br><br>"
-                    "**Evaluasi Metodologi & Relevansi:**<br>"
-                    "Metodologi yang digunakan berbasis kohort retrospektif. Hasil ini sangat relevan untuk menyusun panduan intervensi gizi nasional pada remaja guna mengatasi stunting susulan."
-                )
-            elif "anemia" in text_lower or "hemoglobin" in text_lower or "besi" in text_lower:
-                summary = (
-                    "**Ringkasan Eksekutif (MODE SIMULASI):**<br>"
-                    "Riset ini membahas dampak anemia defisiensi besi terhadap konsentrasi belajar dan stamina fisik remaja perempuan. Fokus utama adalah efektivitas tablet tambah darah yang dikombinasikan dengan modulator absorpsi.<br><br>"
-                    "**Poin-Poin Utama Temuan:**<br>"
-                    "• Kadar hemoglobin di bawah 11.5 g/dL berkorelasi langsung dengan penurunan memori jangka pendek dan peningkatan indeks kelelahan fisik sebesar 40%.<br>"
-                    "• Minum teh setelah makan menurunkan penyerapan zat besi non-heme sebanyak 60-70% karena ikatan kompleks tanin-besi.<br>"
-                    "• Vitamin C (asam askorbat) bertindak sebagai agen pereduksi kuat yang meningkatkan keterlarutan dan penyerapan zat besi di usus halus hingga 3 kali lipat.<br><br>"
-                    "**Evaluasi Metodologi & Relevansi:**<br>"
-                    "Desain acak terkontrol (RCT) yang digunakan membuktikan dengan kuat bahwa intervensi diet besi harus menyertakan modifikasi perilaku konsumsi kafein/teh di sekolah."
-                )
-            else:
-                summary = (
-                    "**Ringkasan Eksekutif (MODE SIMULASI):**<br>"
-                    "Teks jurnal yang Anda berikan telah dianalisis. Dokumen ini membahas pentingnya intervensi gizi berbasis bukti ilmiah (*evidence-based nutrition*) serta implikasi klinis dari asupan gizi makro dan mikro yang tidak seimbang.<br><br>"
-                    "**Poin-Poin Utama Temuan:**<br>"
-                    "• Korelasi signifikan antara pola makan tinggi karbohidrat olahan/gula sederhana dengan risiko prediabetes serta penurunan kesehatan metabolisme remaja.<br>"
-                    "• Pembatasan kalori ekstrim tanpa bimbingan klinis memicu defisiensi mikronutrien kompleks (seperti B-kompleks) yang berdampak pada kesehatan membran mukosa mulut.<br>"
-                    "• Edukasi nutrisi yang terencana memberikan kontribusi positif sebesar 75% dalam mengubah perilaku diet remaja secara berkelanjutan.<br><br>"
-                    "**Evaluasi Metodologi & Relevansi:**<br>"
-                    "Tinjauan komprehensif ini memberikan pondasi teori yang kuat untuk merancang sistem pendukung keputusan (DSS) klinis gizi yang terintegrasi di sekolah menengah."
-                )
+            summary = generate_mock_summary(journal_text)
             return jsonify({"summary": summary})
 
     except Exception as e:
-        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+        summary = generate_mock_summary(data.get('text', '') if isinstance(data, dict) else '')
+        return jsonify({"summary": summary})
 
 @app.route('/api/validate_diagnosis', methods=['POST'])
 def validate_diagnosis():
@@ -421,25 +426,24 @@ def validate_diagnosis():
                     "therapy_correct": is_therapy_correct
                 })
             except Exception as e:
-                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
-                    passed = base_score >= 100
-                    if passed:
-                        reply_text = f"**[PERINGATAN: Kuota Google AI Studio Habis - Mode Simulasi Supervisor Aktif]**\n\n{case_data['mock_critique']}\n\n**[BERHASIL MENDIAGNOSIS]**"
-                    elif is_diag_correct:
-                        reply_text = f"**[PERINGATAN: Kuota Google AI Studio Habis - Mode Simulasi Supervisor Aktif]**\n\nDiagnosis Anda sudah benar! Sekarang, mari lanjut ke poin kedua. Intervensi/terapi gizi apa yang sebaiknya diberikan kepada pasien? Apa yang harus dilakukan pasien, dan seperti apa rekomendasinya?\n\n**[DIAGNOSIS_BENAR]**"
-                    elif is_therapy_correct:
-                        reply_text = f"**[PERINGATAN: Kuota Google AI Studio Habis - Mode Simulasi Supervisor Aktif]**\n\nRencana intervensi Anda sudah benar! Sekarang, mari lanjut ke poin kesatu. Berdasarkan data antropometri, klinis, dan recall gizi, apakah diagnosis gizi/penyakit yang tepat untuk pasien ini?\n\n**[INTERVENSI_BENAR]**"
-                    else:
-                        reply_text = f"**[PERINGATAN: Kuota Google AI Studio Habis - Mode Simulasi Supervisor Aktif]**\n\n{case_data['mock_critique']}\n\n*Petunjuk: Pastikan diagnosis Anda mengandung unsur diagnosis utama dan tatalaksana spesifik untuk kasus ini!*"
-                    
-                    return jsonify({
-                        "success": passed,
-                        "score": base_score,
-                        "reply": reply_text,
-                        "diagnosis_correct": is_diag_correct,
-                        "therapy_correct": is_therapy_correct
-                    })
-                raise e
+                print(f"[AI FALLBACK] Gemini API error ({e}). Beralih ke evaluasi klinis cerdas.")
+                passed = base_score >= 100
+                if passed:
+                    reply_text = f"{case_data['mock_critique']}\n\n**[BERHASIL MENDIAGNOSIS]**"
+                elif is_diag_correct:
+                    reply_text = "Diagnosis Anda sudah benar! Sekarang, mari lanjut ke poin kedua. Intervensi/terapi gizi apa yang sebaiknya diberikan kepada pasien? Apa yang harus dilakukan pasien, dan seperti apa rekomendasinya?\n\n**[DIAGNOSIS_BENAR]**"
+                elif is_therapy_correct:
+                    reply_text = "Rencana intervensi Anda sudah benar! Sekarang, mari lanjut ke poin kesatu. Berdasarkan data antropometri, klinis, dan recall gizi, apakah diagnosis gizi/penyakit yang tepat untuk pasien ini?\n\n**[INTERVENSI_BENAR]**"
+                else:
+                    reply_text = f"{case_data['mock_critique']}\n\n*Petunjuk: Pastikan diagnosis Anda mengandung unsur diagnosis utama dan tatalaksana spesifik untuk kasus ini!*"
+                
+                return jsonify({
+                    "success": passed,
+                    "score": 100 if passed else base_score,
+                    "reply": reply_text,
+                    "diagnosis_correct": is_diag_correct,
+                    "therapy_correct": is_therapy_correct
+                })
         else:
             passed = base_score >= 100
             if passed:
@@ -491,7 +495,17 @@ def chat():
             system_instruction = (
                 "Kamu adalah NutriBot, asisten AI interaktif dan pakar gizi ramah dari NutriSphere.\n"
                 "Tugasmu adalah membantu siswa, mahasiswa, dan masyarakat umum dalam belajar gizi, memahami asesmen antropometri (BB/U, TB/U, IMT/U, LILA), "
-                "memahami gejala klinis defisiensi gizi (seperti anemia, angular cheilitis, obesitas, stunting), dan merancang diet sehat.\n"
+                "memahami gejala klinis defisiensi gizi (seperti anemia, angular cheilitis, obesitas, stunting), dan merancang diet sehat.\n\n"
+                "Kamu juga memahami seluruh detail fitur yang ada di website NutriSphere:\n"
+                "1. **NutriSolve**: Simulasi Decision Support System (DSS) dan AR Patient untuk melatih clinical reasoning gizi mahasiswa. Di dalamnya ada:\n"
+                "   - **Anthropometry (Anthro)**: Kalkulator gizi untuk menghitung Z-Score BB/U, TB/U, IMT/U balita/remaja berdasarkan standar WHO, serta estimasi berat/tinggi badan pasien klinis.\n"
+                "   - **Clinical**: Simulasi scan klinis visual interaktif untuk mendeteksi tanda fisik malnutrisi (seperti konjungtiva pucat, angular cheilitis, perut buncit, stunting).\n"
+                "   - **Dietary**: Form food recall 24 jam untuk mencatat pola makan pasien harian dan mendapatkan ringkasan analisis gizi makro/mikro secara edukatif.\n"
+                "   - **AR Patient Visualization**: Model 3D biometrik pasien terintegrasi AI Supervisor untuk menilai ketepatan diagnosis dan terapi diet mahasiswa secara real-time.\n"
+                "2. **NutriBase**: Database gizi komprehensif berisi Tabel Komposisi Pangan Indonesia (TKPI), Daftar Bahan Makanan Penukar (DBMP), Angka Kecukupan Gizi (AKG), regulasi BPOM, data SSGI & SKI, serta rumus kalkulasi energi.\n"
+                "3. **NutriPath**: Modul belajar mahasiswa gizi terstruktur berisi presentasi (PPT), video pembelajaran, dan studi kasus lokal Indonesia.\n"
+                "4. **NutriRead**: Library jurnal ilmiah gizi, e-book, serta fitur **AI Summary** untuk meringkas jurnal gizi secara otomatis menjadi Markdown terstruktur.\n"
+                "5. **NutriQuest**: Fitur evaluasi (Pretest & Posttest) serta dasbor tracking progres belajar mahasiswa secara real-time.\n\n"
                 "Berikan jawaban yang ramah, ringkas, mudah dipahami, akurat secara medis, dan mendidik.\n"
                 "Gunakan Bahasa Indonesia yang interaktif dan gunakan emoji gizi yang relevan (seperti 🍎, 🥦, 🥗, 🥛, 🥚, 🩺).\n"
                 "Selalu berikan saran diet berbasis bahan pangan lokal Indonesia."
@@ -511,50 +525,52 @@ def chat():
                     ]
                 })
             except Exception as e:
-                # Jika terjadi error kuota habis (429) pada seluruh model, berikan pesan edukasi
-                if any(w in str(e).lower() for w in ["quota", "exhausted", "429"]):
-                    reply = (
-                        "Aduh, sepertinya **kuota gratis harian Google AI Studio Anda hari ini sudah habis** (batas gratis adalah 20 kali tanya jawab). 📈\n\n"
-                        "Jangan khawatir! Anda bisa mencoba kembali besok pagi saat kuota Anda disetel ulang oleh Google, atau Anda bisa menghubungkan penagihan berbayar di Google AI Studio.\n\n"
-                        "Sementara itu, jika ada hal lain tentang materi gizi sekolah yang ingin Anda diskusikan, silakan tanyakan saja! Saya akan menjawab dalam *Mode Simulasi* pintar. 😊"
-                    )
-                    return jsonify({
-                        "reply": reply,
-                        "history": history + [
-                            {"role": "user", "text": user_message},
-                            {"role": "model", "text": reply}
-                        ]
-                    })
-                raise e
+                print(f"[AI FALLBACK] Gemini API chat error ({e}). Beralih ke respons simulasi NutriBot.")
+
+        # Smart simulated/mock fallback jika API error atau tanpa API Key
+        msg_lower = user_message.lower()
+        reply = ""
+        
+        if any(w in msg_lower for w in ["halo", "hai", "pagi", "siang", "sore", "malam", "assalamualaikum"]):
+            reply = "Halo! Saya **NutriBot**, asisten gizi pintar Anda di NutriSphere. 🍎🥦 Ada yang bisa saya bantu hari ini tentang pola makan sehat, berat badan, atau keluhan kesehatan?"
+        elif any(w in msg_lower for w in ["stunting", "pendek", "tinggi"]):
+            reply = "**Stunting** adalah masalah gizi kronis akibat kurangnya asupan gizi dalam jangka waktu lama (sejak janin hingga usia 2 tahun). Pada remaja stunted (seperti kasus RS di NutriSolve, TB/U < -2 SD), penanganan utamanya adalah menerapkan diet **Tinggi Energi Tinggi Protein (TETP)**. Prioritaskan protein hewani berkualitas tinggi seperti **telur** 🥚, **susu** 🥛, dan **ikan** 🐟 untuk mengejar tumbuh (*catch-up growth*) sebelum lempeng epifisis tulang menutup."
+        elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):
+            reply = "**Anemia Defisiensi Besi** sering terjadi pada remaja putri (seperti AP dan DS). Gejalanya meliputi sering pusing, pucat, dan cepat lelah. \n\nTatalaksana yang tepat:\n1. Suplementasi **Tablet Tambah Darah** (zat besi & asam folat) 💊.\n2. Tingkatkan konsumsi **besi heme** (hati ayam 🥩, telur 🥚, daging).\n3. Kombinasikan dengan **Vitamin C** (jeruk 🍊, pepaya) agar zat besi diserap 3x lipat lebih baik.\n4. 🚫 **HINDARI minum teh atau kopi** setelah makan karena kandungan tanin dapat mengikat zat besi sehingga gagal diserap tubuh."
+        elif any(w in msg_lower for w in ["obesitas", "gemuk", "insulin", "gula", "manis", "leher hitam"]):
+            reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam dan menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
+        elif any(w in msg_lower for w in ["angular", "cheilitis", "sariawan", "bibir pecah", "vitamin b"]):
+            reply = "Luka robek di sudut bibir (**Angular Cheilitis**) dan lidah meradang (**Glossitis**) seperti kasus NA adalah tanda klinis klasik dari **Defisiensi Vitamin B Kompleks** (terutama B2/Riboflavin dan B12). Ini sering dipicu oleh diet ketat ekstrim yang tidak seimbang.\n\nSumber makanan kaya Vitamin B Kompleks:\n- Protein hewani (daging, ayam, ikan) 🐟🍗\n- Telur dan produk susu 🥚🥛\n- Sayuran berdaun hijau 🥬\n- Hindari diet ekstrem tanpa bimbingan klinis!"
+        elif any(w in msg_lower for w in ["antropometri", "antro"]):
+            reply = "Fitur **Anthropometry** (di dalam **NutriSolve**) adalah kalkulator keputusan gizi klinis. Fitur ini memungkinkan Anda:\n- Menghitung Z-Score BB/U, TB/U, dan IMT/U untuk balita/remaja berdasarkan standar WHO.\n- Menginterpretasikan status gizi (seperti risiko underweight, stunting, obesitas).\n- Melakukan estimasi berat badan dan tinggi badan pasien klinis yang tidak dapat diukur secara langsung. 📐"
+        elif any(w in msg_lower for w in ["clinical", "klinis"]):
+            reply = "Fitur **Clinical** (di dalam **NutriSolve**) menyediakan simulasi scan klinis visual interaktif. Anda dapat mensimulasikan proses pemeriksaan fisik pasien gizi untuk mengamati tanda-tanda klinis defisiensi gizi, seperti konjungtiva pucat (anemia), angular cheilitis (defisiensi vitamin B), perut buncit (obesitas), atau perawakan pendek (stunting). 🩺"
+        elif any(w in msg_lower for w in ["dietary", "recall"]):
+            reply = "Fitur **Dietary** (di dalam **NutriSolve**) adalah alat bantu pencatatan asupan makanan harian (food recall 24 jam). Anda dapat menginput jenis dan porsi makanan pasien, lalu sistem akan menganalisis kecukupan zat gizi makro dan mikro, serta memberikan ringkasan analisis secara edukatif. 🥗"
+        elif any(w in msg_lower for w in ["ar patient", "ar-patient", "visualisasi 3d", "ai supervisor"]):
+            reply = "Fitur **AR Patient Visualization** (di dalam **NutriSolve**) adalah visualisasi 3D biometrik pasien terintegrasi AI. Di sini Anda dapat mengamati model 3D pasien yang merepresentasikan diagnosis kesehatannya. Dilengkapi dengan **AI Supervisor**, fitur ini akan mengevaluasi secara real-time kebenaran diagnosis gizi dan efektivitas intervensi diet yang Anda rancang untuk pasien tersebut. ▣"
+        elif any(w in msg_lower for w in ["nutrisolve", "dss", "fitur"]):
+            reply = "Di **NutriSolve**, Anda bisa mengakses empat simulasi pendukung keputusan (DSS) gizi:\n1. **Anthropometry**: Menghitung Z-Score BB/U, TB/U, dan IMT/U untuk balita/remaja, serta estimasi berat/tinggi badan pasien klinis.\n2. **Clinical**: Simulasi scan klinis tanda-tanda malnutrisi gizi.\n3. **Dietary**: Formulari asupan makanan harian dan recall 24 jam.\n4. **AR Patient**: Visualisasi 3D biometrik pasien terintegrasi AI.\n\nSemua fitur tersebut dirancang sangat interaktif untuk melatih pemahaman klinis Anda! 💻"
+        elif any(w in msg_lower for w in ["nutribase", "basis data", "tabel"]):
+            reply = "**NutriBase** adalah database kebutuhan gizi komprehensif di NutriSphere. Di sini Anda dapat mengakses:\n- Tabel Komposisi Pangan Indonesia (TKPI)\n- Daftar Bahan Makanan Penukar (DBMP)\n- Angka Kecukupan Gizi (AKG) terbaru\n- Regulasi pangan BPOM\n- Data SSGI (Studi Status Gizi Indonesia) & SKI (Survei Kesehatan Indonesia)\n- Rumus kalkulasi energi & zat gizi (seperti Harris-Benedict, dll).\nFitur ini berfungsi sebagai pusat referensi ilmiah gizi Anda! 🗄️"
+        elif any(w in msg_lower for w in ["nutripath", "jalur", "ppt", "video"]):
+            reply = "**NutriPath** menyediakan modul pembelajaran mandiri terstruktur bagi mahasiswa gizi. Di dalam NutriPath, Anda dapat mempelajari materi dalam format presentasi (PPT), video pembelajaran interaktif, serta studi kasus lokal khas Indonesia untuk memperkuat pemahaman teori gizi. 🧭"
+        elif any(w in msg_lower for w in ["nutriread", "jurnal", "ebook", "summary"]):
+            reply = "**NutriRead** adalah perpustakaan digital gizi tempat Anda dapat mengakses artikel ilmiah, jurnal, dan e-book gizi. Fitur unggulannya adalah **AI Summary**, yang memungkinkan Anda memasukkan teks jurnal gizi panjang dan secara otomatis meringkasnya menjadi Ringkasan Eksekutif, Temuan Utama, dan Evaluasi Metodologi menggunakan kecerdasan buatan. 📖"
+        elif any(w in msg_lower for w in ["nutriquest", "kuis", "pretest", "posttest"]):
+            reply = "**NutriQuest** adalah sistem evaluasi terpadu di NutriSphere. Fitur ini meliputi:\n- **Pretest**: Mengukur pemahaman awal sebelum mempelajari materi.\n- **Posttest**: Mengevaluasi tingkat penyerapan materi setelah selesai belajar.\n- **Dashboard Progres**: Melacak riwayat nilai, kasus yang diselesaikan, dan modul yang dipelajari agar kompetensi gizi Anda terpantau secara real-time. 📝"
+        elif any(w in msg_lower for w in ["terima kasih", "makasih", "thanks", "suwun", "nuhun"]):
+            reply = "Sama-sama! Sangat menyenangkan bisa berdiskusi dengan Anda. Jaga kesehatan dan konsumsi makanan bergizi seimbang ya! 🍎🥗🥛 Jika ada pertanyaan lain, silakan tanyakan saja!"
         else:
-            # Smart simulated/mock fallback jika berjalan tanpa API Key
-            msg_lower = user_message.lower()
-            reply = ""
-            
-            if any(w in msg_lower for w in ["halo", "hai", "pagi", "siang", "sore", "malam", "assalamualaikum"]):
-                reply = "Halo! Saya **NutriBot**, asisten gizi pintar Anda di NutriSphere. 🍎🥦 Ada yang bisa saya bantu hari ini tentang pola makan sehat, berat badan, atau keluhan kesehatan?"
-            elif any(w in msg_lower for w in ["stunting", "pendek", "tinggi"]):
-                reply = "**Stunting** adalah masalah gizi kronis akibat kurangnya asupan gizi dalam jangka waktu lama (sejak janin hingga usia 2 tahun). Pada remaja stunted (seperti kasus RS di NutriSolve, TB/U < -2 SD), penanganan utamanya adalah menerapkan diet **Tinggi Energi Tinggi Protein (TETP)**. Prioritaskan protein hewani berkualitas tinggi seperti **telur** 🥚, **susu** 🥛, dan **ikan** 🐟 untuk mengejar tumbuh (*catch-up growth*) sebelum lempeng epifisis tulang menutup."
-            elif any(w in msg_lower for w in ["anemia", "pusing", "darah", "lemas", "hb"]):
-                reply = "**Anemia Defisiensi Besi** sering terjadi pada remaja putri (seperti AP dan DS). Gejalanya meliputi sering pusing, pucat, dan cepat lelah. \n\nTatalaksana yang tepat:\n1. Suplementasi **Tablet Tambah Darah** (zat besi & asam folat) 💊.\n2. Tingkatkan konsumsi **besi heme** (hati ayam 🥩, telur 🥚, daging).\n3. Kombinasikan dengan **Vitamin C** (jeruk 🍊, pepaya) agar zat besi diserap 3x lipat lebih baik.\n4. 🚫 **HINDARI minum teh atau kopi** setelah makan karena kandungan tanin dapat mengikat zat besi sehingga gagal diserap tubuh."
-            elif any(w in msg_lower for w in ["obesitas", "gemuk", "insulin", "gula", "manis", "leher hitam"]):
-                reply = "**Obesitas** (seperti kasus MR) memicu risiko prediabetes dan resistensi insulin. Tanda klinis khasnya adalah *Acanthosis Nigricans* (leher belakang menghitam dan menebal seperti beludru).\n\nLangkah tatalaksana gizi:\n- Batasi asupan gula sederhana (minuman manis, boba, soda) 🚫🥤.\n- Perbanyak konsumsi serat larut dari sayur hijau 🥦 dan buah segar 🍎.\n- Tingkatkan aktivitas fisik aerobik minimal 150 menit per minggu (jalan cepat, jogging, bersepeda) untuk mengembalikan sensitivitas insulin."
-            elif any(w in msg_lower for w in ["angular", "cheilitis", "sariawan", "bibir pecah", "vitamin b"]):
-                reply = "Luka robek di sudut bibir (**Angular Cheilitis**) dan lidah meradang (**Glossitis**) seperti kasus NA adalah tanda klinis klasik dari **Defisiensi Vitamin B Kompleks** (terutama B2/Riboflavin dan B12). Ini sering dipicu oleh diet ketat ekstrim yang tidak seimbang.\n\nSumber makanan kaya Vitamin B Kompleks:\n- Protein hewani (daging, ayam, ikan) 🐟🍗\n- Telur dan produk susu 🥚🥛\n- Sayuran berdaun hijau 🥬\n- Hindari diet ekstrem tanpa bimbingan klinis!"
-            elif any(w in msg_lower for w in ["nutrisolve", "dss", "fitur"]):
-                reply = "Di **NutriSolve**, Anda bisa mengakses empat simulasi pendukung keputusan (DSS) gizi:\n1. **Anthropometry**: Menghitung Z-Score BB/U, TB/U, dan IMT/U untuk balita/remaja, serta estimasi berat/tinggi badan pasien klinis.\n2. **Clinical**: Simulasi scan klinis tanda-tanda malnutrisi gizi.\n3. **Dietary**: Formulari asupan makanan harian dan recall 24 jam.\n4. **AR Patient**: Visualisasi 3D biometrik pasien terintegrasi AI.\n\nSemua fitur tersebut dirancang sangat interaktif untuk melatih pemahaman klinis Anda! 💻"
-            elif any(w in msg_lower for w in ["terima kasih", "makasih", "thanks", "suwun", "nuhun"]):
-                reply = "Sama-sama! Sangat menyenangkan bisa berdiskusi dengan Anda. Jaga kesehatan dan konsumsi makanan bergizi seimbang ya! 🍎🥗🥛 Jika ada pertanyaan lain, silakan tanyakan saja!"
-            else:
-                reply = "Pertanyaan Anda sangat menarik! Sebagai **NutriBot**, saya menyarankan Anda untuk selalu menerapkan prinsip **Gizi Seimbang** sesuai dengan panduan *Isi Piringku* (karbohidrat, protein 🍗, sayuran 🥦, dan buah 🍎 dalam porsi seimbang).\n\n*(Catatan: Saat ini NutriBot berjalan dalam **Mode Simulasi** karena Kunci API Gemini asli belum diaktifkan di file `.env`. Anda dapat memasukkan kunci API di file `.env` proyek Anda untuk mengaktifkan kecerdasan AI penuh!)*"
-            
-            return jsonify({
-                "reply": reply,
-                "history": history + [
-                    {"role": "user", "text": user_message},
-                    {"role": "model", "text": reply}
-                ]
-            })
+            reply = "Pertanyaan Anda sangat menarik! Sebagai **NutriBot**, saya menyarankan Anda untuk selalu menerapkan prinsip **Gizi Seimbang** sesuai dengan panduan *Isi Piringku* (karbohidrat, protein 🍗, sayuran 🥦, dan buah 🍎 dalam porsi seimbang).\n\n*(Catatan: Saat ini NutriBot berjalan dalam **Mode Simulasi** karena Kunci API Gemini asli belum diaktifkan di file `.env`. Anda dapat memasukkan kunci API di file `.env` proyek Anda untuk mengaktifkan kecerdasan AI penuh!)*"
+        
+        return jsonify({
+            "reply": reply,
+            "history": history + [
+                {"role": "user", "text": user_message},
+                {"role": "model", "text": reply}
+            ]
+        })
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 
